@@ -1,11 +1,19 @@
-.NavBar {
-    width: 100%;
-    background-color: beige;
-    text-align: center;
+.NavBar {/*
+    width: 100%;*/
+    background-color: beige;/*
+    text-align: center;*/
 }
 
 .NavBar a{
+    color: black
+    /*
     display: inline-block;
     margin: 20px;
-    text-decoration: aliceblue;
+    margin-bottom: 8px;
+    text-decoration: aliceblue;*/
+}
+.Spaced{
+    margin:12px;
+    margin-bottom: 0px;
+    padding: 10px;
 }

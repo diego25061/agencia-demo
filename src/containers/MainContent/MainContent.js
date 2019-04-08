@@ -5,6 +5,8 @@ import ViewFiles from '../ViewFiles/ViewFiles'
 
 import './MainContent.css';
 import CrearFile from '../ViewFiles/CrearFile/CrearFile';
+import {Grid, Segment} from 'semantic-ui-react'
+import Inicio from '../Inicio/Inicio';
 
  class MainContent extends Component{
 
@@ -15,9 +17,19 @@ import CrearFile from '../ViewFiles/CrearFile/CrearFile';
     render(){
         return(
             <div className="MainContent">
-                <Route path="/huehue" component={() => {return "heheh"}}/>
-                <Route path="/files" exact component={ViewFiles}/>
-                <Route path="/file/crear" exact component={CrearFile}/>
+                <Grid>
+                    <Grid.Row>
+                        <Grid.Column width={2}></Grid.Column>
+                        <Grid.Column width={12}>
+                        <br/>
+                            <Route path="/inicio" exact component={Inicio}/>
+                            <Route path="/huehue" component={() => {return "heheh"}}/>
+                            <Route path="/files" exact component={ViewFiles}/>
+                            <Route path="/file/crear" exact component={CrearFile}/>
+                        </Grid.Column>
+                        <Grid.Column width={2}></Grid.Column>
+                    </Grid.Row>
+                </Grid>
             </div>
         );
     }
