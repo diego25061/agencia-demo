@@ -2,19 +2,55 @@ import React from 'react'
 import {Component} from 'react';
 import './NavBar.css';
 import {Link} from 'react-router-dom'
-import {Grid, Segment, Item, Image} from 'semantic-ui-react'
+import {Grid, Button, Menu, Image, Header,Container} from 'semantic-ui-react'
+import {Configuracion} from '../../common/Constantes'
 
 import LogoYllari from '../../assets/logo_yllari.png'
- class NavBar extends Component{
+
+import { withRouter } from 'react-router-dom'
+ 
+  
+class NavBar extends Component{
+
+    state={
+        enlace:''
+    }
 
     componentDidMount(){
-
     }
-    
+
+    navegar(direccion){
+        this.props.history.push(direccion);
+    }
     render(){
         return(
-            <header>
-                <div className="NavBar">
+                <div>
+                    <Menu size='large'> 
+                            <Menu.Item position='left'>
+                                <Header>
+                                    <Image circular src={LogoYllari} /> Yllari Travel
+                                </Header>
+                            </Menu.Item>
+                            {Configuracion.EnlacesNavBar.map((element)=>{
+                                return <Menu.Item as='a' active={this.state.enlace === element.nombre} 
+                                    onClick={()=>{this.setState({enlace:element.nombre});this.navegar(element.valor)}}> 
+                                        {element.nombre}
+                                    {/*<Link to={element.valor} style={{color:"black"}}>{element.nombre}</Link>*/}
+                                </Menu.Item>
+                            })}
+                            
+                            <Menu.Item position='right'>
+                            
+                                <Button as='a' >
+                                    Cerrar sesión
+                                </Button>{/*
+                                <Button as='a' style={{ marginLeft: '0.5em' }}>
+                                    Sign Up
+                                </Button>*/}
+                            </Menu.Item> 
+                    </Menu>
+                
+                {/*
                 <Grid>
                     <Grid.Row className="Spaced">
 
@@ -53,16 +89,18 @@ import LogoYllari from '../../assets/logo_yllari.png'
 
                     </Grid.Row>
                 </Grid>
+
+                */}
+
+
                 {/*
                     <Link to="/inicio">Inicio</Link>
                     <Link to="/files">Files</Link>
                     <Link to="/servicios">Servicios</Link>
                 <Link to="/transportes">Transportes</Link>*/}
                 </div>
-            </header>
         );
     }
+}
 
- }
-
- export default NavBar;
+export default NavBar;

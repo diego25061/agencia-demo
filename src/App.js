@@ -4,7 +4,7 @@ import './App.css';
 
 import NavBar from './components/NavBar/NavBar'
 import MainContent from './containers/MainContent/MainContent';
-import {BrowserRouter} from 'react-router-dom';
+import {BrowserRouter, Route} from 'react-router-dom';
 
 class App extends Component {
   render() {
@@ -28,7 +28,7 @@ class App extends Component {
 
       </div>*/
       <BrowserRouter>
-        <NavBar/>
+        <Route path="" component={NavBar}/>
         <MainContent/>
       </BrowserRouter>
     );

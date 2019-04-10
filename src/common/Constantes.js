@@ -21,4 +21,14 @@ const CONSTANTES_GLOBALES={
     ]
 }
 
+const Configuracion={
+    EnlacesNavBar:[
+        {nombre:"Inicio", valor:"/inicio"},
+        {nombre:"Files", valor:"/files"},
+        {nombre:"Transportes", valor:"/transportes"},
+        {nombre:"Servicios", valor:"/servicios"},
+    ]
+}
+
+export {Configuracion};
 export default CONSTANTES_GLOBALES;
