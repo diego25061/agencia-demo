@@ -1,20 +1,23 @@
 import React from 'react'
 import {Component} from 'react'
-import {Dropdown, Input, TextArea, Form, Grid, Segment, Button, Icon, Label, Table, Menu, Popup, Header, Modal} from 'semantic-ui-react'
+import {Dropdown, Input, TextArea, Form, Grid, Segment, Button, Icon, Label, Table, Message, Popup, Header, Modal} from 'semantic-ui-react'
 
 import ElementoForm from '../../../components/ElementoForm/ElementoForm';
-import Constantes from '../../../common/Constantes';
+import Constantes, { RptaTrx } from '../../../common/Constantes';
+import {Configuracion} from '../../../common/Constantes';
 import CamposCrearCliente from '../../VerClientes/CamposCrearCliente/CamposCrearCliente';
 
 //date pickers
-import {
-    DateInput,
-    TimeInput,
-    DateTimeInput,
-    DatesRangeInput
-  } from 'semantic-ui-calendar-react';
+import {DateInput,TimeInput,DateTimeInput,DatesRangeInput} from 'semantic-ui-calendar-react';
+import axios from 'axios';
+import ModalTrxSimple from '../../ModalTrxSimple/ModalTrxSimple';
 
 class CrearFile extends Component{
+
+    constructor(props){
+        super(props);
+        this.modalClientesRef=React.createRef();
+    }
 
     servicio = (fecha,ciudad,servicio,hotel,pasajeros,nombrePasajero,tren,alm,obs) => {
         return {fecha,ciudad,servicio,hotel,pasajeros,nombrePasajero,tren,alm,obs};
@@ -33,10 +36,26 @@ class CrearFile extends Component{
     }
 
     state={
-        //datos de modals
-        modalBibliasAbierto:false,
-        modalClientesAbierto:false,
+        //datos de modal biblia
+        modalCliente:{
+            //abierto:false,
+            transaccionEnviada:false,
+            responseRecibida:false,
+            rptaTransaccion:null
+        },
 
+        modalBiblia:{
+            //abierto:false,
+            transaccionEnviada:false,
+            responseRecibida:false,
+            rptaTransaccion:null
+        },
+
+        camposModalBiblia:{
+            mes:null,
+            anho:null
+        },
+        
         //datos de file
         codigo:'',
         descripcion:'',
@@ -55,24 +74,49 @@ class CrearFile extends Component{
         ],
 
         //opciones a elegir
-        opcionesBiblia: [{value:1, text:'mayo, 2019'}],
-        opcionesCliente: [{value:1, text:'juancito'}]
+        opcionesBiblia: [/*{value:1, text:'mayo, 2019'}*/],
+        opcionesCliente: [/*{value:1, text:''}*/],
+        opcionesHoteles: [/*{value:1, text:'juancito'}*/]
     }
     
     
-    render(){
-        const countryOptions = [
-            {  value: 'af', text: 'Afghanistan' },
-            {  value: 'ax', text: 'Aland Islands' },
-            {  value: 'al', text: 'Albania' },
-            {  value: 'dz', text: 'Algeria' },
-            {  value: 'as', text: 'American Samoa' },
-            {  value: 'ad', text: 'Andorra' },
-            {  value: 'ao', text: 'Angola' },
-            {  value: 'ai', text: 'Anguilla' },
-            {  value: 'ag', text: 'Antigua' },
-          ]
+    contenedorCamposModalCliente = {
+        //ff:()=>{console.log(this.contCliente)},
+        //funcCrearCliente:()=>{}
+    }
 
+    cargarClientes(){
+        axios.get(Configuracion.ServerUrl+"/clientes/dropdown").then( response => { 
+            var listaOpsCliente = response.data.map( element => {return {value:element.idCliente, text: element.nombre}});
+            console.log(listaOpsCliente);
+            this.setState({opcionesCliente: listaOpsCliente}) 
+        });
+    }
+
+    cargarBiblias(){
+        axios.get(Configuracion.ServerUrl+"/biblias/dropdown").then( response => { 
+            var listaBiblias = response.data.map( element => {return {value:element.idBiblia, text: element.nombre}});
+            console.log(listaBiblias);
+            this.setState({opcionesBiblia: listaBiblias}) 
+        });
+    }
+
+    cargarHoteles(){
+        axios.get(Configuracion.ServerUrl+"/hoteles/dropdown").then( response => { 
+            var listaHoteles = response.data.map( element => {return {value: element.nombre, text: element.nombre}});
+            this.setState({opcionesHoteles: listaHoteles}) 
+            console.log(this.state.opcionesHoteles);
+        });
+    }
+
+    componentDidMount(){
+        console.log("wii");
+        this.cargarClientes();
+        this.cargarBiblias();
+        this.cargarHoteles();
+    }
+    
+    render(){
           
         return <div>
         <Header size="large">Formulario de creacion: nuevo file</Header>
@@ -102,7 +146,14 @@ class CrearFile extends Component{
                                 options={this.state.opcionesBiblia}
                             />
                             <Button attached="right" icon onClick={
-                                () => {this.setState({modalBibliasAbierto:true})}
+                                () => {
+                                    
+                                    var state = {...this.state};
+                                    state.modalBibliasAbierto=true;
+                                    state.modalBiblia.responseRecibida=false;
+                                    state.modalBiblia.transaccionEnviada=false;
+                                    this.setState(state);
+                                }
                             }>
                                 <Icon name='plus' />
                             </Button>
@@ -116,7 +167,15 @@ class CrearFile extends Component{
                                 options={this.state.opcionesCliente}
                             />
                             <Button attached="right" icon onClick={
-                                () => {this.setState({modalClientesAbierto:true})}
+                                () => {
+                                    //this.setState({modalClientesAbierto:true});
+                                    this.modalClientesRef.current.abrir();
+                                    
+                                    var state = {...this.state};
+                                    state.modalCliente.responseRecibida=false;
+                                    state.modalCliente.transaccionEnviada=false;
+                                    this.setState(state);
+                                }
                             }>
                                 <Icon name='plus' />
                             </Button>
@@ -179,7 +238,7 @@ class CrearFile extends Component{
                                         <ColumnaTablaIns textAlign="center">Nombre Pax</ColumnaTablaIns>
                                         <ColumnaTablaIns textAlign="center">V/R</ColumnaTablaIns>
                                         <ColumnaTablaIns textAlign="center">TC</ColumnaTablaIns>
-                                        <ColumnaTablaIns textAlign="center">Transp.</ColumnaTablaIns>
+                                        <ColumnaTablaIns textAlign="center">Proveedor</ColumnaTablaIns>
                                         <ColumnaTablaIns textAlign="center">OBS</ColumnaTablaIns>
                                         <ColumnaTablaIns textAlign="center"></ColumnaTablaIns>
                                     </Grid.Row>
@@ -227,7 +286,7 @@ class CrearFile extends Component{
                         <Label>{index+1}</Label>
                     </ColumnaTablaIns>
                     <ColumnaTablaIns> 
-                        <DateInput
+                        <DateInput 
                             fluid
                             name="fecha"
                             placeholder="01-02-2019"
@@ -263,12 +322,19 @@ class CrearFile extends Component{
                         }}></Input>
                     </ColumnaTablaIns>
                     <ColumnaTablaIns>
-                        <Input fluid placeholder="Hotel" value={this.state.servicios[index].hotel} 
-                        onChange={(event)=>{
-                            var servs = this.state.servicios.slice();
-                            servs[index].hotel = event.target.value;
-                            this.setState({servicios:servs});
-                        }}></Input>
+                        {/*
+                        <Dropdown fluid placeholder='Hotel' search selection 
+                            options={this.state.opcionesHoteles}
+                            onChange={(event,data)=>{
+                                var servs = this.state.servicios.slice();
+                                servs[index].hotel = data.value;
+                                this.setState({servicios:servs});
+                            }}
+                        />*/}
+                        <Input list={'hoteles'+index} placeholder='Sheraton' fluid/>
+                        <datalist id={'hoteles'+index}>
+                            {this.state.opcionesHoteles.map(e=><option value={e.text}/>)}
+                        </datalist>
                     </ColumnaTablaIns>
                     <ColumnaTablaIns>
                         <Input fluid placeholder="Pasajeros" value={this.state.servicios[index].pasajeros} 
@@ -451,7 +517,7 @@ class CrearFile extends Component{
                         }}></Input>
                     </ColumnaTablaIns>
                     <ColumnaTablaIns>
-                        <Input fluid placeholder="Transp."
+                        <Input fluid placeholder="Transportista"
                         value={this.state.transportes[index].transportista} 
                         onChange={(event)=>{
                             var trans = this.state.transportes.slice();
@@ -480,41 +546,177 @@ class CrearFile extends Component{
                 </FilaTablaIns>)
     }
 
+    EnviarPostBiblia=()=>{
+        var newStateModalBiblia={...this.state.modalBiblia};
+        newStateModalBiblia.transaccionEnviada=true;
+        this.setState({modalBiblias:newStateModalBiblia});
+        console.log(this.state.camposModalBiblia);
+
+        axios.post(Configuracion.ServerUrl+"/biblias", this.state.camposModalBiblia).then((response)=>{
+            var newState = {...this.state.modalBiblia};
+            newState.responseRecibida=true;
+            newState.rptaTransaccion = new RptaTrx(response.data);
+            this.cargarBiblias();
+            this.setState({modalBiblia:newState});
+        }).catch(error=>{
+            //console.log(error.response);
+            //si hay error manejado por server
+            if(error.response.data){
+                var newState = {...this.state.modalBiblia};
+                newState.responseRecibida=true;
+                newState.rptaTransaccion = new RptaTrx(error.response.data);
+                //console.log(newState.rptaTransaccion);
+                this.setState({modalBiblia:newState});
+            }else{
+            //si hay un error donde el server ni responde
+                var newState = {...this.state.modalBiblia};
+                newState.responseRecibida=true;
+                newState.rptaTransaccion= new RptaTrx().set(null,"Servidor inaccesible",null,0);
+                this.setState({modalBiblia: newState});
+            }
+        })
+    }
+
     ModalCrearBiblia = () => {
+        
+        let msj = <div></div>
+        if (this.state.modalBiblia.transaccionEnviada && !this.state.modalBiblia.responseRecibida){
+            msj = <Message icon>
+                <Icon name='circle notched' loading />
+                <Message.Content>
+                    <Message.Header>Espere un momento...</Message.Header>
+                    Creando biblia
+                </Message.Content>
+            </Message>
+        }else
+        if (this.state.modalBiblia.responseRecibida){
+            if(this.state.modalBiblia.rptaTransaccion.transaccionExitosa()){
+                msj = <Message success header='Biblia nueva creada'>
+                    <Message.List>
+                        <Message.Item>Puede elegir la biblia nuevo desde las opciones</Message.Item>
+                        {this.state.modalBiblia.rptaTransaccion.msj?<Message.Item>{this.state.modalBiblia.rptaTransaccion.msj}</Message.Item>:null}
+                    </Message.List>
+                </Message>
+            }else {
+                msj = <Message negative>
+                    <Message.Header>Error al crear biblia</Message.Header>
+                    <Message.List>
+                        <Message.Item>{this.state.modalBiblia.rptaTransaccion.msj}</Message.Item>
+                        {this.state.modalBiblia.rptaTransaccion.trace?<Message.Item>{this.state.modalBiblia.rptaTransaccion.trace}</Message.Item>:null}
+                    </Message.List>
+                </Message>
+            }
+        }
+
+        
         return (
         <Modal size="tiny" open ={this.state.modalBibliasAbierto} centered={false} onClose={() => {this.setState({modalBibliasAbierto:false})}}>
             <Modal.Header>Nueva biblia</Modal.Header>
             <Modal.Content>
                 <ElementoForm titulo="Mes">
-                    <Dropdown placeholder="Junio" fluid search selection options={Constantes.ListaMeses}/>
+                    <Dropdown placeholder="Junio" fluid search selection options={Constantes.ListaMeses} 
+                        onChange = {(event,data)=>{
+                            var newState = {...this.state};
+                            newState.camposModalBiblia.mes= data.value;
+                            this.setState(newState);
+                            }}/>
                 </ElementoForm>
                 <ElementoForm titulo="Año">
-                    <Input fluid placeholder="Año"></Input>
+                    <Input fluid placeholder="Año" onChange={(event)=>{
+                            var newState = {...this.state};
+                            newState.camposModalBiblia.anho=event.target.value;
+                            this.setState(newState);
+                        }}></Input>
                 </ElementoForm>
+                {msj}
             </Modal.Content>
             <Modal.Actions>
                 <Button negative onClick={() => {this.setState({modalBibliasAbierto:false})}}>
                     Cancelar
                 </Button>
-                <Button positive icon='checkmark' labelPosition='right' content='Crear' />
+                <Button positive icon='checkmark' labelPosition='right' content='Crear' onClick={this.EnviarPostBiblia} />
             </Modal.Actions>
         </Modal>)    
     }
     
+    EnviarPostCliente=(camposModalCliente)=>{
+        //console.log(camposModalCliente);
+        
+        var newState = {...this.state.modalCliente};
+        newState.transaccionEnviada=true;
+        this.setState({modalCliente:newState});
+
+        axios.post(Configuracion.ServerUrl+"/clientes", camposModalCliente).then((response)=>{
+            //console.log(response);
+            var newState = {...this.state.modalCliente};
+            newState.responseRecibida=true;
+            newState.rptaTransaccion = new RptaTrx(response.data);
+            //console.log(newState.rptaTransaccion);
+            this.cargarClientes();
+            this.setState({modalCliente:newState});
+        }).catch(error=>{
+            //console.log(error.response);
+            //si hay error manejado por server
+            if(error.response.data){
+                var newState = {...this.state.modalCliente};
+                newState.responseRecibida=true;
+                newState.rptaTransaccion = new RptaTrx(error.response.data);
+                //console.log(newState.rptaTransaccion);
+                this.setState({modalCliente:newState});
+            }else{
+            //si hay un error donde el server ni responde
+                var newState = {...this.state.modalCliente};
+                newState.responseRecibida=true;
+                newState.rptaTransaccion= new RptaTrx().set(null,"Servidor inaccesible",null,0);
+                this.setState({modalCliente: newState});
+            }
+        })
+    }
+
     ModalCrearCliente = () => {
+        let msj = <div></div>
+        if (this.state.modalCliente.transaccionEnviada && !this.state.modalCliente.responseRecibida){
+            msj = <Message icon>
+                <Icon name='circle notched' loading />
+                <Message.Content>
+                    <Message.Header>Espere un momento...</Message.Header>
+                    Creando cliente
+                </Message.Content>
+            </Message>
+        }else if (this.state.modalCliente.responseRecibida){
+            if(this.state.modalCliente.rptaTransaccion.transaccionExitosa()){
+                msj = <Message success header='Cliente nuevo creado'>
+                    <Message.List>
+                        <Message.Item>Puede elegir al cliente nuevo desde las opciones</Message.Item>
+                        {this.state.modalCliente.rptaTransaccion.msj?<Message.Item>{this.state.modalCliente.rptaTransaccion.msj}</Message.Item>:null}
+                    </Message.List>
+                </Message>
+            }else {
+                msj = <Message negative>
+                    <Message.Header>Error al crear cliente</Message.Header>
+                    <Message.List>
+                        <Message.Item>{this.state.modalCliente.rptaTransaccion.msj}</Message.Item>
+                        {this.state.modalCliente.rptaTransaccion.trace?<Message.Item>{this.state.modalCliente.rptaTransaccion.trace}</Message.Item>:null}
+                    </Message.List>
+                </Message>
+            }
+        }
+
         return (
-        <Modal size="tiny" open ={this.state.modalClientesAbierto} centered={false} onClose={() => {this.setState({modalClientesAbierto:false})}}>
-            <Modal.Header>Nuevo cliente</Modal.Header>
-            <Modal.Content>
-                <CamposCrearCliente/>
-            </Modal.Content>
-            <Modal.Actions>
-                <Button negative onClick={() => {this.setState({modalClientesAbierto:false})}}>
-                    Cancelar
-                </Button>
-                <Button positive icon='checkmark' labelPosition='right' content='Crear' />
-            </Modal.Actions>
-        </Modal>)    
+        <ModalTrxSimple 
+            ref={this.modalClientesRef} 
+            titulo="Crear nuevo cliente" 
+            size="tiny" 
+            textoAceptar="Crear"
+            textoCancelar="Cancelar" 
+            enAceptar={()=>{
+                console.log("aceptando!");
+                this.EnviarPostCliente(this.contenedorCamposModalCliente);
+                }}>
+            <CamposCrearCliente contenedor={this.contenedorCamposModalCliente}/>
+            {msj}
+        </ModalTrxSimple>
+        )
     }
 }
 
@@ -525,9 +727,7 @@ const FilaTablaIns=(props)=>{
 }
 
 const ColumnaTablaIns=(props)=>{
-    return <Grid.Column verticalAlign="middle" textAlign="center" style={{padding:"0px 4px"}}>{props.children}</Grid.Column>
+    return <Grid.Column verticalAlign="middle" textAlign="center" style={{padding:"0px 1px"}}>{props.children}</Grid.Column>
 }
 
-
-  
 export default CrearFile;

@@ -22,6 +22,7 @@ const CONSTANTES_GLOBALES={
 }
 
 const Configuracion={
+    ServerUrl:"http://localhost:65212",
     EnlacesNavBar:[
         {nombre:"Inicio", valor:"/inicio"},
         {nombre:"Files", valor:"/files"},
@@ -30,5 +31,51 @@ const Configuracion={
     ]
 }
 
-export {Configuracion};
+class RptaTrx{
+    cont;
+    msj;
+    trace;
+    cod;
+    constructor(response){
+        if(response){
+            this.cont = response.cont;
+            this.msj = response.msj;
+            this.trace = response.trace;
+            this.cod = response.cod;
+        }
+    }
+    set=(cont,msj,trace,cod)=>{
+        this.cont = cont;
+        this.msj = msj;
+        this.trace = trace;
+        this.cod = cod;
+    };
+/*
+    constructor(contenido,mensaje,trace,codigo){
+        this.cont = contenido;
+        this.msj = mensaje;
+        this.trace = trace;
+        this.codigo = codigo;
+    }
+
+    constructor(contenido,mensaje){
+        this.cont=contenido;
+        this.msj=mensaje;
+        this.trace=null;
+        this.codigo=1;
+    }
+
+    constructor(mensaje,codigo){
+        this.cont=null;
+        this.msj=mensaje;
+        this.cod=codigo;
+        this.trace=null;
+    }
+*/
+    transaccionExitosa(){
+        return this.cod!=0
+    }
+}
+
+export {Configuracion, RptaTrx};
 export default CONSTANTES_GLOBALES;
