@@ -2,12 +2,20 @@ import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
 
+import Background from './assets/fondo-tic-tac-toe.png';
+
 import NavBar from './components/NavBar/NavBar'
 import MainContent from './containers/MainContent/MainContent';
 import {BrowserRouter, Route} from 'react-router-dom';
+import { Image } from 'semantic-ui-react';
 
 class App extends Component {
   render() {
+    
+    var sectionStyle = {
+      //backgroundImage: `url(${Background})`
+    };
+
     return (
       /*
       <div className="App">
@@ -29,7 +37,9 @@ class App extends Component {
       </div>*/
       <BrowserRouter>
         <Route path="" component={NavBar}/>
-        <MainContent/>
+        <section style={ sectionStyle }>
+          <MainContent/>
+        </section>
       </BrowserRouter>
     );
   }

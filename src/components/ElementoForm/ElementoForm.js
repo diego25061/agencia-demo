@@ -1,6 +1,6 @@
 import React from 'react'
 import {Component} from 'react'
-import { Header } from 'semantic-ui-react';
+import { Header, Container } from 'semantic-ui-react';
 
 class ElementoForm extends Component{
     render(){
@@ -8,10 +8,10 @@ class ElementoForm extends Component{
         if(this.props.black)
             e = <b>{e}</b>;
 
-        return <p>
+        return <Container fluid>
                 <Header size="tiny">{e}</Header>
                 {this.props.children}
-            </p>
+            </Container>
     }
 
 }

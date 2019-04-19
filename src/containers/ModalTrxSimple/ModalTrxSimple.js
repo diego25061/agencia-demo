@@ -18,12 +18,10 @@ class ModalTrxSimple extends Component{
         centered={false} 
         onClose={() => {this.setState({abierto:false})}}>
                 <Modal.Header>{this.props.titulo}</Modal.Header>
-                <Modal.Content>
-                    {this.props.children}
-                </Modal.Content>
+                <Modal.Content>{this.props.children}</Modal.Content>
                 <Modal.Actions>
-                    <Button negative onClick={()=>{if(this.props.enCancelar) this.props.enCancelar(); this.setState({abierto:false})}}>{this.props.textoCancelar}</Button>
                     <Button positive icon='checkmark' labelPosition='right' content={this.props.textoAceptar} onClick={this.props.enAceptar}/>
+                    <Button negative onClick={()=>{if(this.props.enCancelar) this.props.enCancelar(); this.setState({abierto:false})}}>{this.props.textoCancelar}</Button>
                 </Modal.Actions>
             </Modal>
     }

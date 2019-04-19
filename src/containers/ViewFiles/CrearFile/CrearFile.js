@@ -1,6 +1,6 @@
 import React from 'react'
 import {Component} from 'react'
-import {Dropdown, Input, TextArea, Form, Grid, Segment, Button, Icon, Label, Table, Message, Popup, Header, Modal} from 'semantic-ui-react'
+import {Dropdown, Input, TextArea, Form, Grid, Segment, Button, Icon, Label, Table, Message, Popup, Header, Modal, Container} from 'semantic-ui-react'
 
 import ElementoForm from '../../../components/ElementoForm/ElementoForm';
 import Constantes, { RptaTrx } from '../../../common/Constantes';
@@ -11,6 +11,7 @@ import CamposCrearCliente from '../../VerClientes/CamposCrearCliente/CamposCrear
 import {DateInput,TimeInput,DateTimeInput,DatesRangeInput} from 'semantic-ui-calendar-react';
 import axios from 'axios';
 import ModalTrxSimple from '../../ModalTrxSimple/ModalTrxSimple';
+import Requester from '../../../common/Services/Requester';
 
 class CrearFile extends Component{
 
@@ -74,8 +75,17 @@ class CrearFile extends Component{
         ],
 
         //opciones a elegir
+        
+        bibliasCargaron:false,
+        bibliasCargaronExito:true,
         opcionesBiblia: [/*{value:1, text:'mayo, 2019'}*/],
+
+        clientesCargaron:false,
+        clientesCargaronExito:true,
         opcionesCliente: [/*{value:1, text:''}*/],
+
+        hotelesCargaron:false,
+        hotelesCargaronExito:true,
         opcionesHoteles: [/*{value:1, text:'juancito'}*/]
     }
     
@@ -86,31 +96,68 @@ class CrearFile extends Component{
     }
 
     cargarClientes(){
-        axios.get(Configuracion.ServerUrl+"/clientes/dropdown").then( response => { 
-            var listaOpsCliente = response.data.map( element => {return {value:element.idCliente, text: element.nombre}});
-            console.log(listaOpsCliente);
-            this.setState({opcionesCliente: listaOpsCliente}) 
+        Requester.getClientesListaDropdown(rpta=>{
+            console.log(rpta);
+            var listaOpsCliente = rpta.cont.map( element => { return { value:element.idCliente, text: element.nombre }});
+            this.setState({
+                clientesCargaronExito:false,
+                clientesCargaron:true,
+                opcionesCliente: listaOpsCliente
+            }) 
+        },(rptaError)=>{
+            this.setState({
+                clientesCargaronExito:false,
+                clientesCargaron:true
+            });
         });
     }
 
     cargarBiblias(){
-        axios.get(Configuracion.ServerUrl+"/biblias/dropdown").then( response => { 
-            var listaBiblias = response.data.map( element => {return {value:element.idBiblia, text: element.nombre}});
-            console.log(listaBiblias);
-            this.setState({opcionesBiblia: listaBiblias}) 
-        });
+        Requester.getBibliasDropdownCompleto((rpta)=>{
+            var listaBiblias = rpta.cont.map( element => {return {value: element.idBiblia, text: element.nombre}});
+            this.setState({opcionesBiblia: listaBiblias});
+            this.setState({
+                bibliasCargaronExito:false,
+                bibliasCargaron:true
+            });
+        }, 
+        (rptaError)=>{
+            //console.log(rptaError);
+            this.setState({
+                bibliasCargaronExito:false,
+                bibliasCargaron:true,
+            });
+        })
     }
 
     cargarHoteles(){
+        Requester.getHotelesListaDropdown(rpta=>{
+            var listaOpsCliente = rpta.cont.map( element => { return { value:element.idHotel, text: element.nombre }});
+            this.setState({
+                opcionesHoteles: listaOpsCliente,
+                hotelesCargaronExito: true,
+                hotelesCargaron:true
+            })
+        }, 
+        (rptaError)=>{
+            //console.log(rptaError);
+            this.setState({
+                hotelesCargaronExito:false,
+                hotelesCargaron:true
+            });
+        });
+        /*
         axios.get(Configuracion.ServerUrl+"/hoteles/dropdown").then( response => { 
             var listaHoteles = response.data.map( element => {return {value: element.nombre, text: element.nombre}});
             this.setState({opcionesHoteles: listaHoteles}) 
             console.log(this.state.opcionesHoteles);
-        });
+        });*/
     }
 
     componentDidMount(){
         console.log("wii");
+        //Requester.getListadoFiles(this.filesRecibidos,this.filesError);
+        
         this.cargarClientes();
         this.cargarBiblias();
         this.cargarHoteles();
@@ -122,11 +169,13 @@ class CrearFile extends Component{
         <Header size="large">Formulario de creacion: nuevo file</Header>
             <Grid columns={2} >
                 <Grid.Row>
-                    <Grid.Column width={8}>
+                    <Grid.Column width={5}>
                         <ElementoForm titulo="Codigo">
                             <Input placeholder="002-134" ></Input>
                         </ElementoForm>
 
+                    </Grid.Column>
+                    <Grid.Column width={5}>
                         <ElementoForm titulo="Descripcion">
                             <Form>
                                 {/*style={{ minHeight: 100 }}*/}
@@ -136,13 +185,16 @@ class CrearFile extends Component{
 
                     </Grid.Column>
                     
-                    <Grid.Column width={8}>
+                </Grid.Row>
+                <Grid.Row>
+                    <Grid.Column width={5}>
                         <ElementoForm titulo="Biblia">
                             {/*<Input  type="text" fluid placeholder="2019, Mayo"></Input>*/}
                             <Dropdown
                                 placeholder='Mes, año'
                                 search
-                                selection
+                                loading={!this.state.bibliasCargaron}
+                                selection 
                                 options={this.state.opcionesBiblia}
                             />
                             <Button attached="right" icon onClick={
@@ -158,11 +210,15 @@ class CrearFile extends Component{
                                 <Icon name='plus' />
                             </Button>
                         </ElementoForm>
+                    </Grid.Column>
+                    
+                    <Grid.Column width={5}>
                         <ElementoForm titulo="Cliente">
                             {/*<Input  type="text" fluid placeholder="Javi"></Input>*/}
                             <Dropdown
                                 placeholder='Christian'
                                 search
+                                loading ={!this.state.bibliasCargaron}
                                 selection
                                 options={this.state.opcionesCliente}
                             />
@@ -181,38 +237,32 @@ class CrearFile extends Component{
                             </Button>
                         </ElementoForm>
                     </Grid.Column>
-                    <Grid.Column textAlign="right" width={6}>
-                    {/*
-                        <Label fluid as='a' color='red' tag>
-                            File no guardado
-                    </Label>*/}
-                    </Grid.Column>
                 </Grid.Row>
+
                 <Grid.Row>
                     <Grid.Column width={16}>
-                        <ElementoForm titulo="Servicios">
-                            <Segment>
-                                <Grid textAlign="justified" >
-                                    <Grid.Row  columns={11}>
-                                        <ColumnaTablaIns textAlign="center">#</ColumnaTablaIns>
-                                        <ColumnaTablaIns textAlign="center">Fecha</ColumnaTablaIns>
-                                        <ColumnaTablaIns textAlign="center">Ciudad</ColumnaTablaIns>
-                                        <ColumnaTablaIns textAlign="center">Servicio</ColumnaTablaIns>
-                                        <ColumnaTablaIns textAlign="center">Hotel</ColumnaTablaIns>
-                                        <ColumnaTablaIns textAlign="center">Pasajeros</ColumnaTablaIns>
-                                        <ColumnaTablaIns textAlign="center">Nombre pax</ColumnaTablaIns>
-                                        <ColumnaTablaIns textAlign="center">Tren</ColumnaTablaIns>
-                                        <ColumnaTablaIns textAlign="center">ALM</ColumnaTablaIns>
-                                        <ColumnaTablaIns textAlign="center">OBS</ColumnaTablaIns>
-                                        <ColumnaTablaIns textAlign="center"></ColumnaTablaIns>
-                                    </Grid.Row>
-                                    {this.state.servicios.map((elem,index)=>{
-                                        return this.filaServicio(index);
-                                    })}
-                                </Grid>
-                                <br/>
-                            </Segment>
-                        </ElementoForm>
+                    <Header size="tiny">Servicios</Header>
+                        <Segment>
+                            <Grid textAlign="justified" >
+                                <Grid.Row  columns={11}>
+                                    <ColumnaTablaIns textAlign="center">#</ColumnaTablaIns>
+                                    <ColumnaTablaIns textAlign="center">Fecha</ColumnaTablaIns>
+                                    <ColumnaTablaIns textAlign="center">Ciudad</ColumnaTablaIns>
+                                    <ColumnaTablaIns textAlign="center">Servicio</ColumnaTablaIns>
+                                    <ColumnaTablaIns textAlign="center">Hotel</ColumnaTablaIns>
+                                    <ColumnaTablaIns textAlign="center">Pasajeros</ColumnaTablaIns>
+                                    <ColumnaTablaIns textAlign="center">Nombre pax</ColumnaTablaIns>
+                                    <ColumnaTablaIns textAlign="center">Tren</ColumnaTablaIns>
+                                    <ColumnaTablaIns textAlign="center">ALM</ColumnaTablaIns>
+                                    <ColumnaTablaIns textAlign="center">OBS</ColumnaTablaIns>
+                                    <ColumnaTablaIns textAlign="center"></ColumnaTablaIns>
+                                </Grid.Row>
+                                {this.state.servicios.map((elem,index)=>{
+                                    return this.filaServicio(index);
+                                })}
+                            </Grid>
+                            <br/>
+                        </Segment>
                         <Button content='Agregar servicio' icon='plus' labelPosition='left' onClick={()=>{
                             var servs = this.state.servicios.slice();
                             servs.push(this.servicioDefault());
@@ -220,35 +270,33 @@ class CrearFile extends Component{
                         }}/>
                     </Grid.Column>
                 </Grid.Row>
-                
                 <Grid.Row>
-                    <Grid.Column width={16}>
-                        <ElementoForm titulo="Transportes">
-                            <Segment>
-                                <Grid textAlign="center">
-                                    <Grid.Row columns={14}>
-                                        <ColumnaTablaIns textAlign="center">#</ColumnaTablaIns>
-                                        <ColumnaTablaIns textAlign="center">Fecha</ColumnaTablaIns>
-                                        <ColumnaTablaIns textAlign="center">Ciudad</ColumnaTablaIns>
-                                        <ColumnaTablaIns textAlign="center">Hora recojo</ColumnaTablaIns>
-                                        <ColumnaTablaIns textAlign="center">Hora salida</ColumnaTablaIns>
-                                        <ColumnaTablaIns textAlign="center">Vuelo</ColumnaTablaIns>
-                                        <ColumnaTablaIns textAlign="center">Servicio</ColumnaTablaIns>
-                                        <ColumnaTablaIns textAlign="center">Pasajeros</ColumnaTablaIns>
-                                        <ColumnaTablaIns textAlign="center">Nombre Pax</ColumnaTablaIns>
-                                        <ColumnaTablaIns textAlign="center">V/R</ColumnaTablaIns>
-                                        <ColumnaTablaIns textAlign="center">TC</ColumnaTablaIns>
-                                        <ColumnaTablaIns textAlign="center">Proveedor</ColumnaTablaIns>
-                                        <ColumnaTablaIns textAlign="center">OBS</ColumnaTablaIns>
-                                        <ColumnaTablaIns textAlign="center"></ColumnaTablaIns>
-                                    </Grid.Row>
-                                    {this.state.transportes.map((elem,index)=>{
-                                        return this.filaTransporte(index);
-                                    })}
-                                </Grid>
-                                <br></br>
-                            </Segment>
-                        </ElementoForm>
+                    <Grid.Column width={16}> 
+                    <Header size="tiny">Transportes</Header>
+                        <Segment>
+                            <Grid textAlign="center">
+                                <Grid.Row columns={14}>
+                                    <ColumnaTablaIns textAlign="center">#</ColumnaTablaIns>
+                                    <ColumnaTablaIns textAlign="center">Fecha</ColumnaTablaIns>
+                                    <ColumnaTablaIns textAlign="center">Ciudad</ColumnaTablaIns>
+                                    <ColumnaTablaIns textAlign="center">Hora recojo</ColumnaTablaIns>
+                                    <ColumnaTablaIns textAlign="center">Hora salida</ColumnaTablaIns>
+                                    <ColumnaTablaIns textAlign="center">Vuelo</ColumnaTablaIns>
+                                    <ColumnaTablaIns textAlign="center">Servicio</ColumnaTablaIns>
+                                    <ColumnaTablaIns textAlign="center">Pasajeros</ColumnaTablaIns>
+                                    <ColumnaTablaIns textAlign="center">Nombre Pax</ColumnaTablaIns>
+                                    <ColumnaTablaIns textAlign="center">V/R</ColumnaTablaIns>
+                                    <ColumnaTablaIns textAlign="center">TC</ColumnaTablaIns>
+                                    <ColumnaTablaIns textAlign="center">Proveedor</ColumnaTablaIns>
+                                    <ColumnaTablaIns textAlign="center">OBS</ColumnaTablaIns>
+                                    <ColumnaTablaIns textAlign="center"></ColumnaTablaIns>
+                                </Grid.Row>
+                                {this.state.transportes.map((elem,index)=>{
+                                    return this.filaTransporte(index);
+                                })}
+                            </Grid>
+                            <br></br>
+                        </Segment>
                         <Button content='Agregar transporte' icon='plus' labelPosition='left' onClick={()=>{
                                 var transps = this.state.transportes.slice();
                                 transps.push(this.transporteDefault());
@@ -256,12 +304,16 @@ class CrearFile extends Component{
                             }} />
                         </Grid.Column>
                 </Grid.Row>
-                
                         
             </Grid>
-            <br></br>
-            <hr></hr>
-            <Button>Guardar file</Button>
+            
+            {!this.state.bibliasCargaronExito?<Message error>Error de conexion: Las biblias no se pueden cargar.</Message>:null}            
+            {!this.state.clientesCargaronExito?<Message error>Error de conexion: Los clientes no se pueden cargar.</Message>:null}            
+            {!this.state.hotelesCargaronExito?<Message error>Error de conexion: Los hoteles no se pueden cargar.</Message>:null}            
+            <hr/>
+            <Container fluid textAlign="right">
+                <Button positive>Guardar file</Button>
+            </Container>
             {this.ModalCrearBiblia()}
             {this.ModalCrearCliente()}
         </div>
@@ -331,7 +383,7 @@ class CrearFile extends Component{
                                 this.setState({servicios:servs});
                             }}
                         />*/}
-                        <Input list={'hoteles'+index} placeholder='Sheraton' fluid/>
+                        <Input list={'hoteles'+index} loading={!this.state.hotelesCargaron} placeholder='Sheraton' fluid/>
                         <datalist id={'hoteles'+index}>
                             {this.state.opcionesHoteles.map(e=><option value={e.text}/>)}
                         </datalist>
@@ -547,11 +599,30 @@ class CrearFile extends Component{
     }
 
     EnviarPostBiblia=()=>{
+
         var newStateModalBiblia={...this.state.modalBiblia};
         newStateModalBiblia.transaccionEnviada=true;
         this.setState({modalBiblias:newStateModalBiblia});
         console.log(this.state.camposModalBiblia);
 
+        Requester.postBiblia(this.state.camposModalBiblia,(rpta)=>{
+            var newState = {...this.state.modalBiblia};
+            newState.responseRecibida= true;
+            newState.rptaTransaccion = rpta;
+            this.cargarBiblias();
+            this.setState({modalBiblia:newState});
+        },(rptaError)=>{
+            console.log("error!")
+            console.log(rptaError)
+            console.log(this.state.modalBiblia);
+            var newState = {...this.state.modalBiblia};
+            newState.responseRecibida=true;
+            newState.rptaTransaccion = rptaError;
+            console.log(this.state.modalBiblia);
+            this.setState({modalBiblia:newState});
+        });
+
+/*
         axios.post(Configuracion.ServerUrl+"/biblias", this.state.camposModalBiblia).then((response)=>{
             var newState = {...this.state.modalBiblia};
             newState.responseRecibida=true;
@@ -574,7 +645,56 @@ class CrearFile extends Component{
                 newState.rptaTransaccion= new RptaTrx().set(null,"Servidor inaccesible",null,0);
                 this.setState({modalBiblia: newState});
             }
-        })
+        })*/
+    }
+
+    
+    EnviarPostCliente=(camposModalCliente)=>{
+        //console.log(camposModalCliente);
+        
+        var newState = {...this.state.modalCliente};
+        newState.transaccionEnviada=true;
+        this.setState({modalCliente:newState});
+
+        Requester.postCliente(this.state.camposModalCliente,(rpta)=>{
+            var newState = {...this.state.modalCliente};
+            newState.responseRecibida= true;
+            newState.rptaTransaccion = rpta;
+            this.cargarClientes();
+            this.setState({modalCliente:newState});
+        },(rptaError)=>{
+            var newState = {...this.state.modalCliente};
+            newState.responseRecibida=true;
+            newState.rptaTransaccion = rptaError;
+            this.setState({modalCliente:newState});
+        });
+
+        /*
+        axios.post(Configuracion.ServerUrl+"/clientes", camposModalCliente).then((response)=>{
+            //console.log(response);
+            var newState = {...this.state.modalCliente};
+            newState.responseRecibida=true;
+            newState.rptaTransaccion = new RptaTrx(response.data);
+            //console.log(newState.rptaTransaccion);
+            this.cargarClientes();
+            this.setState({modalCliente:newState});
+        }).catch(error=>{
+            //console.log(error.response);
+            //si hay error manejado por server
+            if(error.response.data){
+                var newState = {...this.state.modalCliente};
+                newState.responseRecibida=true;
+                newState.rptaTransaccion = new RptaTrx(error.response.data);
+                //console.log(newState.rptaTransaccion);
+                this.setState({modalCliente:newState});
+            }else{
+            //si hay un error donde el server ni responde
+                var newState = {...this.state.modalCliente};
+                newState.responseRecibida=true;
+                newState.rptaTransaccion= new RptaTrx().set(null,"Servidor inaccesible",null,0);
+                this.setState({modalCliente: newState});
+            }
+        })*/
     }
 
     ModalCrearBiblia = () => {
@@ -590,6 +710,7 @@ class CrearFile extends Component{
             </Message>
         }else
         if (this.state.modalBiblia.responseRecibida){
+            console.log(this.state.modalBiblia)
             if(this.state.modalBiblia.rptaTransaccion.transaccionExitosa()){
                 msj = <Message success header='Biblia nueva creada'>
                     <Message.List>
@@ -639,39 +760,6 @@ class CrearFile extends Component{
         </Modal>)    
     }
     
-    EnviarPostCliente=(camposModalCliente)=>{
-        //console.log(camposModalCliente);
-        
-        var newState = {...this.state.modalCliente};
-        newState.transaccionEnviada=true;
-        this.setState({modalCliente:newState});
-
-        axios.post(Configuracion.ServerUrl+"/clientes", camposModalCliente).then((response)=>{
-            //console.log(response);
-            var newState = {...this.state.modalCliente};
-            newState.responseRecibida=true;
-            newState.rptaTransaccion = new RptaTrx(response.data);
-            //console.log(newState.rptaTransaccion);
-            this.cargarClientes();
-            this.setState({modalCliente:newState});
-        }).catch(error=>{
-            //console.log(error.response);
-            //si hay error manejado por server
-            if(error.response.data){
-                var newState = {...this.state.modalCliente};
-                newState.responseRecibida=true;
-                newState.rptaTransaccion = new RptaTrx(error.response.data);
-                //console.log(newState.rptaTransaccion);
-                this.setState({modalCliente:newState});
-            }else{
-            //si hay un error donde el server ni responde
-                var newState = {...this.state.modalCliente};
-                newState.responseRecibida=true;
-                newState.rptaTransaccion= new RptaTrx().set(null,"Servidor inaccesible",null,0);
-                this.setState({modalCliente: newState});
-            }
-        })
-    }
 
     ModalCrearCliente = () => {
         let msj = <div></div>
