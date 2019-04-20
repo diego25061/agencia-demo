@@ -31,15 +31,21 @@ class Requester{
 
     
     static requestBasicoPost(direccion, objeto, funcSuccess, funcError, funcAlways){
-        axios.get(direccion, objeto)
+        axios.post(direccion, objeto)
         .then(response => {
-            if(funcSuccess)
-                funcSuccess(response.data)
+            if(funcSuccess){
+                if(response.data){
+                    var resp = new RptaTrx();
+                    resp.set(response.data.cont,response.data.msj,response.data.trace,response.data.cod);
+                    funcSuccess(resp);
+                }
+            }
         }).catch(error=>{
             if(funcError){
                 if(error.response){
-                    if(error.response.data)
+                    if(error.response.data){
                         funcError(new RptaTrx(error.response.data));
+                    }
                     else{
                         var r = new RptaTrx();
                         r.set(null,"Servidor inaccesible",null,0);
@@ -71,7 +77,7 @@ class Requester{
     }
 
 
-    static postBiblia(objeto, funcSuccess,funcError,funcAlways){
+    static postBiblia(objeto, funcSuccess, funcError, funcAlways){
         this.requestBasicoPost(Configuracion.ServerUrl+"/biblias/",objeto,funcSuccess,funcError,funcAlways);
     }
 
@@ -85,14 +91,28 @@ class Requester{
         this.requestBasicoGet(Configuracion.ServerUrl+"/clientes/dropdown",funcSuccess,funcError,funcAlways);
     }
 
-    static postCliente(objeto, funcSuccess,funcError,funcAlways){
+    static postCliente(objeto, funcSuccess, funcError, funcAlways){
         this.requestBasicoPost(Configuracion.ServerUrl+"/clientes/",objeto,funcSuccess,funcError,funcAlways);
     }
 
     //------------------------ HOTELES -----------------------------------
 
     static getHotelesListaDropdown(funcSuccess, funcError, funcAlways){
-        this.requestBasicoGet(Configuracion.ServerUrl+"/hoteles/dropdown",funcSuccess,funcError,funcAlways);
+        this.requestBasicoGet(Configuracion.ServerUrl+"/proveedores/dropdown/hotel",funcSuccess,funcError,funcAlways);
+    }
+
+    static postProvHotel(objeto, funcSuccess, funcError, funcAlways){
+        this.requestBasicoPost(Configuracion.ServerUrl+"/proveedores/",objeto,funcSuccess,funcError,funcAlways);
+    }
+
+    //------------------------ PROVEEDORES -----------------------------------
+    
+    static getProveedores( tipoProveedor, funcSuccess, funcError, funcAlways){
+        this.requestBasicoGet(Configuracion.ServerUrl + "/proveedores/" + tipoProveedor,funcSuccess,funcError,funcAlways);
+    }
+    
+    static getProveedoresDropdown( tipoProveedor, funcSuccess, funcError, funcAlways){
+        this.requestBasicoGet(Configuracion.ServerUrl+"/proveedores/dropdown/"+tipoProveedor,funcSuccess,funcError,funcAlways);
     }
 }
 

@@ -3,7 +3,6 @@ import {Component} from 'react'
 import { Button, Container, Header, Menu } from 'semantic-ui-react';
 import ReactTable from "react-table";
 
-
 const cols = [
     {
         Header: 'Nombre',
@@ -50,14 +49,15 @@ class TabTodos extends Component{
     }
 
     render(){
-        return <div>
-                <Header size="medium">Hoteles</Header> 
+        return <Container fluid style={{margin:"10px 0px 0px 0px"}}>
+                <Header size="medium">Todos los proveedores</Header> 
+                
                 <ReactTable
                     data={this.state.hoteles}
                     columns={cols}
                     minRows={1}
                 />  
-            </div>
+            </Container>
     }
 }
 

@@ -1,9 +1,10 @@
 import React from 'react';
 import {Component} from 'react';
 import {Link} from 'react-router-dom'
-import { Label, Button, Container, Header} from 'semantic-ui-react';
+import { Label, Button, Container, Header, Segment} from 'semantic-ui-react';
 import ReactTable from "react-table";
 import 'react-table/react-table.css'
+import TablaBuscador from '../TablaBuscador/TablaBuscador';
 
 class VerServicios extends Component{
 
@@ -94,19 +95,24 @@ class VerServicios extends Component{
         return(<div>
                 <Header size="large">Lista de servicios</Header> 
                 <Header size="medium">Servicios</Header> 
-                <ReactTable
-                    data={this.state.serviciosServ}
-                    columns={cols}
-                    minRows={1}
-                />
+                <Segment>
+                    <ReactTable
+                        data={this.state.serviciosServ}
+                        columns={cols}
+                        minRows={1}
+                    />
+                </Segment>
                 <Header size="medium">Transportes</Header> 
-                <ReactTable
-                    data={this.state.serviciosTransp}
-                    columns={cols}
-                    minRows={1}
-                />
+                <Segment>
+                    <ReactTable
+                        data={this.state.serviciosTransp}
+                        columns={cols}
+                        minRows={1}
+                    />
+                </Segment>
                 <hr/>
                 <Link to="/servicios/crear">Agregar nuevo servicio</Link>
+                <TablaBuscador/>
             </div>
         )
     }

@@ -22,7 +22,28 @@ const CONSTANTES_GLOBALES={
     TiposServicios:[
         { key: 1, text: 'Servicio general', value: 1 },
         { key: 2, text: 'Transporte', value: 2 }
-    ]
+    ],
+    
+    AliasClientes:{
+        CLIENTE_DIRECTO:"CLDIR",
+        OPERADOR_MAYORISTA:"OPMAY",
+        OPERADOR_MINORISTA:"OPMIN"
+    },
+
+    AliasProovedores:{
+        PERSONA:"PERSO",
+        EMPRESA:"EMPRE",
+        HOTEL:"HOTEL",
+        RESTAURANTE:"RESTA",
+        TRANSPORTE:"TRANS",
+        GUIA:"GUIAA",
+        OPERADOR:"OPERA"
+    },
+
+    AliasServicios:{
+        TRANSPORTE:"TRANS",
+        SERVICIO:"SERVI"
+    }
 }
 
 const Configuracion={
@@ -59,7 +80,7 @@ class RptaTrx{
         this.cod = cod;
     };
 
-    transaccionExitosa(){
+    transaccionExitosa=()=>{
         return this.cod!=0
     }
 }

@@ -7,6 +7,7 @@ import { Table , Menu, Icon, Label, Button, Container, Header, Input, Segment} f
 import ReactTable from "react-table";
 import 'react-table/react-table.css'
 import Requester from '../../common/Services/Requester';
+import TablaBuscador from '../TablaBuscador/TablaBuscador';
 
 //import { MDBDataTable } from 'mdbreact';
   
@@ -14,7 +15,7 @@ import Requester from '../../common/Services/Requester';
 
 class ViewFiles extends Component{
 	state={
-		search:'',
+		//search:'',
 		files:[
 			//{codigo: "23123", descripcion: "descripcion del file", biblia:"2018, mayo", cliente:"nts", fecha:"2/05/2019", estado:"activo", cantServicios: "2", cantTransportes: "3" },
 		] 
@@ -79,6 +80,7 @@ class ViewFiles extends Component{
 			}
 		]
 		
+		/*
 		let data = this.state.files
 	
 		if (this.state.search) {
@@ -96,16 +98,22 @@ class ViewFiles extends Component{
 				return false;
 			})
 		}
-  
+  */
+
 		return(<div>
 			
 			<Header size="large">Files</Header>
-			<Container fluid>
-			<Link to="/file/crear">
-				<Button primary>Agregar file</Button>
-			</Link>
+			<Container fluid textAlign>
+				<Link to="/file/crear">
+					<Button primary>Nuevo file</Button>
+				</Link>
 			</Container>
 			<Header size="medium">Lista de files</Header>
+
+			<Segment>
+				<TablaBuscador data={this.state.files} columns={cols} />
+			</Segment>
+			{/*
 			<Segment>
 			Buscar registros: <Input style={{padding:"10px 0px"}}
 				placeholder="Buscar..."
@@ -115,10 +123,14 @@ class ViewFiles extends Component{
 			<ReactTable
 				data={data}
 				columns={cols} 
+
+				rows={10}
 				minRows={5}
 				className="-highlight"
 			/>
 			</Segment>
+			*/}
+
 		</div>
 		)
   	}
