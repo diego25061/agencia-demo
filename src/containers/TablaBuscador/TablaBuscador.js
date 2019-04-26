@@ -61,8 +61,7 @@ class TablaBuscador extends Component{
                 <ReactTable
                     data={dataFiltrada}
                     columns={this.props.columns ? this.props.columns : this.columnasDefault} 
-
-                    pageSize={10}
+                    defaultPageSize={5}
                     minRows={5}
                     className="-highlight"
                 />

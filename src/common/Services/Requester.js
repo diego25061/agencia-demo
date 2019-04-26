@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { RptaTrx, Configuracion } from '../Constantes';
+import CONSTANTES_GLOBALES, { RptaTrx, Configuracion } from '../Constantes';
 
 
 class Requester{
@@ -101,9 +101,6 @@ class Requester{
         this.requestBasicoGet(Configuracion.ServerUrl+"/proveedores/dropdown/hotel",funcSuccess,funcError,funcAlways);
     }
 
-    static postProvHotel(objeto, funcSuccess, funcError, funcAlways){
-        this.requestBasicoPost(Configuracion.ServerUrl+"/proveedores/",objeto,funcSuccess,funcError,funcAlways);
-    }
 
     //------------------------ PROVEEDORES -----------------------------------
     
@@ -114,6 +111,129 @@ class Requester{
     static getProveedoresDropdown( tipoProveedor, funcSuccess, funcError, funcAlways){
         this.requestBasicoGet(Configuracion.ServerUrl+"/proveedores/dropdown/"+tipoProveedor,funcSuccess,funcError,funcAlways);
     }
+
+    //hoteles
+    
+    static postProvHotel( nombre, correo, numeroContacto, numeroContactoAdicional, correoAdicional, ciudad, funcSuccess, funcError, funcAlways){
+        let body = {
+            nombre,
+            correo,
+            numeroContacto,
+            numeroCntctAdicional:numeroContactoAdicional,
+            correoAdicional,
+            ciudad
+        };
+        body.tipoProveedor = CONSTANTES_GLOBALES.AliasProovedores.HOTEL;
+        this.requestBasicoPost(Configuracion.ServerUrl+"/proveedores/", body, funcSuccess,funcError,funcAlways);
+    }
+
+    
+    static postEditarProvHotel( idProveedor, nombre, correo, numeroContacto, numeroContactoAdicional, correoAdicional, ciudad, funcSuccess, funcError, funcAlways){
+        let body = {
+            idProveedor,
+            nombre,
+            correo,
+            numeroContacto,
+            numeroCntctAdicional:numeroContactoAdicional,
+            correoAdicional,
+            ciudad
+        };
+        body.tipoProveedor = CONSTANTES_GLOBALES.AliasProovedores.HOTEL;
+        this.requestBasicoPost(Configuracion.ServerUrl+"/proveedores/editar", body, funcSuccess,funcError,funcAlways);
+    }
+
+    //operadores
+
+    static postProvOperador( nombre, correo, numeroContacto, numeroContactoAdicional, correoAdicional, ciudad, funcSuccess, funcError, funcAlways){
+        let body = {
+            nombre,
+            correo,
+            numeroContacto,
+            numeroCntctAdicional:numeroContactoAdicional,
+            correoAdicional,
+            ciudad
+        };
+        body.tipoProveedor = CONSTANTES_GLOBALES.AliasProovedores.OPERADOR;
+        this.requestBasicoPost(Configuracion.ServerUrl+"/proveedores/", body, funcSuccess,funcError,funcAlways);
+    }
+
+    //restaurantes
+    
+    static postProvRestaurante( nombre, correo, numeroContacto, numeroContactoAdicional, correoAdicional, ciudad, funcSuccess, funcError, funcAlways){
+        let body = {
+            nombre,
+            correo,
+            numeroContacto,
+            numeroCntctAdicional:numeroContactoAdicional,
+            correoAdicional,
+            ciudad
+        };
+        body.tipoProveedor = CONSTANTES_GLOBALES.AliasProovedores.RESTAURANTE;
+        this.requestBasicoPost(Configuracion.ServerUrl+"/proveedores/", body, funcSuccess,funcError,funcAlways);
+    }
+
+    //transportes
+
+    static postProvTransporte( nombre, correo, numeroContacto, numeroContactoAdicional, correoAdicional, ciudad, funcSuccess, funcError, funcAlways){
+        let body = {
+            nombre,
+            correo,
+            numeroContacto,
+            numeroCntctAdicional:numeroContactoAdicional,
+            correoAdicional,
+            ciudad
+        };
+        body.tipoProveedor = CONSTANTES_GLOBALES.AliasProovedores.TRANSPORTE;
+        this.requestBasicoPost(Configuracion.ServerUrl+"/proveedores/", body, funcSuccess,funcError,funcAlways);
+    }
+
+    //guias
+    
+    static postProvGuia( nombre, correo, numeroContacto, numeroContactoAdicional, correoAdicional, ciudad, funcSuccess, funcError, funcAlways){
+        let body = {
+            nombre,
+            correo,
+            numeroContacto,
+            numeroCntctAdicional:numeroContactoAdicional,
+            correoAdicional,
+            ciudad
+        };
+        body.tipoProveedor = CONSTANTES_GLOBALES.AliasProovedores.GUIA;
+        this.requestBasicoPost(Configuracion.ServerUrl+"/proveedores/", body, funcSuccess,funcError,funcAlways);
+    }
+
+    
+    //empresas
+    
+    static postProvEmpresa( nombre, correo, numeroContacto, numeroContactoAdicional, correoAdicional, ciudad, funcSuccess, funcError, funcAlways){
+        let body = {
+            nombre,
+            correo,
+            numeroContacto,
+            numeroCntctAdicional:numeroContactoAdicional,
+            correoAdicional,
+            ciudad
+        };
+        body.tipoProveedor = CONSTANTES_GLOBALES.AliasProovedores.EMPRESA;
+        this.requestBasicoPost(Configuracion.ServerUrl+"/proveedores/", body, funcSuccess,funcError,funcAlways);
+    }
+
+    //personas
+
+    static postProvPersona( nombre, correo, numeroContacto, numeroContactoAdicional, correoAdicional, ciudad, funcSuccess, funcError, funcAlways){
+        let body = {
+            nombre,
+            correo,
+            numeroContacto,
+            numeroCntctAdicional:numeroContactoAdicional,
+            correoAdicional,
+            ciudad
+        };
+        body.tipoProveedor = CONSTANTES_GLOBALES.AliasProovedores.PERSONA;
+        this.requestBasicoPost(Configuracion.ServerUrl+"/proveedores/", body, funcSuccess,funcError,funcAlways);
+    }
+
+
 }
 
 export default Requester;

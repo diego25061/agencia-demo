@@ -39,6 +39,25 @@ const CONSTANTES_GLOBALES={
         GUIA:"GUIAA",
         OPERADOR:"OPERA"
     },
+    
+    aliasATextoProovedores : (alias) => {
+        console.log("a");
+        if(alias){
+            if (alias==this.AliasProovedores.PERSONA)
+                return "Persona"
+            if (alias==this.AliasProovedores.EMPRESA)
+                return "Empresa"
+            if (alias==this.AliasProovedores.HOTEL)
+                return "Hotel"
+            if (alias==this.AliasProovedores.RESTAURANTE)
+                return "Restaurante"
+            if (alias==this.AliasProovedores.GUIA)
+                return "Guia"
+            if (alias==this.AliasProovedores.OPERADOR)
+                return "Operador"
+        }else
+            return "ERROR";
+    },
 
     AliasServicios:{
         TRANSPORTE:"TRANS",

@@ -7,11 +7,15 @@ class ModalTest extends Component{
 
     render(){
 
+        var msjSuccess="Objeto creado";
+        if(this.props.parent.state.modalCrearEditar.modo === "edicion")
+            msjSuccess ="Objeto editado exitosamente";
+
         var msjComp = <div></div>
         //console.log("weee");
-        //console.log(this.props.parent.state.modalCrear);
-        if(this.props.parent.state.modalCrear && this.props.parent.state.modalCrear.mensaje ){
-            var mensaje = this.props.parent.state.modalCrear.mensaje;
+        //console.log(this.props.parent.state.modalCrearEditar);
+        if(this.props.parent.state.modalCrearEditar && this.props.parent.state.modalCrearEditar.mensaje ){
+            var mensaje = this.props.parent.state.modalCrearEditar.mensaje;
             if (mensaje.enviado && !mensaje.recibido){
                 msjComp = <Message icon>
                     <Icon name='circle notched' loading />
@@ -25,7 +29,7 @@ class ModalTest extends Component{
                 if(mensaje.respuesta.transaccionExitosa()){
                     msjComp = <Message success header='Transaccion exitosa'>
                         <Message.List>
-                            <Message.Item>Objeto creado</Message.Item>
+                            <Message.Item>{msjSuccess}</Message.Item>
                             { mensaje.respuesta.msj ? <Message.Item> {mensaje.respuesta.msj} </Message.Item> : null }
                         </Message.List>
                     </Message>
@@ -41,25 +45,24 @@ class ModalTest extends Component{
             }        
         }
 
-
-
-        return  <Modal size="tiny"  open ={ this.props.parent.state.modalCrear.abierto} centered={false}  onClose={() => {
-            var obj= {...this.props.parent.state.modalCrear};
+        return  <Modal size="tiny"  open ={ this.props.parent.state.modalCrearEditar.abierto} centered={false}  onClose={() => {
+            var obj= {...this.props.parent.state.modalCrearEditar};
             obj.abierto=false;
-            this.props.parent.setState({modalCrear:obj});
+            this.props.enCerrar();
+            this.props.parent.setState({modalCrearEditar:obj});
         }}>
 
-            <Modal.Header>{this.props.titulo}</Modal.Header>
+            <Modal.Header>{this.props.parent.state.modalCrearEditar.modo==='creacion'?'Crear ':'Modificar ' + this.props.sustantivoTitulo}</Modal.Header>
             
             <Modal.Content>
                 <Grid>
                     <Grid.Row>
                         <Grid.Column>
                             <ElementoForm grid titulo="Nombre">
-                                <Input fluid placeholder={this.props.placeholderNombre} value={this.props.parent.state.modalCrear.campos.nombre} onChange={(event)=>{
-                                        var obj = {...this.props.parent.state.modalCrear};
+                                <Input fluid placeholder={this.props.placeholderNombre} value={this.props.parent.state.modalCrearEditar.campos.nombre} onChange={(event)=>{
+                                        var obj = {...this.props.parent.state.modalCrearEditar};
                                         obj.campos.nombre = event.target.value;
-                                        this.props.parent.setState({modalCrear:obj});}}
+                                        this.props.parent.setState({modalCrearEditar:obj});}}
                                         />
                             </ElementoForm>
                         </Grid.Column>
@@ -70,10 +73,10 @@ class ModalTest extends Component{
                         <ElementoForm grid titulo="Correo electrónico">
                                 <Input 
                                     fluid
-                                    iconPosition="left" placeholder={this.props.placeholderCorreo} value={this.props.parent.state.modalCrear.campos.correo} onChange={(event)=>{
-                                        var obj = {...this.props.parent.state.modalCrear};
+                                    iconPosition="left" placeholder={this.props.placeholderCorreo} value={this.props.parent.state.modalCrearEditar.campos.correo} onChange={(event)=>{
+                                        var obj = {...this.props.parent.state.modalCrearEditar};
                                         obj.campos.correo = event.target.value;
-                                        this.props.parent.setState({modalCrear:obj});}}
+                                        this.props.parent.setState({modalCrearEditar:obj});}}
                                     >
                                     <Icon name="at"></Icon>
                                     <input />
@@ -84,10 +87,10 @@ class ModalTest extends Component{
                             <ElementoForm grid titulo="Correo electrónico adicional">
                                 <Input 
                                     fluid
-                                    iconPosition="left" placeholder={this.props.placeholderCorreoAdic} value={this.props.parent.state.modalCrear.campos.correoAdic} onChange={(event)=>{
-                                        var obj = {...this.props.parent.state.modalCrear};
+                                    iconPosition="left" placeholder={this.props.placeholderCorreoAdic} value={this.props.parent.state.modalCrearEditar.campos.correoAdic} onChange={(event)=>{
+                                        var obj = {...this.props.parent.state.modalCrearEditar};
                                         obj.campos.correoAdic = event.target.value;
-                                        this.props.parent.setState({modalCrear:obj});}}>
+                                        this.props.parent.setState({modalCrearEditar:obj});}}>
                                     <Icon name="at"></Icon>
                                     <input />
                                 </Input>
@@ -103,10 +106,10 @@ class ModalTest extends Component{
                                     fluid
                                     placeholder="98957845"
                                     iconPosition="left"
-                                    value={this.props.parent.state.modalCrear.campos.num} onChange={(event)=>{
-                                        var obj = {...this.props.parent.state.modalCrear};
+                                    value={this.props.parent.state.modalCrearEditar.campos.num} onChange={(event)=>{
+                                        var obj = {...this.props.parent.state.modalCrearEditar};
                                         obj.campos.num = event.target.value;
-                                        this.props.parent.setState({modalCrear:obj});}}>
+                                        this.props.parent.setState({modalCrearEditar:obj});}}>
                                     <Icon name="phone"></Icon>
                                     <input />
                                 </Input>
@@ -118,10 +121,10 @@ class ModalTest extends Component{
                                     fluid
                                     placeholder="564-8790"
                                     iconPosition="left"
-                                    value={this.props.parent.state.modalCrear.campos.numAdic} onChange={(event)=>{
-                                        var obj = {...this.props.parent.state.modalCrear};
+                                    value={this.props.parent.state.modalCrearEditar.campos.numAdic} onChange={(event)=>{
+                                        var obj = {...this.props.parent.state.modalCrearEditar};
                                         obj.campos.numAdic = event.target.value;
-                                        this.props.parent.setState({modalCrear:obj});}}>
+                                        this.props.parent.setState({modalCrearEditar:obj});}}>
                                     <Icon name="phone"></Icon>
                                     <input />
                                 </Input>
@@ -134,10 +137,10 @@ class ModalTest extends Component{
                         <Grid.Column>
                             <ElementoForm grid titulo="Ciudad">
                                 <Input fluid placeholder="Cusco" 
-                                    value={this.props.parent.state.modalCrear.campos.ciudad} onChange={(event)=>{
-                                        var obj = {...this.props.parent.state.modalCrear};
+                                    value={this.props.parent.state.modalCrearEditar.campos.ciudad} onChange={(event)=>{
+                                        var obj = {...this.props.parent.state.modalCrearEditar};
                                         obj.campos.ciudad = event.target.value;
-                                        this.props.parent.setState({modalCrear:obj});}}/>
+                                        this.props.parent.setState({modalCrearEditar:obj});}}/>
                             </ElementoForm>
                         </Grid.Column>
                     </Grid.Row>
@@ -148,17 +151,21 @@ class ModalTest extends Component{
 
             <Modal.Actions>
                 <Button negative onClick={() => {
-                    var obj= {...this.props.parent.state.modalCrear};
+                    var obj= {...this.props.parent.state.modalCrearEditar};
                     obj.abierto=false;
-                    this.props.parent.setState({modalCrear:obj});
+                    this.props.enCerrar();
+                    this.props.parent.setState({modalCrearEditar:obj});
                     }}>
                     Cancelar
                 </Button>
-                <Button positive icon='checkmark' labelPosition='right' content='Crear' onClick={this.props.enEnviar} />
+                {
+                    this.props.parent.state.modalCrearEditar.modo==='creacion'?
+                    <Button positive icon='checkmark' labelPosition='right' content='Crear' onClick={ this.props.enEnviar } /> :
+                    <Button color="yellow" icon='checkmark' labelPosition='right' content='Modificar' onClick={ this.props.enEditar}/>
+                }
             </Modal.Actions>
 
         </Modal>
-
 
     }
 }
