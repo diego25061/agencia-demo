@@ -1,13 +1,16 @@
 import React from 'react'
 import {Component} from 'react'
-import { Button, Container, Header, Menu, Modal, Confirm } from 'semantic-ui-react';
-import Requester from '../../../common/Services/Requester';
-import ModalCrearEditarCliente from '../ModalCrearEditarCliente';
-import TablaBuscador from '../../TablaBuscador/TablaBuscador';
-import Constantes from '../../../common/Constantes';
+import { Button, Container, Header, Menu, Modal, Confirm, Segment } from 'semantic-ui-react';
+import Requester from '../../common/Services/Requester';
 
 
-class TabClientesDirs extends Component{
+
+import TablaBuscador from '../TablaBuscador/TablaBuscador';
+import ModalCrearEditarCliente from './ModalCrearEditarCliente';
+import Constantes from '../../common/Constantes';
+
+
+class TabClientes extends Component{
 
     
     state = {
@@ -35,9 +38,9 @@ class TabClientesDirs extends Component{
     columnasTabla = [ 
         { Header: 'Nombre', accessor: 'nombre', Cell: props => props.value ? props.value:"-" },
         { Header: 'Correo', accessor: 'correo', Cell: props => props.value ? props.value:"-" },
-        { Header: 'Correo Adic.',accessor: 'correoAdic', Cell: props => props.value ? props.value:"-" }, 
+        { Header: 'Correo Adic.',accessor: 'correoAdicional', Cell: props => props.value ? props.value:"-" }, 
         { Header: 'Numero contacto',accessor: 'numeroContacto', Cell: props => props.value ? props.value:"-" }, 
-        { Header: 'Numero contacto adicional', accessor: 'numeroContactoAdicional', Cell: props => props.value ? props.value:"-" },
+        { Header: 'Numero contacto adicional', accessor: 'numeroAdicional', Cell: props => props.value ? props.value:"-" },
         { Header: 'Ciudad', accessor: 'ciudad', Cell: props => props.value ? props.value:"-" },
         { Header: 'Pais', accessor: 'pais', Cell: props => props.value ? props.value:"-" },
         { Header: 'Accion', Cell: props => {
@@ -57,17 +60,17 @@ class TabClientesDirs extends Component{
 
     render(){
         
-        return <div>
-            <Header size="medium">Clientes Directos</Header> 
-            <Button primary onClick={ this.abrirModal }>Nuevo cliente directo</Button>
+        return <div /*style={{backgroundColor:"#f9f9f9"}}*/>
+            <Header size="medium">{this.props.sustPlural}</Header> 
+            <Button primary onClick={ this.abrirModal }>Nuevo {this.props.sust}</Button>
             <Header size="small">Lista</Header>
             <TablaBuscador data={this.state.clientesDirs} columns={this.columnasTabla} />
             {/*this.ModalCrear()*/}
 
-            <ModalCrearEditarCliente parent={this} sustantivoTitulo="Cliente directo" 
-                placeholderNombre="juancito" 
-                placeholderCorreo="correo@gmail.com" 
-                placeholderCorreoAdic="arawi.ventas@asd.com"
+            <ModalCrearEditarCliente parent={this} sustantivoTitulo={this.props.sust}
+                placeholderNombre={this.props.placeholderNombre}
+                placeholderCorreo={this.props.placeholderCorreo}
+                placeholderCorreoAdic={this.props.placeholderCorreoAdic}
                 enEnviar={this.enviarCliente}
                 enEditar={this.editarCliente}
                 enCerrar={this.enCerrarModal}/>
@@ -75,7 +78,7 @@ class TabClientesDirs extends Component{
                 open={this.state.confirmacionEliminarAbierta}
                 cancelButton="Cancelar"
                 confirmButton="Eliminar"
-                content={'Seguro que deseas eliminar al cliente ' + (this.state.idEliminar ? this.state.clientesDirs.find(element => element.idCliente == this.state.idEliminar).nombre
+                content={'Seguro que deseas eliminar el '+this.props.sust+' ' + (this.state.idEliminar ? this.state.clientesDirs.find(element => element.idCliente == this.state.idEliminar).nombre
                     :"<NULO>") + '?'}
                 onCancel={this.cerrarConfirmacionEliminar}
                 onConfirm={()=>{this.confirmarEliminar(this.state.clientesDirs.find(element => element.idCliente == this.state.idEliminar))}}
@@ -152,8 +155,9 @@ class TabClientesDirs extends Component{
         obj.transaccionEnviada=true;
         this.setState({modalCrearEditar:obj});
 
-        Requester.postCliente(
-            Constantes.AliasClientes.CLIENTE_DIRECTO,
+        //Requester.postCliente(
+        this.props.funcEnviar(
+            this.props.alias,
             this.state.modalCrearEditar.campos.nombre,
             this.state.modalCrearEditar.campos.correo,
             this.state.modalCrearEditar.campos.numero,
@@ -184,7 +188,7 @@ class TabClientesDirs extends Component{
         this.setState({modalCrearEditar:obj});
         //console.log("::::::::: ",this.state.modalCrearEditar.campos);
         Requester.postEditarCliente( 
-            Constantes.AliasClientes.CLIENTE_DIRECTO,
+            this.props.alias,
             this.state.modalCrearEditar.campos.idCliente,
             this.state.modalCrearEditar.campos.nombre,
             this.state.modalCrearEditar.campos.correo,
@@ -214,7 +218,7 @@ class TabClientesDirs extends Component{
 
     cargarClientes= () =>{
         //console.log("aweeeee");
-        Requester.getClientesFullDetallado(Constantes.AliasClientes.CLIENTE_DIRECTO, (rpta)=>{
+        Requester.getClientesFullDetallado(this.props.alias, (rpta)=>{
             var clientesDirs=rpta.cont.map((e,i)=>{
                 var h = {
                     idCliente:e.idCliente,
@@ -257,4 +261,4 @@ class TabClientesDirs extends Component{
     }
 }
 
-export default TabClientesDirs
+export default TabClientes

@@ -10,7 +10,7 @@ class ElementoForm extends Component{
 
         let obj = 
         <Container fluid>
-            <Header size="tiny">{e}</Header>
+            <p>{e}</p>
             {this.props.children}
         </Container>
 /*

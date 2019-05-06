@@ -7,8 +7,12 @@ class Requester{
     static requestBasicoGet(direccion, funcSuccess, funcError, funcAlways){
         axios.get(direccion)
         .then(response => {
-            if(funcSuccess)
-                funcSuccess(response.data)
+            try{
+                if(funcSuccess)
+                    funcSuccess(response.data)
+            }catch(err) {
+                console.log(err);
+            }
         }).catch(error=>{
             if(funcError){
                 if(error.response){
@@ -31,14 +35,19 @@ class Requester{
 
     
     static requestBasicoPost(direccion, objeto, funcSuccess, funcError, funcAlways){
+        //console.log("enviando POSTTTTTTTTTTTTTTTTTTTTTTTTTT :",direccion," obj: ",objeto);
         axios.post(direccion, objeto)
         .then(response => {
-            if(funcSuccess){
-                if(response.data){
-                    var resp = new RptaTrx();
-                    resp.set(response.data.cont,response.data.msj,response.data.trace,response.data.cod);
-                    funcSuccess(resp);
+            try{
+                if(funcSuccess){
+                    if(response.data){
+                        var resp = new RptaTrx();
+                        resp.set(response.data.cont,response.data.msj,response.data.trace,response.data.cod);
+                        funcSuccess(resp);
+                    }
                 }
+            }catch(err) {
+                console.log(err);
             }
         }).catch(error=>{
             if(funcError){
@@ -61,65 +70,177 @@ class Requester{
         })
     }
 
-    static getListadoFiles(funcSuccess,funcError,funcAlways){
+
+    
+    //------------------------ FILES -----------------------------------
+
+
+    static getListadoFiles=(funcSuccess,funcError,funcAlways) => {
         this.requestBasicoGet(Configuracion.ServerUrl+"/files",funcSuccess,funcError,funcAlways);
     }
 
-    static getHoteles(funcSuccess, funcError,funcAlways){
+    static getHoteles=(funcSuccess, funcError,funcAlways)=>{
         this.requestBasicoGet(Configuracion.ServerUrl+"/files",funcSuccess,funcError,funcAlways);
     }
     
     //------------------------ BIBLIAS -----------------------------------
 
     ///lista de biblias para elegir
-    static getBibliasDropdownCompleto(funcSuccess, funcError, funcAlways){
+    static getBibliasDropdownCompleto = (funcSuccess, funcError, funcAlways) => {
         this.requestBasicoGet(Configuracion.ServerUrl+"/biblias/dropdown",funcSuccess,funcError,funcAlways);
     }
 
+    static getBibliasDetalle = (funcSuccess, funcError, funcAlways) => {
+        this.requestBasicoGet(Configuracion.ServerUrl+"/biblias/",funcSuccess,funcError,funcAlways);
+    }
 
-    static postBiblia(objeto, funcSuccess, funcError, funcAlways){
+
+    static postBiblia = (objeto, funcSuccess, funcError, funcAlways)=>{
         this.requestBasicoPost(Configuracion.ServerUrl+"/biblias/",objeto,funcSuccess,funcError,funcAlways);
+    }
+    
+    //------------------------ SERVICIOS -----------------------------------
+
+    static getServiciosGeneralesDetalle = (funcSuccess, funcError, funcAlways) => {
+        this.requestBasicoGet(Configuracion.ServerUrl+"/servicios/generales",funcSuccess,funcError,funcAlways);
+    }
+
+    static getServiciosTransporteDetalle = (funcSuccess, funcError, funcAlways) => {
+        this.requestBasicoGet(Configuracion.ServerUrl+"/servicios/transportes",funcSuccess,funcError,funcAlways);
+    }
+
+    static postServicio = (
+        idFile,
+        idProveedor,
+        fecha,
+        tipoServicio,
+        nombre,
+        horaRecojo,
+        horaSalida,
+        vuelo,
+        pasajeros,
+        vr,
+        tc,
+        observaciones,
+        ciudad,
+        nombrePasajero,
+        tren,
+        alm,
+        transporte,
+        hotel,
+        funcSuccess, funcError, funcAlways)=>{
+        this.requestBasicoPost(Configuracion.ServerUrl+"/servicios/",
+        {
+            idFile,
+            idProveedor,
+            fecha,
+            tipoServicio,
+            nombre,
+            horaRecojo,
+            horaSalida,
+            vuelo,
+            pasajeros,
+            vr,
+            tc,
+            observaciones,
+            ciudad,
+            nombrePasajero,
+            tren,
+            alm,
+            transporte,
+            hotel
+        },funcSuccess,funcError,funcAlways);
     }
 
     //------------------------ CLIENTES -----------------------------------
 
-    static getClientesFullDetallado(funcSuccess, funcError, funcAlways){
-        this.requestBasicoGet(Configuracion.ServerUrl+"/clientes",funcSuccess,funcError,funcAlways);
+    static getClientesFullDetallado = (alias, funcSuccess, funcError, funcAlways) => {
+        this.requestBasicoGet(Configuracion.ServerUrl+"/clientes/"+alias,funcSuccess,funcError,funcAlways);
     }
 
-    static getClientesListaDropdown(funcSuccess, funcError, funcAlways){
+    static getClientesListaDropdown = (funcSuccess, funcError, funcAlways) => {
         this.requestBasicoGet(Configuracion.ServerUrl+"/clientes/dropdown",funcSuccess,funcError,funcAlways);
     }
-
-    static postCliente(objeto, funcSuccess, funcError, funcAlways){
-        this.requestBasicoPost(Configuracion.ServerUrl+"/clientes/",objeto,funcSuccess,funcError,funcAlways);
+    
+    static postCliente = ( tipo, nombre, correo, numeroContacto, numeroContactoAdicional, correoAdicional, ciudad, pais, funcSuccess, funcError, funcAlways) => {
+        let body = {
+            nombre,
+            CorreoContacto:correo,
+            numeroContacto,
+            numeroAdicional:numeroContactoAdicional,
+            correoAdicional,
+            ciudad,
+            pais
+        };
+        body.tipo = tipo;
+        this.requestBasicoPost(Configuracion.ServerUrl+"/clientes/", body, funcSuccess,funcError,funcAlways);
     }
+
+    
+    static postEditarCliente = ( tipo, idCliente, nombre, correo, numeroContacto, numeroContactoAdicional, correoAdicional, ciudad, pais, funcSuccess, funcError, funcAlways) => {
+        let body = {
+            idCliente,
+            nombre,
+            CorreoContacto:correo,
+            numeroContacto,
+            numeroAdicional:numeroContactoAdicional,
+            correoAdicional,
+            ciudad,
+            pais
+        };
+        body.tipo = tipo;
+        console.log("weeeeeeeee",body);
+        this.requestBasicoPost(Configuracion.ServerUrl+"/clientes/editar", body, funcSuccess,funcError,funcAlways);
+    }
+    
+    static postEliminarCliente = ( id, funcSuccess, funcError, funcAlways) =>{
+        this.requestBasicoPost(Configuracion.ServerUrl + "/clientes/eliminar/" + id, null, funcSuccess,funcError,funcAlways);
+    }
+    
 
     //------------------------ HOTELES -----------------------------------
 
-    static getHotelesListaDropdown(funcSuccess, funcError, funcAlways){
+    static getHotelesListaDropdown = (funcSuccess, funcError, funcAlways) => {
         this.requestBasicoGet(Configuracion.ServerUrl+"/proveedores/dropdown/hotel",funcSuccess,funcError,funcAlways);
     }
 
 
     //------------------------ PROVEEDORES -----------------------------------
     
-    static getProveedores( tipoProveedor, funcSuccess, funcError, funcAlways){
+    static getProveedores = ( tipoProveedor, funcSuccess, funcError, funcAlways) => {
         this.requestBasicoGet(Configuracion.ServerUrl + "/proveedores/" + tipoProveedor,funcSuccess,funcError,funcAlways);
     }
     
-    static getProveedoresDropdown( tipoProveedor, funcSuccess, funcError, funcAlways){
+    static getProveedoresDropdown = ( tipoProveedor, funcSuccess, funcError, funcAlways) => {
         this.requestBasicoGet(Configuracion.ServerUrl+"/proveedores/dropdown/"+tipoProveedor,funcSuccess,funcError,funcAlways);
+    }
+    
+    static postEliminarProv = ( id, funcSuccess, funcError, funcAlways) =>{
+        this.requestBasicoPost(Configuracion.ServerUrl + "/proveedores/eliminar/" + id, null, funcSuccess,funcError,funcAlways);
+    }
+    
+    static postEditarProv = (alias, idProveedor, nombre, correo, numeroContacto, numeroContactoAdicional, correoAdicional, ciudad, funcSuccess, funcError, funcAlways)=>{
+        let body = {
+            idProveedor,
+            nombre,
+            correo,
+            numeroContacto,
+            numeroContactoAdicional:numeroContactoAdicional,
+            correoAdicional,
+            ciudad
+        };
+        body.tipoProveedor = alias;
+        this.requestBasicoPost(Configuracion.ServerUrl+"/proveedores/editar", body, funcSuccess,funcError,funcAlways);
     }
 
     //hoteles
     
-    static postProvHotel( nombre, correo, numeroContacto, numeroContactoAdicional, correoAdicional, ciudad, funcSuccess, funcError, funcAlways){
+    static postProvHotel = ( nombre, correo, numeroContacto, numeroContactoAdicional, correoAdicional, ciudad, funcSuccess, funcError, funcAlways) => {
         let body = {
             nombre,
             correo,
             numeroContacto,
-            numeroCntctAdicional:numeroContactoAdicional,
+            numeroContactoAdicional:numeroContactoAdicional,
             correoAdicional,
             ciudad
         };
@@ -127,14 +248,15 @@ class Requester{
         this.requestBasicoPost(Configuracion.ServerUrl+"/proveedores/", body, funcSuccess,funcError,funcAlways);
     }
 
+
     
-    static postEditarProvHotel( idProveedor, nombre, correo, numeroContacto, numeroContactoAdicional, correoAdicional, ciudad, funcSuccess, funcError, funcAlways){
+    static postEditarProvHotel = ( idProveedor, nombre, correo, numeroContacto, numeroContactoAdicional, correoAdicional, ciudad, funcSuccess, funcError, funcAlways)=>{
         let body = {
             idProveedor,
             nombre,
             correo,
             numeroContacto,
-            numeroCntctAdicional:numeroContactoAdicional,
+            numeroContactoAdicional:numeroContactoAdicional,
             correoAdicional,
             ciudad
         };
@@ -144,12 +266,12 @@ class Requester{
 
     //operadores
 
-    static postProvOperador( nombre, correo, numeroContacto, numeroContactoAdicional, correoAdicional, ciudad, funcSuccess, funcError, funcAlways){
+    static postProvOperador=( nombre, correo, numeroContacto, numeroContactoAdicional, correoAdicional, ciudad, funcSuccess, funcError, funcAlways)=>{
         let body = {
             nombre,
             correo,
             numeroContacto,
-            numeroCntctAdicional:numeroContactoAdicional,
+            numeroContactoAdicional:numeroContactoAdicional,
             correoAdicional,
             ciudad
         };
@@ -159,12 +281,12 @@ class Requester{
 
     //restaurantes
     
-    static postProvRestaurante( nombre, correo, numeroContacto, numeroContactoAdicional, correoAdicional, ciudad, funcSuccess, funcError, funcAlways){
+    static postProvRestaurante=( nombre, correo, numeroContacto, numeroContactoAdicional, correoAdicional, ciudad, funcSuccess, funcError, funcAlways)=>{
         let body = {
             nombre,
             correo,
             numeroContacto,
-            numeroCntctAdicional:numeroContactoAdicional,
+            numeroContactoAdicional:numeroContactoAdicional,
             correoAdicional,
             ciudad
         };
@@ -174,12 +296,12 @@ class Requester{
 
     //transportes
 
-    static postProvTransporte( nombre, correo, numeroContacto, numeroContactoAdicional, correoAdicional, ciudad, funcSuccess, funcError, funcAlways){
+    static postProvTransporte=( nombre, correo, numeroContacto, numeroContactoAdicional, correoAdicional, ciudad, funcSuccess, funcError, funcAlways)=>{
         let body = {
             nombre,
             correo,
             numeroContacto,
-            numeroCntctAdicional:numeroContactoAdicional,
+            numeroContactoAdicional:numeroContactoAdicional,
             correoAdicional,
             ciudad
         };
@@ -189,12 +311,12 @@ class Requester{
 
     //guias
     
-    static postProvGuia( nombre, correo, numeroContacto, numeroContactoAdicional, correoAdicional, ciudad, funcSuccess, funcError, funcAlways){
+    static postProvGuia=( nombre, correo, numeroContacto, numeroContactoAdicional, correoAdicional, ciudad, funcSuccess, funcError, funcAlways)=>{
         let body = {
             nombre,
             correo,
             numeroContacto,
-            numeroCntctAdicional:numeroContactoAdicional,
+            numeroContactoAdicional:numeroContactoAdicional,
             correoAdicional,
             ciudad
         };
@@ -205,12 +327,12 @@ class Requester{
     
     //empresas
     
-    static postProvEmpresa( nombre, correo, numeroContacto, numeroContactoAdicional, correoAdicional, ciudad, funcSuccess, funcError, funcAlways){
+    static postProvEmpresa=( nombre, correo, numeroContacto, numeroContactoAdicional, correoAdicional, ciudad, funcSuccess, funcError, funcAlways)=>{
         let body = {
             nombre,
             correo,
             numeroContacto,
-            numeroCntctAdicional:numeroContactoAdicional,
+            numeroContactoAdicional:numeroContactoAdicional,
             correoAdicional,
             ciudad
         };
@@ -220,12 +342,12 @@ class Requester{
 
     //personas
 
-    static postProvPersona( nombre, correo, numeroContacto, numeroContactoAdicional, correoAdicional, ciudad, funcSuccess, funcError, funcAlways){
+    static postProvPersona = ( nombre, correo, numeroContacto, numeroContactoAdicional, correoAdicional, ciudad, funcSuccess, funcError, funcAlways)=>{
         let body = {
             nombre,
             correo,
             numeroContacto,
-            numeroCntctAdicional:numeroContactoAdicional,
+            numeroContactoAdicional:numeroContactoAdicional,
             correoAdicional,
             ciudad
         };

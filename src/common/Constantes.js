@@ -43,18 +43,31 @@ const CONSTANTES_GLOBALES={
     aliasATextoProovedores : (alias) => {
         console.log("a");
         if(alias){
-            if (alias==this.AliasProovedores.PERSONA)
+            if (alias===CONSTANTES_GLOBALES.AliasProovedores.PERSONA)
                 return "Persona"
-            if (alias==this.AliasProovedores.EMPRESA)
+            if (alias===CONSTANTES_GLOBALES.AliasProovedores.EMPRESA)
                 return "Empresa"
-            if (alias==this.AliasProovedores.HOTEL)
+            if (alias===CONSTANTES_GLOBALES.AliasProovedores.HOTEL)
                 return "Hotel"
-            if (alias==this.AliasProovedores.RESTAURANTE)
+            if (alias===CONSTANTES_GLOBALES.AliasProovedores.RESTAURANTE)
                 return "Restaurante"
-            if (alias==this.AliasProovedores.GUIA)
+            if (alias===CONSTANTES_GLOBALES.AliasProovedores.GUIA)
                 return "Guia"
-            if (alias==this.AliasProovedores.OPERADOR)
+            if (alias===CONSTANTES_GLOBALES.AliasProovedores.OPERADOR)
                 return "Operador"
+        }else
+            return "ERROR";
+    },
+
+    aliasATextoClientes : (alias) => {
+        console.log("a",alias);
+        if(alias){
+            if (alias===CONSTANTES_GLOBALES.AliasClientes.CLIENTE_DIRECTO)
+                return "Cliente directo"
+            if (alias===CONSTANTES_GLOBALES.AliasClientes.OPERADOR_MAYORISTA)
+                return "Operador mayorista"
+            if (alias===CONSTANTES_GLOBALES.AliasClientes.OPERADOR_MINORISTA)
+                return "Operador minorista"
         }else
             return "ERROR";
     },
@@ -63,6 +76,8 @@ const CONSTANTES_GLOBALES={
         TRANSPORTE:"TRANS",
         SERVICIO:"SERVI"
     }
+
+    
 }
 
 const Configuracion={
@@ -76,6 +91,18 @@ const Configuracion={
         {nombre:"Clientes", valor:"/clientes"},
         {nombre:"Calendario", valor:"/calendario"},
     ]
+}
+
+const CodigoMesATexto = (codigoMes) => {
+    if(codigoMes){
+        var obj = CONSTANTES_GLOBALES.ListaMeses.find(x=> x.key === codigoMes );
+        console.log(obj);
+        if(obj){
+            return obj.text;
+        }else{
+            return "error";
+        }
+    }
 }
 
 class RptaTrx{
@@ -104,5 +131,5 @@ class RptaTrx{
     }
 }
 
-export {Configuracion, RptaTrx};
+export {Configuracion, RptaTrx, CodigoMesATexto};
 export default CONSTANTES_GLOBALES;

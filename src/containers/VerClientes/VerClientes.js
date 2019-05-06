@@ -1,10 +1,10 @@
 import React from 'react'
 import {Component} from 'react'
 import { Tab, Menu, Label, Icon} from 'semantic-ui-react';
-import TabClientesDirs from './TabClientesDirs/TabClientesDirs';
-import TabMinoristas from './TabMinoristas/TabMinoristas';
-import TabMayoristas from './TabMayoristas/TabMayoristas';
-import TabTodos from './TabTodos/TabTodos';
+import TabClientes from './TabClientes';
+import Requester from '../../common/Services/Requester';
+import Constantes from '../../common/Constantes';
+import TabTodosClientes from './TabTodos/TabTodosClientes';
 
 const panes = [ 
     {
@@ -15,7 +15,7 @@ const panes = [
         ),
         render: () => {
             return <Tab.Pane>
-                <TabTodos/>
+                <TabTodosClientes/>
             </Tab.Pane>},
     },
     {
@@ -26,7 +26,15 @@ const panes = [
         ),
         render: () => {
             return <Tab.Pane>
-                <TabClientesDirs/>
+                
+                <TabClientes sust="Cliente directo" 
+                    sustPlural="Clientes directos"
+                    placeholderNombre="Juan" 
+                    placeholderCorreo="Juan@gmail.com" 
+                    placeholderCorreoAdic="juan.agencia@gmail.com"
+                    alias = {Constantes.AliasClientes.CLIENTE_DIRECTO}
+                    funcEnviar = {Requester.postCliente}
+                    />
             </Tab.Pane>},
     },
     {
@@ -37,7 +45,15 @@ const panes = [
         ),
         render: () => {
             return <Tab.Pane>
-                <TabMinoristas/>
+                <div></div>
+                <TabClientes sust="Operador minorista" 
+                    sustPlural="Minoristas"
+                    placeholderNombre="NTS" 
+                    placeholderCorreo="mariana@nts.com.gt" 
+                    placeholderCorreoAdic="-"
+                    alias = {Constantes.AliasClientes.OPERADOR_MINORISTA}
+                    funcEnviar = {Requester.postCliente}
+                    />
             </Tab.Pane>},
     },
     {
@@ -48,7 +64,15 @@ const panes = [
         ),
         render: () => {
             return <Tab.Pane>
-                <TabMayoristas/>
+                <div></div><div></div>
+                <TabClientes sust="Operador mayorista" 
+                    sustPlural="Mayoristas"
+                    placeholderNombre="Eurolatina" 
+                    placeholderCorreo="acaiminagua@eurolatina.com.ec" 
+                    placeholderCorreoAdic="achala@eurolatina.com.ec"
+                    alias = {Constantes.AliasClientes.OPERADOR_MAYORISTA}
+                    funcEnviar = {Requester.postCliente}
+                    />
             </Tab.Pane>},
     }
   ]

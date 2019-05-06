@@ -7,10 +7,10 @@ import Constantes from '../../../common/Constantes';
 import ModalTest from '../ModalTest';
 
 
-class TabHoteles extends Component{
+class TabProovs extends Component{
 
     state = {
-        hoteles:[
+        proovs:[
             //{idProveedor:"-1",nombre:"Melia", correo:"asd@asd.com", correoAdic:"asljkdq@as.com", numeroContacto:"(51)65465",numeroContactoAdicional:"123312", ciudad:"city"}
         ],
         
@@ -29,13 +29,13 @@ class TabHoteles extends Component{
             },
 
             campos:{
-                id:null,
-                nombre:null,
-                correo:null,
-                correoAdic:null,
-                num:null,
-                numAdic:null,
-                ciudad:null
+                id:'',
+                nombre:'',
+                correo:'',
+                correoAdic:'',
+                num:'',
+                numAdic:'',
+                ciudad:''
             }
             
         }
@@ -51,34 +51,34 @@ class TabHoteles extends Component{
         { Header: 'Accion', Cell: props => {
             //console.log(props);
             return <Container textAlign="center">
-                <Button circular color="yellow" icon="pencil" onClick={()=>{this.abrirModalEdicion(this.state.hoteles.find(element=>element.idProveedor==props.original.idProveedor))}}></Button>
-                <Button circular color="red" icon="trash" onClick={()=>{this.intentarEliminar(this.state.hoteles.find(element=>element.idProveedor==props.original.idProveedor))}}></Button>
+                <Button circular color="yellow" icon="pencil" onClick={()=>{this.abrirModalEdicion(this.state.proovs.find(element=>element.idProveedor==props.original.idProveedor))}}></Button>
+                <Button circular color="red" icon="trash" onClick={()=>{this.intentarEliminar(this.state.proovs.find(element=>element.idProveedor==props.original.idProveedor))}}></Button>
             </Container>
         }} 
     ]
     
     render = () => {
         return <div>
-            <Header size="medium">Hoteles</Header> 
-            <Button primary onClick={ this.abrirModal }>Nuevo Hotel</Button>
+            <Header size="medium">{this.props.sustPlural}</Header> 
+            <Button primary onClick={ this.abrirModal }>Nuevo {this.props.sust}</Button>
             <Header size="small">Lista</Header>
-            <TablaBuscador data={this.state.hoteles} columns={this.columnasTabla} />
+            <TablaBuscador data={this.state.proovs} columns={this.columnasTabla} />
             {/*this.ModalCrear()*/}
-            <ModalTest parent={this} sustantivoTitulo="Hotel" 
-                placeholderNombre="Arawi" 
-                placeholderCorreo="correo@arawi.com" 
-                placeholderCorreoAdic="arawi.ventas@gmail.com"
-                enEnviar={this.enviarHotel}
-                enEditar={this.editarHotel}
+            <ModalTest parent={this} sustantivoTitulo={this.props.sust}
+                placeholderNombre={this.props.placeholderNombre}
+                placeholderCorreo={this.props.placeholderCorreo}
+                placeholderCorreoAdic={this.props.placeholderCorreoAdic}
+                enEnviar={this.enviarProov}
+                enEditar={this.editarProov}
                 enCerrar={this.enCerrarModal}/>
             <Confirm
                 open={this.state.confirmacionEliminarAbierta}
                 cancelButton="Cancelar"
                 confirmButton="Eliminar"
-                content={'Seguro que deseas eliminar el hotel ' + (this.state.idEliminar ? this.state.hoteles.find(element => element.idProveedor == this.state.idEliminar).nombre
+                content={'Seguro que deseas eliminar el '+this.props.sust+' ' + (this.state.idEliminar ? this.state.proovs.find(element => element.idProveedor == this.state.idEliminar).nombre
                     :"<NULO>") + '?'}
                 onCancel={this.cerrarConfirmacionEliminar}
-                onConfirm={()=>{this.confirmarEliminar(this.state.hoteles.find(element => element.idProveedor == this.state.idEliminar))}}
+                onConfirm={()=>{this.confirmarEliminar(this.state.proovs.find(element => element.idProveedor == this.state.idEliminar))}}
             />
             <Modal></Modal>
         </div>
@@ -103,9 +103,9 @@ class TabHoteles extends Component{
         })
 
         if(proveedor){
-            Requester.postElimnarProv(proveedor.idProveedor,
+            Requester.postEliminarProv(proveedor.idProveedor,
                 (rpta)=>{
-                    this.cargarHoteles();
+                    this.cargarProovs();
                 },
                 (rptaError)=>{
                 }
@@ -145,14 +145,14 @@ class TabHoteles extends Component{
         this.setState({modalCrearEditar:obj});
     }
 
-    enviarHotel = () => { 
+    enviarProov = () => { 
         console.log("enviando!");
         
         var obj = {...this.state.modalCrearEditar};
         obj.mensaje.enviado=true;
         this.setState({modalCrearEditar:obj});
 
-        Requester.postProvHotel( 
+        this.props.funcEnviar( 
             this.state.modalCrearEditar.campos.nombre,
             this.state.modalCrearEditar.campos.correo,
             this.state.modalCrearEditar.campos.num,
@@ -167,7 +167,7 @@ class TabHoteles extends Component{
                 obj.mensaje.recibido=true;
                 obj.mensaje.respuesta = rpta;
                 this.setState({modalCrearEditar:obj});
-                this.cargarHoteles();
+                this.cargarProovs();
             },
             (rptaError)=>{
                 console.log("err!");
@@ -178,14 +178,15 @@ class TabHoteles extends Component{
             })
     }
     
-    editarHotel = () => { 
+    editarProov = () => { 
         console.log("editando!");
         
         var obj = {...this.state.modalCrearEditar};
         obj.mensaje.enviado=true;
         this.setState({modalCrearEditar:obj});
         console.log(": "+this.state.modalCrearEditar.campos.id);
-        Requester.postEditarProvHotel( 
+        Requester.postEditarProv(
+            this.props.alias,
             this.state.modalCrearEditar.campos.id,
             this.state.modalCrearEditar.campos.nombre,
             this.state.modalCrearEditar.campos.correo,
@@ -201,7 +202,7 @@ class TabHoteles extends Component{
                 obj.mensaje.recibido=true;
                 obj.mensaje.respuesta = rpta;
                 this.setState({modalCrearEditar:obj});
-                this.cargarHoteles();
+                this.cargarProovs();
             },
             (rptaError)=>{
                 console.log("edicion error!");
@@ -212,26 +213,28 @@ class TabHoteles extends Component{
             })
     }
 
-    cargarHoteles= () =>{
-        Requester.getProveedores(Constantes.AliasProovedores.HOTEL, (rpta)=>{
-            var hoteles=rpta.cont.map((e,i)=>{
+    cargarProovs= () =>{
+        console.log(this.props.alias);
+        Requester.getProveedores(this.props.alias, (rpta)=>{
+            var proovs=rpta.cont.map((e,i)=>{
                 var h = {
-                    idProveedor:e.idProveedor,
-                    nombre:e.nombre,
-                    correo:e.correo,//?e.correo:"-",
-                    correoAdic:e.correoAdicional,//?e.correoAdicional:"-",
-                    numeroContacto:e.numeroContacto,//?e.numeroContacto:"-",
-                    numeroContactoAdicional:e.numeroContactoAdicional,//?e.numeroContactoAdicional:"-",
-                    ciudad:e.ciudad//?e.ciudad:"-"
+                    idProveedor:e.idProveedor?e.idProveedor:0,
+                    nombre:e.nombre?e.nombre:'',
+                    correo:e.correo?e.correo:"",
+                    correoAdic:e.correoAdicional?e.correoAdicional:"",
+                    numeroContacto:e.numeroContacto?e.numeroContacto:'',
+                    numeroContactoAdicional:e.numeroContactoAdicional?e.numeroContactoAdicional:"",
+                    ciudad:e.ciudad?e.ciudad:""
                 }
                 return h;
             });
-            this.setState({hoteles:hoteles});
+            this.setState({proovs:proovs});
         });
     }
 
     componentDidMount = () => {
-        this.cargarHoteles();
+        console.log("weeeee");
+        this.cargarProovs();
     }
 
     enCerrarModal = () =>{
@@ -242,17 +245,17 @@ class TabHoteles extends Component{
 
         if(this.state.modalCrearEditar.modo==="edicion"){
             var obj = {...this.state.modalCrearEditar};
-            obj.campos.id=null;
-            obj.campos.nombre=null;
-            obj.campos.correo=null;
-            obj.campos.correoAdic=null;
-            obj.campos.num=null;
-            obj.campos.numAdic=null;
-            obj.campos.ciudad=null;
+            obj.campos.id='';
+            obj.campos.nombre='';
+            obj.campos.correo='';
+            obj.campos.correoAdic='';
+            obj.campos.num='';
+            obj.campos.numAdic='';
+            obj.campos.ciudad='';
             this.setState({modalCrearEditar:obj});
         }
     }
     
 }
 
-export default TabHoteles
+export default TabProovs

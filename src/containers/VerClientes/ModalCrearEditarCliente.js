@@ -2,8 +2,9 @@ import React from 'react'
 import {Component} from 'react'
 import { Button, Container, Message, Icon, Input, Modal, Grid } from 'semantic-ui-react';
 import ElementoForm from '../../components/ElementoForm/ElementoForm';
+import MensajeTransaccion from '../../components/MensajeTransaccion/MensajeTransaccion';
 
-class ModalTest extends Component{
+class ModalCrearEditarCliente extends Component{
 
     render(){
 
@@ -12,39 +13,7 @@ class ModalTest extends Component{
             msjSuccess ="Objeto editado exitosamente";
 
         var msjComp = <div></div>
-        //console.log("weee");
-        //console.log(this.props.parent.state.modalCrearEditar);
-        if(this.props.parent.state.modalCrearEditar && this.props.parent.state.modalCrearEditar.mensaje ){
-            var mensaje = this.props.parent.state.modalCrearEditar.mensaje;
-            if (mensaje.enviado && !mensaje.recibido){
-                msjComp = <Message icon>
-                    <Icon name='circle notched' loading />
-                    <Message.Content>
-                        <Message.Header>Espere un momento...</Message.Header>
-                        Completando la transacción
-                    </Message.Content>
-                </Message>
-            }else
-            if (mensaje.recibido){ 
-                if(mensaje.respuesta.transaccionExitosa()){
-                    msjComp = <Message success >
-                        <Message.Header>Transaccion exitosa</Message.Header>
-                        <Message.List>
-                            <Message.Item>{msjSuccess}</Message.Item>
-                            { mensaje.respuesta.msj ? <Message.Item> {mensaje.respuesta.msj} </Message.Item> : null }
-                        </Message.List>
-                    </Message>
-                } else {
-                    msjComp = <Message negative>
-                        <Message.Header>Error en transaccion</Message.Header>
-                        <Message.List>
-                            <Message.Item>{mensaje.respuesta.msj}</Message.Item>
-                            {mensaje.respuesta.trace?<Message.Item>{mensaje.respuesta.trace}</Message.Item>:null}
-                        </Message.List>
-                    </Message>
-                }
-            }        
-        }
+
 
         return  <Modal size="tiny"  open ={ this.props.parent.state.modalCrearEditar.abierto} centered={true}  onClose={() => {
             var obj= {...this.props.parent.state.modalCrearEditar};
@@ -105,7 +74,7 @@ class ModalTest extends Component{
                             <ElementoForm grid titulo="Numero contacto">
                                 <Input 
                                     fluid
-                                    placeholder="98957845"
+                                    placeholder="+57 98 957 0845"
                                     iconPosition="left"
                                     value={this.props.parent.state.modalCrearEditar.campos.num} onChange={(event)=>{
                                         var obj = {...this.props.parent.state.modalCrearEditar};
@@ -134,20 +103,34 @@ class ModalTest extends Component{
                     </Grid.Row>
 
 
-                    <Grid.Row>
+                    <Grid.Row columns={2}>
                         <Grid.Column>
                             <ElementoForm grid titulo="Ciudad">
-                                <Input fluid placeholder="Cusco" 
+                                <Input fluid placeholder="Medellin" 
                                     value={this.props.parent.state.modalCrearEditar.campos.ciudad} onChange={(event)=>{
                                         var obj = {...this.props.parent.state.modalCrearEditar};
                                         obj.campos.ciudad = event.target.value;
                                         this.props.parent.setState({modalCrearEditar:obj});}}/>
                             </ElementoForm>
                         </Grid.Column>
+                        <Grid.Column>
+                            <ElementoForm grid titulo="Pais">
+                                <Input fluid placeholder="Colombia" 
+                                    value={this.props.parent.state.modalCrearEditar.campos.pais} onChange={(event)=>{
+                                        var obj = {...this.props.parent.state.modalCrearEditar};
+                                        obj.campos.pais = event.target.value;
+                                        this.props.parent.setState({modalCrearEditar:obj});}}/>
+                            </ElementoForm>
+                        </Grid.Column>
                     </Grid.Row>
 
                 </Grid>
-                {msjComp}
+                <MensajeTransaccion
+                    transaccionEnviada = {this.props.parent.state.modalCrearEditar.transaccionEnviada} 
+                    responseRecibida = {this.props.parent.state.modalCrearEditar.responseRecibida}
+                    rptaTransaccion = {this.props.parent.state.modalCrearEditar.rptaTransaccion}
+                    //textoExito = "Puede usar la nueva biblia"
+                />
             </Modal.Content>
 
             <Modal.Actions>
@@ -170,4 +153,4 @@ class ModalTest extends Component{
 
     }
 }
-export default ModalTest;
+export default ModalCrearEditarCliente;

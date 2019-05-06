@@ -12,6 +12,7 @@ import CrearServicio from '../VerServicios/CrearServicio/CrearServicio';
 import ListaBiblias from '../VerBiblias/VerBiblias';
 import MostradorProveedores from '../MostradorProovedores/MostradorProveedores';
 import VerClientes from '../VerClientes/VerClientes';
+import VerCalendario from '../Calendario/VerCalendario';
 
  class MainContent extends Component{
 
@@ -36,6 +37,7 @@ import VerClientes from '../VerClientes/VerClientes';
                             <Route path="/biblias" exact component={ListaBiblias}/>
                             <Route path="/proveedores" exact component={MostradorProveedores}/>
                             <Route path="/clientes" exact component={VerClientes}/>
+                            <Route path="/calendario" exact component={VerCalendario}/>
                         </Grid.Column>
                         <Grid.Column width={2}></Grid.Column>
                     </Grid.Row>
