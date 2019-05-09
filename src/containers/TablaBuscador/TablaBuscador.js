@@ -52,7 +52,7 @@ class TablaBuscador extends Component{
 
         //mostrando data
         return <Container fluid>
-                Buscar registros:
+                Buscar registros:{"      "}
                 <Input style={{padding:"0px 0px 12px 0px"}}
                     placeholder="Buscar..."
                     value={this.state.queryBusqueda}

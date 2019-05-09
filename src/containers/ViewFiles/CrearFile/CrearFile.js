@@ -13,6 +13,10 @@ import axios from 'axios';
 import ModalTrxSimple from '../../ModalTrxSimple/ModalTrxSimple';
 import Requester from '../../../common/Services/Requester';
 
+const CampoServicio = (props) =>{
+    return <Segment style={{padding:"7px"}}><Header style={{margin:"-2px 0px 4px 0px"}} as="h4">{props.titulo}</Header>{props.componente}</Segment>
+}
+
 class CrearFile extends Component{
 
     constructor(props){
@@ -86,7 +90,11 @@ class CrearFile extends Component{
 
         hotelesCargaron:false,
         hotelesCargaronExito:true,
-        opcionesHoteles: [/*{value:1, text:'juancito'}*/]
+        opcionesHoteles: [/*{value:1, text:'juancito'}*/],
+
+        opcionesCiudades:[],
+
+        opcionesPaises:[]
     }
     
     
@@ -130,6 +138,28 @@ class CrearFile extends Component{
         })
     }
 
+    cargarCiudades(){
+        Requester.getCiudades((rpta)=>{
+            this.setState({opcionesCiudades: rpta.cont});
+        }, 
+        (rptaError)=>{
+            console.error("Ciudades no cargadas");
+        })
+    }
+
+    cargarPaises(){
+        Requester.getPaises((rpta)=>{
+            this.setState({opcionesPaises: rpta.cont});
+        }, 
+        (rptaError)=>{
+            console.error("Paises no cargadas");
+        })
+    }
+
+    cargarProveedoresNoTransp(){
+        
+    }
+
     cargarHoteles(){
         Requester.getHotelesListaDropdown(rpta=>{
             var listaOpsCliente = rpta.cont.map( element => { return { value:element.idHotel, text: element.nombre }});
@@ -161,17 +191,20 @@ class CrearFile extends Component{
         this.cargarClientes();
         this.cargarBiblias();
         this.cargarHoteles();
+        this.cargarCiudades();
+        this.cargarPaises();
     }
     
     render(){
           
+        let fieldStyle={margin:"6px 0 4px 0"};
         return <div>
         <Header size="large">Formulario de creacion: nuevo file</Header>
             <Grid columns={2} >
                 <Grid.Row>
                     <Grid.Column width={5}>
                         <ElementoForm titulo="Codigo">
-                            <Input placeholder="002-134" ></Input>
+                            <Input fluid placeholder="002-134" ></Input>
                         </ElementoForm>
 
                     </Grid.Column>
@@ -190,51 +223,48 @@ class CrearFile extends Component{
                     <Grid.Column width={5}>
                         <ElementoForm titulo="Biblia">
                             {/*<Input  type="text" fluid placeholder="2019, Mayo"></Input>*/}
-                            <Dropdown
-                                placeholder='Mes, año'
-                                search
-                                loading={!this.state.bibliasCargaron}
-                                selection 
-                                options={this.state.opcionesBiblia}
-                            />
-                            <Button attached="right" icon onClick={
-                                () => {
-                                    
-                                    var state = {...this.state};
-                                    state.modalBibliasAbierto=true;
-                                    state.modalBiblia.responseRecibida=false;
-                                    state.modalBiblia.transaccionEnviada=false;
-                                    this.setState(state);
-                                }
-                            }>
-                                <Icon name='plus' />
-                            </Button>
+                            <Grid>
+                            <Grid.Row columns='equal'>
+                                <Grid.Column >
+                                        <Dropdown fluid placeholder='Mes, año'
+                                            search
+                                            loading={!this.state.bibliasCargaron}
+                                            selection 
+                                            options={this.state.opcionesBiblia}
+                                        />
+                                        
+                                </Grid.Column>
+                                <Grid.Column width={3}>
+                                    <Button fluid icon onClick={
+                                            () => {
+                                                
+                                                var state = {...this.state};
+                                                state.modalBibliasAbierto=true;
+                                                state.modalBiblia.responseRecibida=false;
+                                                state.modalBiblia.transaccionEnviada=false;
+                                                this.setState(state);
+                                            }
+                                        }>
+                                        
+                                            <Icon name='plus' />
+                                        </Button>
+                                </Grid.Column>
+                            </Grid.Row>
+                            </Grid>
+
                         </ElementoForm>
                     </Grid.Column>
                     
                     <Grid.Column width={5}>
                         <ElementoForm titulo="Cliente">
                             {/*<Input  type="text" fluid placeholder="Javi"></Input>*/}
-                            <Dropdown
+                            <Dropdown fluid
                                 placeholder='Christian'
                                 search
                                 loading ={!this.state.bibliasCargaron}
                                 selection
                                 options={this.state.opcionesCliente}
-                            />
-                            <Button attached="right" icon onClick={
-                                () => {
-                                    //this.setState({modalClientesAbierto:true});
-                                    this.modalClientesRef.current.abrir();
-                                    
-                                    var state = {...this.state};
-                                    state.modalCliente.responseRecibida=false;
-                                    state.modalCliente.transaccionEnviada=false;
-                                    this.setState(state);
-                                }
-                            }>
-                                <Icon name='plus' />
-                            </Button>
+                            /> 
                         </ElementoForm>
                     </Grid.Column>
                 </Grid.Row>
@@ -249,9 +279,9 @@ class CrearFile extends Component{
                                     <ColumnaTablaIns textAlign="center">Fecha</ColumnaTablaIns>
                                     <ColumnaTablaIns textAlign="center">Ciudad</ColumnaTablaIns>
                                     <ColumnaTablaIns textAlign="center">Servicio</ColumnaTablaIns>
-                                    <ColumnaTablaIns textAlign="center">Hotel</ColumnaTablaIns>
+                                    <ColumnaTablaIns textAlign="center">Proveedor</ColumnaTablaIns>
                                     <ColumnaTablaIns textAlign="center">Pasajeros</ColumnaTablaIns>
-                                    <ColumnaTablaIns textAlign="center">Nombre pax</ColumnaTablaIns>
+                                    <ColumnaTablaIns textAlign="center">Nombre pasajero</ColumnaTablaIns>
                                     <ColumnaTablaIns textAlign="center">Tren</ColumnaTablaIns>
                                     <ColumnaTablaIns textAlign="center">ALM</ColumnaTablaIns>
                                     <ColumnaTablaIns textAlign="center">OBS</ColumnaTablaIns>
@@ -262,6 +292,95 @@ class CrearFile extends Component{
                                 })}
                             </Grid>
                             <br/>
+
+
+                            <Segment.Group>
+                                <Segment.Group horizontal>
+                                    <Segment style={{backgroundColor:"aliceblue"}}>
+                                        <Grid columns="equal">
+                                            <Grid.Row style={{padding:"8px 0px"}}>
+                                                <Grid.Column verticalAlign="middle">
+                                                    <Header as="h3">Servicio 1</Header>
+                                                </Grid.Column>
+                                                <Grid.Column>
+                                                    <Button floated="right" color="red">Borrar</Button>            
+                                                </Grid.Column>
+                                            </Grid.Row>
+                                        </Grid>
+                                        
+                                    </Segment>
+                                </Segment.Group>
+                                <Segment.Group horizontal>
+                                    <CampoServicio titulo="Nombre" componente={<Input transparent fluid placeholder="4 Pax Lima"/>} />
+                                    <CampoServicio titulo="Ciudad de destino" componente={<Input transparent fluid placeholder="Lima"/>} />
+                                    <CampoServicio titulo="Fecha ejecucion" componente={<Input transparent fluid placeholder="2/5/19"/>} />
+                                    <CampoServicio titulo="Nombre pasajero" componente={<Input transparent fluid placeholder="Mike Morhaime"/>} />
+                                </Segment.Group>
+                                <Segment.Group horizontal>
+                                    <CampoServicio titulo="Cant. pasajeros" componente={<Input transparent fluid placeholder="4"/>} />
+                                    <CampoServicio titulo="Proveedor" componente={<Input transparent fluid placeholder="Cosapi"/>} />
+                                    <CampoServicio titulo="Tren" componente={<Input transparent fluid placeholder="Tren"/>} />
+                                    <CampoServicio titulo="ALM" componente={<Input transparent fluid placeholder="Punto Azul"/>} />
+                                    <CampoServicio titulo="Obs" componente={<Input transparent fluid placeholder="Obs"/>} />
+                                </Segment.Group>
+                            </Segment.Group>
+
+                            <Segment style={{backgroundColor:"aliceblue"}}>
+                                <Grid>
+                                    <Grid.Row columns="equal" divided>
+                                        <Grid.Column > 
+                                            <div style={{textAlign:"center"}}>
+                                                <Header verticalAlign="top" as='h3'>Servicio #1</Header>                
+                                            </div>
+                                            <div style={{textAlign:"center", verticalAlign:"text-bottom"}}>
+                                                <Button verticalAlign="bottom" textAlign="right" icon color='red'>
+                                                    <Icon name='trash'/>
+                                                </Button>
+                                            </div>
+                                            
+                                            
+                                            
+                                        </Grid.Column>
+                                        <Grid.Column width={14}>
+
+                                            <Grid columns="equal">
+                                                <Grid.Row>
+                                                    <Grid.Column>
+
+                                                        
+ 
+                                                        <Header style={{margin:"0px 0px 4px 0px"}} sub>Nombre Servicio</Header>
+                                                        
+                                                        <Input style={fieldStyle} fluid placeholder="Nombre de servicio"></Input> 
+                                                        <Header style={{margin:"0px 0px 4px 0px"}} sub>Ciudad de destino</Header>
+                                                        <Input style={fieldStyle} fluid placeholder="Lima"></Input> 
+                                                        <Header style={{margin:"0px 0px 4px 0px"}} sub>Fecha de ejecucion</Header>
+                                                        <Input style={fieldStyle} fluid placeholder="Servicio"></Input> 
+                                                        <Header style={{margin:"0px 0px 4px 0px"}} sub>Observaciones</Header>
+                                                        <Input style={fieldStyle} fluid placeholder="Observaciones"></Input> 
+                                                    </Grid.Column>
+                                                    <Grid.Column> 
+                                                        <Header style={{margin:"0px 0px 4px 0px"}} sub>Cantidad pasajeros</Header>
+                                                        <Input style={fieldStyle} type="number" fluid placeholder="4"></Input> 
+                                                        <Header style={{margin:"0px 0px 4px 0px"}} sub>Nombre pasajero</Header>
+                                                        <Input style={fieldStyle} fluid placeholder="Christian Cueva"></Input> 
+                                                    </Grid.Column>
+                                                    <Grid.Column> 
+                                                        <Header style={{margin:"0px 0px 4px 0px"}} sub>Proveedor asignado</Header>
+                                                        <Input style={fieldStyle} fluid placeholder="Proveedor"></Input> 
+                                                        <Header style={{margin:"0px 0px 4px 0px"}} sub>Tren</Header>
+                                                        <Input style={fieldStyle} fluid placeholder="Tren"></Input> 
+                                                        <Header style={{margin:"0px 0px 4px 0px"}} sub>Alm</Header>
+                                                        <Input style={fieldStyle} fluid placeholder="ALM"></Input> 
+
+                                                    </Grid.Column>
+                                                </Grid.Row>
+                                            </Grid>
+
+                                        </Grid.Column>
+                                    </Grid.Row>
+                                </Grid>
+                            </Segment>
                         </Segment>
                         <Button content='Agregar servicio' icon='plus' labelPosition='left' onClick={()=>{
                             var servs = this.state.servicios.slice();
@@ -284,10 +403,10 @@ class CrearFile extends Component{
                                     <ColumnaTablaIns textAlign="center">Vuelo</ColumnaTablaIns>
                                     <ColumnaTablaIns textAlign="center">Servicio</ColumnaTablaIns>
                                     <ColumnaTablaIns textAlign="center">Pasajeros</ColumnaTablaIns>
-                                    <ColumnaTablaIns textAlign="center">Nombre Pax</ColumnaTablaIns>
+                                    <ColumnaTablaIns textAlign="center">Nombre pasajero</ColumnaTablaIns>
                                     <ColumnaTablaIns textAlign="center">V/R</ColumnaTablaIns>
                                     <ColumnaTablaIns textAlign="center">TC</ColumnaTablaIns>
-                                    <ColumnaTablaIns textAlign="center">Proveedor</ColumnaTablaIns>
+                                    <ColumnaTablaIns textAlign="center">Proveedor de transporte</ColumnaTablaIns>
                                     <ColumnaTablaIns textAlign="center">OBS</ColumnaTablaIns>
                                     <ColumnaTablaIns textAlign="center"></ColumnaTablaIns>
                                 </Grid.Row>
@@ -354,7 +473,9 @@ class CrearFile extends Component{
                             }}
                         />
                     </ColumnaTablaIns>
+                    
                     <ColumnaTablaIns style={{padding:"1px", margin:"1px"}}>
+                    {/*
                         <Input fluid placeholder="Lima" 
                         value={this.state.servicios[index].ciudad} 
                         onChange={(event)=>{
@@ -364,6 +485,16 @@ class CrearFile extends Component{
                             this.setState({servicios:servs});
                         }}>
                         </Input>
+                    */}
+                        <Input list={'ciudades'+index} placeholder='Lima' fluid
+                            onChange={(event)=>{
+                                var servs = this.state.servicios.slice();
+                                servs[index].ciudad = event.target.value;
+                                this.setState({servicios:servs});
+                            }}/>
+                        <datalist id={'ciudades'+index}>
+                            {this.state.opcionesCiudades.map(e=><option value={e}/>)}
+                        </datalist>
                     </ColumnaTablaIns>
                     <ColumnaTablaIns>
                         <Input fluid placeholder="Servicio" value={this.state.servicios[index].servicio} 
@@ -383,7 +514,18 @@ class CrearFile extends Component{
                                 this.setState({servicios:servs});
                             }}
                         />*/}
-                        <Input list={'hoteles'+index} loading={!this.state.hotelesCargaron} placeholder='Sheraton' fluid/>
+                        <Input list={'hoteles'+index} loading={!this.state.hotelesCargaron} placeholder='Sheraton' fluid
+                            label={<Dropdown defaultValue='.c' options={[
+                                { key: '.c', text: '.c', value: '.c' },
+                                { key: '.net', text: '.net', value: '.net' },
+                                { key: '.org', text: '.org', value: '.org' },
+                              ]} />}
+                            labelPosition='right'
+                            onChange={(event)=>{
+                                var servs = this.state.servicios.slice();
+                                servs[index].hotel = event.target.value;
+                                this.setState({servicios:servs});
+                            }}/>
                         <datalist id={'hoteles'+index}>
                             {this.state.opcionesHoteles.map(e=><option value={e.text}/>)}
                         </datalist>
@@ -397,7 +539,7 @@ class CrearFile extends Component{
                         }}></Input>
                     </ColumnaTablaIns>
                     <ColumnaTablaIns>
-                        <Input fluid placeholder="Nombre pax" value={this.state.servicios[index].nombrePasajero} 
+                        <Input fluid placeholder="Nombre" value={this.state.servicios[index].nombrePasajero} 
                         onChange={(event)=>{
                             var servs = this.state.servicios.slice();
                             servs[index].nombrePasajero = event.target.value;
@@ -542,7 +684,7 @@ class CrearFile extends Component{
                         }}></Input>
                     </ColumnaTablaIns>
                     <ColumnaTablaIns>
-                        <Input fluid placeholder="Nombre pax"
+                        <Input fluid placeholder="Nombre"
                         value={this.state.transportes[index].nombrePasajero} 
                         onChange={(event)=>{
                             var trans = this.state.transportes.slice();
@@ -669,32 +811,6 @@ class CrearFile extends Component{
             this.setState({modalCliente:newState});
         });
 
-        /*
-        axios.post(Configuracion.ServerUrl+"/clientes", camposModalCliente).then((response)=>{
-            //console.log(response);
-            var newState = {...this.state.modalCliente};
-            newState.responseRecibida=true;
-            newState.rptaTransaccion = new RptaTrx(response.data);
-            //console.log(newState.rptaTransaccion);
-            this.cargarClientes();
-            this.setState({modalCliente:newState});
-        }).catch(error=>{
-            //console.log(error.response);
-            //si hay error manejado por server
-            if(error.response.data){
-                var newState = {...this.state.modalCliente};
-                newState.responseRecibida=true;
-                newState.rptaTransaccion = new RptaTrx(error.response.data);
-                //console.log(newState.rptaTransaccion);
-                this.setState({modalCliente:newState});
-            }else{
-            //si hay un error donde el server ni responde
-                var newState = {...this.state.modalCliente};
-                newState.responseRecibida=true;
-                newState.rptaTransaccion= new RptaTrx().set(null,"Servidor inaccesible",null,0);
-                this.setState({modalCliente: newState});
-            }
-        })*/
     }
 
     ModalCrearBiblia = () => {

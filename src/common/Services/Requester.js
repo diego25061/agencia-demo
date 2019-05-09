@@ -355,6 +355,18 @@ class Requester{
         this.requestBasicoPost(Configuracion.ServerUrl+"/proveedores/", body, funcSuccess,funcError,funcAlways);
     }
 
+    //------------------------ CIUDADES -----------------------------------
+
+    static getCiudades = (  funcSuccess, funcError, funcAlways) => {
+        this.requestBasicoGet(Configuracion.ServerUrl + "/ciudades/" ,funcSuccess,funcError,funcAlways);
+    }
+
+    
+    //------------------------ PAISES -----------------------------------
+
+    static getPaises = ( funcSuccess, funcError, funcAlways) => {
+        this.requestBasicoGet(Configuracion.ServerUrl + "/paises/" ,funcSuccess,funcError,funcAlways);
+    }
 
 }
 
