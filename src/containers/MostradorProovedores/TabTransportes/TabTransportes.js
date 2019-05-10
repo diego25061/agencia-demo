@@ -4,7 +4,7 @@ import { Button, Container, Header } from 'semantic-ui-react';
 import TablaBuscador from '../../TablaBuscador/TablaBuscador';
 import Requester from '../../../common/Services/Requester';
 import Constantes from '../../../common/Constantes';
-import ModalTest from '../ModalTest';
+import ModalCrearEditarProveedor from '../ModalCrearEditarProveedor';
 
 
 class TabTransportes extends Component{
@@ -55,7 +55,7 @@ class TabTransportes extends Component{
             <Header size="small">Lista</Header>
             <TablaBuscador data={this.state.transportes} columns={this.columnasTabla} />
             {/*this.ModalCrear()*/}
-            <ModalTest parent={this} titulo="Crear Transportes" 
+            <ModalCrearEditarProveedor parent={this} titulo="Crear Transportes" 
                 placeholderNombre="Javier" 
                 placeholderCorreo="javier.asd@gmail.com" 
                 placeholderCorreoAdic="javier.asdasd@hotmail.com"

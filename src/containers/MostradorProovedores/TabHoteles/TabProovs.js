@@ -4,7 +4,7 @@ import { Button, Container, Header, Confirm, Modal } from 'semantic-ui-react';
 import TablaBuscador from '../../TablaBuscador/TablaBuscador';
 import Requester from '../../../common/Services/Requester';
 import Constantes from '../../../common/Constantes';
-import ModalTest from '../ModalTest';
+import ModalCrearEditarProveedor from '../ModalCrearEditarProveedor';
 
 
 class TabProovs extends Component{
@@ -64,7 +64,7 @@ class TabProovs extends Component{
             <Header size="small">Lista</Header>
             <TablaBuscador data={this.state.proovs} columns={this.columnasTabla} />
             {/*this.ModalCrear()*/}
-            <ModalTest parent={this} sustantivoTitulo={this.props.sust}
+            <ModalCrearEditarProveedor parent={this} sustantivoTitulo={this.props.sust}
                 placeholderNombre={this.props.placeholderNombre}
                 placeholderCorreo={this.props.placeholderCorreo}
                 placeholderCorreoAdic={this.props.placeholderCorreoAdic}

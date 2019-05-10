@@ -1,11 +1,31 @@
 import React from 'react'
 import {Component} from 'react'
-import { Button, Container, Message, Icon, Input, Modal, Grid } from 'semantic-ui-react';
+import { Button, Container, Message, Icon, Input, Modal, Grid, Dropdown } from 'semantic-ui-react';
 import ElementoForm from '../../components/ElementoForm/ElementoForm';
+import Constantes from '../../common/Constantes';
 
-class ModalTest extends Component{
+class ModalCrearEditarProveedor extends Component{
 
     render(){
+        var CompElegir=''
+        if(this.props.elegirTipo){
+            CompElegir= <Grid.Row>
+                <Grid.Column>
+                    <ElementoForm grid titulo="Tipo de proveedor">
+                    
+                        <Dropdown fluid placeholder='Elegir Tipo'
+                            search
+                            selection
+                            options={Constantes.TiposProveedores}
+                            onChange={(event,data)=>{
+                                var obj = {...this.props.parent.state.modalCrearEditar};
+                                obj.campos.tipo = data.value;
+                                this.props.parent.setState({modalCrearEditar:obj});
+                            }}/>
+                    </ElementoForm>
+                </Grid.Column>
+            </Grid.Row>
+        }
 
         var msjSuccess="Objeto creado";
         if(this.props.parent.state.modalCrearEditar.modo === "edicion")
@@ -145,7 +165,7 @@ class ModalTest extends Component{
                             </ElementoForm>
                         </Grid.Column>
                     </Grid.Row>
-
+                    {CompElegir}
                 </Grid>
                 {msjComp}
             </Modal.Content>
@@ -170,4 +190,4 @@ class ModalTest extends Component{
 
     }
 }
-export default ModalTest;
+export default ModalCrearEditarProveedor;

@@ -210,6 +210,16 @@ class Requester{
     static getProveedores = ( tipoProveedor, funcSuccess, funcError, funcAlways) => {
         this.requestBasicoGet(Configuracion.ServerUrl + "/proveedores/" + tipoProveedor,funcSuccess,funcError,funcAlways);
     }
+
+    
+    static getProveedoresMenosTransportes = (  funcSuccess, funcError, funcAlways) => {
+        this.requestBasicoGet(Configuracion.ServerUrl + "/proveedores/tipos?incluir=GUIAA,EMPRE,RESTA,HOTEL,PERSO,OPERA" ,funcSuccess,funcError,funcAlways);
+    }
+    
+    static getProveedoresTransportes = (  funcSuccess, funcError, funcAlways) => {
+        this.requestBasicoGet(Configuracion.ServerUrl + "/proveedores/tipos?incluir=trans" ,funcSuccess,funcError,funcAlways);
+    }
+    
     
     static getProveedoresDropdown = ( tipoProveedor, funcSuccess, funcError, funcAlways) => {
         this.requestBasicoGet(Configuracion.ServerUrl+"/proveedores/dropdown/"+tipoProveedor,funcSuccess,funcError,funcAlways);
@@ -219,6 +229,19 @@ class Requester{
         this.requestBasicoPost(Configuracion.ServerUrl + "/proveedores/eliminar/" + id, null, funcSuccess,funcError,funcAlways);
     }
     
+    static postProveedor = (tipo, nombre, correo, numeroContacto, numeroContactoAdicional, correoAdicional, ciudad, funcSuccess, funcError, funcAlways) => {
+        let body = {
+            nombre,
+            correo,
+            numeroContacto,
+            numeroContactoAdicional:numeroContactoAdicional,
+            correoAdicional,
+            ciudad
+        };
+        body.tipoProveedor = tipo;
+        this.requestBasicoPost(Configuracion.ServerUrl+"/proveedores/", body, funcSuccess,funcError,funcAlways);
+    }
+
     static postEditarProv = (alias, idProveedor, nombre, correo, numeroContacto, numeroContactoAdicional, correoAdicional, ciudad, funcSuccess, funcError, funcAlways)=>{
         let body = {
             idProveedor,

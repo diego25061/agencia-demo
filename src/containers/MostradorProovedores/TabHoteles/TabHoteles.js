@@ -4,7 +4,7 @@ import { Button, Container, Header, Confirm, Modal } from 'semantic-ui-react';
 import TablaBuscador from '../../TablaBuscador/TablaBuscador';
 import Requester from '../../../common/Services/Requester';
 import Constantes from '../../../common/Constantes';
-import ModalTest from '../ModalTest';
+import lul from '../ModalCrearEditarProveedor';
 
 
 class TabHoteles extends Component{
@@ -64,7 +64,7 @@ class TabHoteles extends Component{
             <Header size="small">Lista</Header>
             <TablaBuscador data={this.state.hoteles} columns={this.columnasTabla} />
             {/*this.ModalCrear()*/}
-            <ModalTest parent={this} sustantivoTitulo="Hotel" 
+            <lul parent={this} sustantivoTitulo="Hotel" 
                 placeholderNombre="Arawi" 
                 placeholderCorreo="correo@arawi.com" 
                 placeholderCorreoAdic="arawi.ventas@gmail.com"

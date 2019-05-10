@@ -4,7 +4,7 @@ import { Button, Container, Header } from 'semantic-ui-react';
 import TablaBuscador from '../../TablaBuscador/TablaBuscador';
 import Requester from '../../../common/Services/Requester';
 import Constantes from '../../../common/Constantes';
-import ModalTest from '../ModalTest';
+import ModalCrearEditarProveedor from '../ModalCrearEditarProveedor';
 
 
 class TabTodos extends Component{

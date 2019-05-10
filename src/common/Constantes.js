@@ -14,15 +14,7 @@ const CONSTANTES_GLOBALES={
         { key: 11, text: 'Noviembre', value: 11 },
         { key: 12   , text: 'Diciembre', value: 12 },
     ],
-    TiposClientes:[
-        { key: 1, text: 'Cliente directo', value: 1 },
-        { key: 2, text: 'Operador mayorista', value: 2 },
-        { key: 3, text: 'Operador minorista', value: 3 }
-    ],
-    TiposServicios:[
-        { key: 1, text: 'Servicio general', value: 1 },
-        { key: 2, text: 'Transporte', value: 2 }
-    ],
+    
     
     AliasClientes:{
         CLIENTE_DIRECTO:"CLDIR",
@@ -40,6 +32,26 @@ const CONSTANTES_GLOBALES={
         OPERADOR:"OPERA"
     },
     
+    TiposClientes:[
+        { key: 1, text: 'Cliente directo', value: "CLDIR" },
+        { key: 2, text: 'Operador mayorista', value: "OPMAY" },
+        { key: 3, text: 'Operador minorista', value: "OPMIN" }
+    ],
+
+    TiposServicios:[
+        { key: 1, text: 'Servicio general', value: 1 },
+        { key: 2, text: 'Transporte', value: 2 }
+    ],
+    TiposProveedores:[
+        { key: 1, text: 'Persona', value: "PERSO"},
+        { key: 2, text: 'Empresa', value: "EMPRE"},
+        { key: 3, text: 'Hotel', value: "HOTEL"},
+        { key: 4, text: 'Restaurant', value: "RESTA"},
+        { key: 5, text: 'Transporte', value: "TRANS" },
+        { key: 6, text: 'Guia', value: "GUIAA"},
+        { key: 7, text: 'Operador', value: "OPERA" }
+    ],
+
     aliasATextoProovedores : (alias) => {
         console.log("a");
         if(alias){

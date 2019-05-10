@@ -4,7 +4,7 @@ import { Button, Container, Header } from 'semantic-ui-react';
 import TablaBuscador from '../../TablaBuscador/TablaBuscador';
 import Requester from '../../../common/Services/Requester';
 import Constantes from '../../../common/Constantes';
-import ModalTest from '../ModalTest';
+import lul from '../ModalCrearEditarProveedor';
 
 
 class TabEmpresas extends Component{
@@ -55,7 +55,7 @@ class TabEmpresas extends Component{
             <Header size="small">Lista</Header>
             <TablaBuscador data={this.state.empresas} columns={this.columnasTabla} />
             {/*this.ModalCrear()*/}
-            <ModalTest parent={this} titulo="Crear Empresa" 
+            <lul parent={this} titulo="Crear Empresa" 
                 placeholderNombre="Empresa" 
                 placeholderCorreo="empresa@gmail.com" 
                 placeholderCorreoAdic="ventas.empresa@hotmail.com"

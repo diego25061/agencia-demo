@@ -4,7 +4,7 @@ import { Button, Container, Header } from 'semantic-ui-react';
 import TablaBuscador from '../../TablaBuscador/TablaBuscador';
 import Requester from '../../../common/Services/Requester';
 import Constantes from '../../../common/Constantes';
-import ModalTest from '../ModalTest';
+import lul from '../ModalCrearEditarProveedor';
 
 
 class TabGuias extends Component{
@@ -55,7 +55,7 @@ class TabGuias extends Component{
             <Header size="small">Lista</Header>
             <TablaBuscador data={this.state.guias} columns={this.columnasTabla} />
             {/*this.ModalCrear()*/}
-            <ModalTest parent={this} titulo="Crear Guias" 
+            <lul parent={this} titulo="Crear Guias" 
                 placeholderNombre="Guia" 
                 placeholderCorreo="guia@gmail.com" 
                 placeholderCorreoAdic="ventas.guia@hotmail.com"
