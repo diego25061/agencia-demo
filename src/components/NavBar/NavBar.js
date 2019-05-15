@@ -25,11 +25,9 @@ class NavBar extends Component{
     render(){
         return(
                 <div>
-                    <Menu size='large'> 
-                            <Menu.Item position='left'>
-                                <Header>
-                                    <Image circular src={LogoYllari} /> Yllari Travel
-                                </Header>
+                    <Menu /*style={{backgroundColor:"#ffb366"}}*/ stackable > 
+                            <Menu.Item >
+                                <img src={LogoYllari} />
                             </Menu.Item>
                             {Configuracion.EnlacesNavBar.map((element)=>{
                                 return <Menu.Item as='a' active={this.state.enlace === element.nombre} 

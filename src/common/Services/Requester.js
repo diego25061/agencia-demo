@@ -74,6 +74,9 @@ class Requester{
     
     //------------------------ FILES -----------------------------------
 
+    static postFile=(funcSuccess,funcError,funcAlways) => {
+        this.requestBasicoPost(Configuracion.ServerUrl+"/files",funcSuccess,funcError,funcAlways);
+    }
 
     static getListadoFiles=(funcSuccess,funcError,funcAlways) => {
         this.requestBasicoGet(Configuracion.ServerUrl+"/files",funcSuccess,funcError,funcAlways);

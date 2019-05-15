@@ -25,8 +25,8 @@ import VerCalendario from '../Calendario/VerCalendario';
             <div className="MainContent">
                 <Grid>
                     <Grid.Row>
-                        <Grid.Column width={2}></Grid.Column>
-                        <Grid.Column width={12}>
+                        <Grid.Column width={1}></Grid.Column>
+                        <Grid.Column width={13}>
                         <br/>
                             <Route path="/inicio" exact component={Inicio}/>
                             <Route path="/huehue" component={() => {return "heheh"}}/>
@@ -39,7 +39,7 @@ import VerCalendario from '../Calendario/VerCalendario';
                             <Route path="/clientes" exact component={VerClientes}/>
                             <Route path="/calendario" exact component={VerCalendario}/>
                         </Grid.Column>
-                        <Grid.Column width={2}></Grid.Column>
+                        <Grid.Column width={1}></Grid.Column>
                     </Grid.Row>
                 </Grid>
             </div>
