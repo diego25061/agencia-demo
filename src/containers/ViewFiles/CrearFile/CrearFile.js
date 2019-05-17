@@ -13,6 +13,7 @@ import axios from 'axios';
 import ModalTrxSimple from '../../ModalTrxSimple/ModalTrxSimple';
 import Requester from '../../../common/Services/Requester';
 import ModalCrearEditarProveedor from '../../MostradorProovedores/ModalCrearEditarProveedor';
+import MensajeTransaccion from '../../../components/MensajeTransaccion/MensajeTransaccion';
 
 const CampoServicio = (props) => {
     return <Segment style={{ padding: "7px" }}><Header style={{ margin: "-2px 0px 4px 0px" }} as="h4">{props.titulo}</Header>{props.componente}</Segment>
@@ -23,21 +24,19 @@ class CrearFile extends Component {
 
     constructor(props) {
         super(props);
-        this.modalClientesRef = React.createRef();
+        //this.modalClientesRef = React.createRef();
     }
 
-    servicio = (fecha, ciudad, servicio, hotel, pasajeros, nombrePasajero, tren, alm, obs) => {
-        return { fecha, ciudad, servicio, hotel, pasajeros, nombrePasajero, tren, alm, obs };
+    servicio = (fecha, ciudad, nombre,  pasajeros, nombrePasajero, tren, alm, observaciones, proveedor) => {
+        return { fecha, ciudad, nombre,  pasajeros, nombrePasajero, tren, alm, observaciones , proveedor};
+    }
+    transporte = (fecha, ciudad, horaRecojo, horaSalida, vuelo, nombre, pasajeros, nombrePasajero, vr, tc, proveedor, observaciones) => {
+        return { fecha, ciudad, horaRecojo, horaSalida, vuelo, nombre, pasajeros, nombrePasajero, vr, tc, proveedor, observaciones };
     }
 
     servicioDefault = () => {
-        return this.servicio('', '', '', '', 0, '', '', '', '')
+        return this.servicio('', '', '',  0, '', '', '', '')
     }
-
-    transporte = (fecha, ciudad, horaRecojo, horaSalida, vuelo, servicio, pasajeros, nombrePasajero, vr, tc, transportista, obs) => {
-        return { fecha, ciudad, horaRecojo, horaSalida, vuelo, servicio, pasajeros, nombrePasajero, vr, tc, transportista, obs };
-    }
-
     transporteDefault = () => {
         return this.transporte('', '', '', '', '', '', 0, '', '', '', '', '')
     }
@@ -68,20 +67,13 @@ class CrearFile extends Component {
         descripcion: '',
         idBiblia: 0,
         idCliente: 0,
+
         servicios: [
-            this.servicioDefault()
-            //this.servicio('231','lima','ser','hotell',2,'johnn','trenn','elm','duhhhh'),
-            //this.servicio('231','limaaaa','ser','hotell',2,'johnn','trenn','elm','duh'),
+            //this.servicioDefault()
         ],
-        transportes: [
-            this.transporteDefault()
-            //this.transporte('231','lima','02:35','16:28','acj-ctm','servicio','2','johnn','vr','tc','juan','csmmmmmmm')
-            /*{fecha:'231',ciudad:'lima',horaRecojo:'02:35',horaSalida:'16:28',vuelo:'acj-ctm',
-            servicio:'servicio',pasajeros:'2',nombrePasajero:'johnn',vr:'vr',tc:'tc',transportista:'juan',obs:'csmmmmmmm'}*/
-        ],
+        transportes: [],
 
         //opciones a elegir
-
         bibliasCargaron: false,
         //bibliasCargaronExito: true,
         opcionesBiblia: [/*{value:1, text:'mayo, 2019'}*/],
@@ -120,8 +112,14 @@ class CrearFile extends Component {
                 ciudad: '',
                 tipo: ''
             }
-        }
+        },
 
+        transaccionEnviadaCrearFile:false,
+        responseRecibidaCrearFile:false,
+        rptaTransaccionCrearFile:null,
+        
+        mensajeCreacionFile:"",
+        creacionFileExitosa:false
     }
 
 
@@ -130,6 +128,175 @@ class CrearFile extends Component {
         //funcCrearCliente:()=>{}
     }
 
+    
+    
+    componentDidMount() {
+        console.log("wii");
+        //Requester.getListadoFiles(this.filesRecibidos,this.filesError);
+        this.cargarClientes();
+        this.cargarBiblias();
+        this.cargarProveedoresNoTransp();
+        this.cargarTransportes();
+        this.cargarCiudades();
+        //this.cargarPaises();
+    }
+
+    render = () => {
+        let fieldStyle = { margin: "6px 0 4px 0" };
+        return <div>
+            <Header size="large">Formulario de creacion: Nuevo File</Header>
+            <Segment>
+                <Grid columns={2} >
+                    <Grid.Row>
+                        <Grid.Column width={8}>
+                            <ElementoForm titulo="Codigo">
+                                <Input fluid placeholder="08-020" value={this.state.codigo} onChange={(event) => {
+                                    this.setState({ codigo: event.target.value });
+                                }} ></Input>
+                            </ElementoForm>
+
+                        </Grid.Column>
+                        <Grid.Column width={8}>
+                            <ElementoForm titulo="Descripcion">
+                                <Form>
+                                    {/*style={{ minHeight: 100 }}*/}
+                                    <TextArea placeholder='Descripcion del file' rows={1} value={this.state.descripcion} onChange={(event) => {
+                                        this.setState({ descripcion: event.target.value });
+                                    }} />
+                                </Form>
+                            </ElementoForm>
+                        </Grid.Column>
+
+                    </Grid.Row>
+                    <Grid.Row>
+                        <Grid.Column width={8}>
+                            <ElementoForm titulo="Biblia">
+                                <Grid>
+                                    <Grid.Row columns='equal'>
+                                        <Grid.Column >
+                                            <Dropdown fluid placeholder='Elegir Biblia'
+                                                search
+                                                loading={!this.state.bibliasCargaron}
+                                                selection
+                                                options={this.state.opcionesBiblia}
+                                                onChange={(event, data) => {
+                                                    this.setState({ idBiblia: data.value });
+                                                }}
+                                            >
+                                            </Dropdown>
+
+                                        </Grid.Column>
+                                        <Grid.Column width={3}>
+                                            <Button fluid icon onClick={
+                                                () => {
+
+                                                    var state = { ...this.state };
+                                                    state.modalBibliasAbierto = true;
+                                                    state.modalBiblia.responseRecibida = false;
+                                                    state.modalBiblia.transaccionEnviada = false;
+                                                    this.setState(state);
+                                                }
+                                            }>
+                                                <Icon name='plus' />
+                                            </Button>
+                                        </Grid.Column>
+                                    </Grid.Row>
+                                </Grid>
+
+                            </ElementoForm>
+                        </Grid.Column>
+
+                        <Grid.Column width={8}>
+                            <ElementoForm titulo="Cliente">
+                                {/*<Input  type="text" fluid placeholder="Javi"></Input>*/}
+                                <Dropdown fluid
+                                    placeholder='Christian'
+                                    search
+                                    loading={!this.state.bibliasCargaron}
+                                    selection
+                                    options={this.state.opcionesCliente}
+                                    onChange={(event,data)=>{
+                                        this.setState({idCliente:data.value});
+                                    }}
+                                />
+                            </ElementoForm>
+                        </Grid.Column>
+                    </Grid.Row>
+                    {/*<Button positive onClick={() => { console.log(this.state) }}>weeee</Button>*/}
+                    <Grid.Row>
+                        <Grid.Column width={16}>
+                            <Header size="tiny">Servicios</Header>
+                            {this.state.servicios.map((elem, index) => {
+                                //return this.filaServicio(index);
+                                return this.CuerpoServicio({ index: index });
+                            })}
+                            <Button content='Agregar servicio' icon='plus' floated="left" labelPosition='right' onClick={() => {
+                                var servs = this.state.servicios.slice();
+                                servs.push(this.servicioDefault());
+                                this.setState({ servicios: servs });
+                            }} />
+                        </Grid.Column>
+                    </Grid.Row>
+                    <Grid.Row>
+                        <Grid.Column width={16}>
+                            <Header size="tiny">Transportes</Header>
+
+                            {this.state.transportes.map((elem, index) => {
+                                return this.CuerpoTransporte({ index: index });
+                            })}
+
+                            <Button content='Agregar transporte' icon='plus' labelPosition='right' onClick={() => {
+                                var transps = this.state.transportes.slice();
+                                transps.push(this.transporteDefault());
+                                this.setState({ transportes: transps });
+                            }} />
+                            
+                            <MensajeTransaccion
+                                transaccionEnviada = {this.state.transaccionEnviadaCrearFile} 
+                                responseRecibida = {this.state.responseRecibidaCrearFile}
+                                rptaTransaccion = {this.state.rptaTransaccionCrearFile}
+                                //textoExito = "Puede usar la nueva biblia"
+                            />
+                            
+                        </Grid.Column>
+                    </Grid.Row>
+
+                </Grid>
+                <Grid>
+                    <Grid.Row>
+                        <Grid.Column>
+                            <Button positive onClick={()=>{this.EnviarPostFile()}}>Guardar file</Button>
+                        </Grid.Column>
+                    </Grid.Row>
+                </Grid>
+                
+            </Segment>
+            {/*
+            {!this.state.bibliasCargaronExito ? <Message error>Error de conexion: Las biblias no se pueden cargar.</Message> : null}
+            {!this.state.clientesCargaronExito ? <Message error>Error de conexion: Los clientes no se pueden cargar.</Message> : null}
+            {!this.state.hotelesCargaronExito ? <Message error>Error de conexion: Los hoteles no se pueden cargar.</Message> : null}
+            */}
+            <hr />
+
+            <Container fluid textAlign="right">
+            </Container>
+
+            <ModalCrearEditarProveedor parent={this} sustantivoTitulo="Proveedor"
+                elegirTipo
+                placeholderNombre="Melia"
+                placeholderCorreo="ventas@hotelmelia.com"
+                placeholderCorreoAdic="contacto.melia@gmail.com"
+                enEnviar={this.enEnviarProovedor}
+                enCerrar={this.enCerrarModalProveedor} />
+
+            {/*this.ModalCrearBiblia()*/}
+            {/*this.ModalCrearCliente()*/}
+        </div>
+
+    }
+
+    // ------------------------------------------------------------------------- Cargas iniciales
+    
     cargarClientes() {
         Requester.getClientesListaDropdown(rpta => {
             console.log(rpta);
@@ -210,185 +377,6 @@ class CrearFile extends Component {
         }, (rptaError) => {
         });
     }
-    /*
-        cargarHoteles() {
-            Requester.getHotelesListaDropdown(rpta => {
-                var listaOpsCliente = rpta.cont.map(element => { return { value: element.idHotel, text: element.nombre } });
-                this.setState({
-                    opcionesProveedores: listaOpsCliente,
-                    hotelesCargaronExito: true,
-                    hotelesCargaron: true
-                })
-            },
-                (rptaError) => {
-                    //console.log(rptaError);
-                    this.setState({
-                        hotelesCargaronExito: false,
-                        hotelesCargaron: true
-                    });
-                });
-            /*
-        }
-    */
-    componentDidMount() {
-        console.log("wii");
-        //Requester.getListadoFiles(this.filesRecibidos,this.filesError);
-
-        this.cargarClientes();
-        this.cargarBiblias();
-        this.cargarProveedoresNoTransp();
-        this.cargarTransportes();
-        this.cargarCiudades();
-        //this.cargarPaises();
-    }
-
-    render = () => {
-
-        let fieldStyle = { margin: "6px 0 4px 0" };
-        return <div>
-            <Header size="large">Formulario de creacion: nuevo file</Header>
-            <Segment>
-                <Grid columns={2} >
-                    <Grid.Row>
-                        <Grid.Column width={8}>
-                            <ElementoForm titulo="Codigo">
-                                <Input fluid placeholder="08-020" value={this.state.codigo} onChange={(event) => {
-                                    this.setState({ codigo: event.target.value });
-                                }} ></Input>
-                            </ElementoForm>
-
-                        </Grid.Column>
-                        <Grid.Column width={8}>
-                            <ElementoForm titulo="Descripcion">
-                                <Form>
-                                    {/*style={{ minHeight: 100 }}*/}
-                                    <TextArea placeholder='Descripcion del file' rows={1} value={this.state.descripcion} onChange={(event) => {
-                                        this.setState({ descripcion: event.target.value });
-                                    }} />
-                                </Form>
-                            </ElementoForm>
-                        </Grid.Column>
-
-                    </Grid.Row>
-                    <Grid.Row>
-                        <Grid.Column width={8}>
-                            <ElementoForm titulo="Biblia">
-                                <Grid>
-                                    <Grid.Row columns='equal'>
-                                        <Grid.Column >
-                                            <Dropdown fluid placeholder='Elegir Biblia'
-                                                search
-                                                loading={!this.state.bibliasCargaron}
-                                                selection
-                                                options={this.state.opcionesBiblia}
-                                                onChange={(event, data) => {
-                                                    this.setState({ idBiblia: data.value });
-                                                }}
-                                            >
-                                            </Dropdown>
-
-                                        </Grid.Column>
-                                        <Grid.Column width={3}>
-                                            <Button fluid icon onClick={
-                                                () => {
-
-                                                    var state = { ...this.state };
-                                                    state.modalBibliasAbierto = true;
-                                                    state.modalBiblia.responseRecibida = false;
-                                                    state.modalBiblia.transaccionEnviada = false;
-                                                    this.setState(state);
-                                                }
-                                            }>
-                                                <Icon name='plus' />
-                                            </Button>
-                                        </Grid.Column>
-                                    </Grid.Row>
-                                </Grid>
-
-                            </ElementoForm>
-                        </Grid.Column>
-
-                        <Grid.Column width={8}>
-                            <ElementoForm titulo="Cliente">
-                                {/*<Input  type="text" fluid placeholder="Javi"></Input>*/}
-                                <Dropdown fluid
-                                    placeholder='Christian'
-                                    search
-                                    loading={!this.state.bibliasCargaron}
-                                    selection
-                                    options={this.state.opcionesCliente}
-                                />
-                            </ElementoForm>
-                        </Grid.Column>
-                    </Grid.Row>
-                    {/*<Button positive onClick={() => { console.log(this.state) }}>weeee</Button>*/}
-                    <Grid.Row>
-                        <Grid.Column width={16}>
-                            <Header size="tiny">Servicios</Header>
-                            {this.state.servicios.map((elem, index) => {
-                                //return this.filaServicio(index);
-                                return this.CuerpoServicio({ index: index });
-                            })}
-                            <Button content='Agregar servicio' icon='plus' floated="right" labelPosition='left' onClick={() => {
-                                var servs = this.state.servicios.slice();
-                                servs.push(this.servicioDefault());
-                                this.setState({ servicios: servs });
-                            }} />
-                        </Grid.Column>
-                    </Grid.Row>
-                    <Grid.Row>
-                        <Grid.Column width={16}>
-                            <Header size="tiny">Transportes</Header>
-
-                            {this.state.transportes.map((elem, index) => {
-                                return this.CuerpoTransporte({ index: index });
-                            })}
-
-                            <Button content='Agregar transporte' icon='plus' labelPosition='left' onClick={() => {
-                                var transps = this.state.transportes.slice();
-                                transps.push(this.transporteDefault());
-                                this.setState({ transportes: transps });
-                            }} />
-                        </Grid.Column>
-                    </Grid.Row>
-
-                </Grid>
-            </Segment>
-            {/*
-            {!this.state.bibliasCargaronExito ? <Message error>Error de conexion: Las biblias no se pueden cargar.</Message> : null}
-            {!this.state.clientesCargaronExito ? <Message error>Error de conexion: Los clientes no se pueden cargar.</Message> : null}
-            {!this.state.hotelesCargaronExito ? <Message error>Error de conexion: Los hoteles no se pueden cargar.</Message> : null}
-            */}
-            <hr />
-
-            <Container fluid textAlign="right">
-                <Button positive>Guardar file</Button>
-            </Container>
-
-            <ModalCrearEditarProveedor parent={this} sustantivoTitulo="Proveedor"
-                elegirTipo
-                placeholderNombre="Melia"
-                placeholderCorreo="ventas@hotelmelia.com"
-                placeholderCorreoAdic="contacto.melia@gmail.com"
-                enEnviar={this.enEnviarProovedor}
-                enCerrar={this.enCerrarModalProveedor} />
-
-            {this.ModalCrearBiblia()}
-            {this.ModalCrearCliente()}
-        </div>
-
-    }
-
-
-    onDateChange = (event, { name, value }) => {
-        console.log(event);
-        console.log(name);
-        if (name === "date") {
-            var servs = this.state.servicios.slice();
-            servs[0].fecha = value;
-            this.setState({ servicios: servs });
-        }
-    }
 
     CuerpoServicio = (props) => {
         return <Segment.Group>
@@ -414,10 +402,11 @@ class CrearFile extends Component {
             </Segment.Group>
             <Segment.Group horizontal style={{ backgroundColor: "#fffbf6" }}>
                 <CampoServicio titulo="Nombre" componente={
-                    <Input transparent fluid placeholder="In + city" value={this.state.servicios[props.index].servicio}
+                    <Input transparent fluid placeholder="In + city" 
+                    value={this.state.servicios[props.index].nombre}
                         onChange={(event) => {
                             var servs = this.state.servicios.slice();
-                            servs[props.index].servicio = event.target.value;
+                            servs[props.index].nombre = event.target.value;
                             this.setState({ servicios: servs });
                         }} />
                 } />
@@ -434,12 +423,13 @@ class CrearFile extends Component {
                         </datalist>
                     </div>
                 } />
-                <CampoServicio titulo="Fecha ejecucion" componente={
+                <CampoServicio titulo="Fecha" componente={
                     <DateInput
                         transparent
                         fluid
+                        dateFormat = "YYYY-MM-DD"
                         name="fecha"
-                        placeholder="01-02-2019"
+                        placeholder="año-mes-dia"
                         value={this.state.servicios[props.index].fecha}
                         iconPosition="left"
                         onChange={(event, { name, value }) => {
@@ -485,22 +475,22 @@ class CrearFile extends Component {
                                     });
                                     if (foundVal) {
                                         var servs = this.state.servicios.slice();
-                                        servs[props.index].hotel = foundVal.text;
+                                        servs[props.index].proveedor = foundVal.text;
                                         this.setState({ servicios: servs });
                                     } else {
                                         var servs = this.state.servicios.slice();
-                                        servs[props.index].hotel = "";
+                                        servs[props.index].proveedor = "";
                                         this.setState({ servicios: servs });
                                     }
                                 } else {
                                     var servs = this.state.servicios.slice();
-                                    servs[props.index].hotel = "";
+                                    servs[props.index].proveedor = "";
                                     this.setState({ servicios: servs });
                                 }
                             }}
                             onChange={(event) => {
                                 var servs = this.state.servicios.slice();
-                                servs[props.index].hotel = event.target.value;
+                                servs[props.index].proveedor = event.target.value;
                                 this.setState({ servicios: servs });
                             }}>
                             {/*
@@ -534,10 +524,10 @@ class CrearFile extends Component {
                             this.setState({ servicios: servs });
                         }}></Input>} />
                 <CampoServicio titulo="Obs" componente={
-                    <Input transparent fluid placeholder="OBS" value={this.state.servicios[props.index].obs}
+                    <Input transparent fluid placeholder="OBS" value={this.state.servicios[props.index].observaciones}
                         onChange={(event) => {
                             var servs = this.state.servicios.slice();
-                            servs[props.index].obs = event.target.value;
+                            servs[props.index].observaciones = event.target.value;
                             this.setState({ servicios: servs });
                         }}></Input>
                 } />
@@ -570,10 +560,10 @@ class CrearFile extends Component {
             <Segment.Group horizontal style={{ backgroundColor: "#e6f5ff" }}>
                 <CampoServicio titulo="Nombre" componente={
                     <Input transparent fluid placeholder="APTO / Four points"
-                        value={this.state.transportes[props.index].servicio}
+                        value={this.state.transportes[props.index].nombre}
                         onChange={(event) => {
                             var trans = this.state.transportes.slice();
-                            trans[props.index].ser = event.target.value;
+                            trans[props.index].nombre = event.target.value;
                             this.setState({ transportes: trans });
                         }}></Input>
                 } />
@@ -593,7 +583,8 @@ class CrearFile extends Component {
                         transparent
                         fluid
                         name="fecha"
-                        placeholder="10-02-2019"
+                        dateFormat = "YYYY-MM-DD"
+                        placeholder="año-mes-dia"
                         value={this.state.transportes[props.index].fecha}
                         iconPosition="left"
                         onChange={(event, { name, value }) => {
@@ -628,10 +619,10 @@ class CrearFile extends Component {
                 <CampoServicio titulo="Proveedor de Transporte" componente={
                     <div>
                         <Input icon="lightning" iconPosition="left" list={'transportes' + props.index} transparent fluid placeholder="Transportista"
-                            value={this.state.transportes[props.index].transportista}
+                            value={this.state.transportes[props.index].proveedor}
                             onChange={(event) => {
                                 var trans = this.state.transportes.slice();
-                                trans[props.index].transportista = event.target.value;
+                                trans[props.index].proveedor = event.target.value;
                                 this.setState({ transportes: trans });
                             }}></Input>
                         <datalist id={'transportes' + props.index}>
@@ -708,10 +699,10 @@ class CrearFile extends Component {
                 } />
                 <CampoServicio titulo="Obs" componente={
                     <Input transparent fluid placeholder="OBS"
-                        value={this.state.transportes[props.index].obs}
+                        value={this.state.transportes[props.index].observaciones}
                         onChange={(event) => {
                             var trans = this.state.transportes.slice();
-                            trans[props.index].obs = event.target.value;
+                            trans[props.index].observaciones = event.target.value;
                             this.setState({ transportes: trans });
                         }}></Input>
                 } />
@@ -719,132 +710,65 @@ class CrearFile extends Component {
         </Segment.Group>
     }
 
-    filaServicio = (index) => {
-        return (<FilaTablaIns columns={11}>
-            <ColumnaTablaIns >
-                <Label>{index + 1}</Label>
-            </ColumnaTablaIns>
-            <ColumnaTablaIns>
-                <DateInput
-                    fluid
-                    name="fecha"
-                    placeholder="01-02-2019"
-                    value={this.state.servicios[index].fecha}
-                    iconPosition="left"
-                    onChange={(event, { name, value }) => {
-                        if (name === "fecha") {
-                            var servs = this.state.servicios.slice();
-                            servs[index].fecha = value;
-                            this.setState({ servicios: servs });
-                            console.log(this.state);
-                        }
-                    }}
-                />
-            </ColumnaTablaIns>
+    EnviarPostFile=()=>{
 
-            <ColumnaTablaIns style={{ padding: "1px", margin: "1px" }}>
+        let obj = {
+            idBiblia:this.state.idBiblia,
+            idCliente:this.state.idCliente,
+            codigo:this.state.codigo,
+            descripcion:this.state.descripcion,
+            servicios:this.state.servicios,
+            transportes:this.state.transportes
+        };
 
-            </ColumnaTablaIns>
-            <ColumnaTablaIns>
-
-            </ColumnaTablaIns>
-            <ColumnaTablaIns>
-                {/*
-                        <Dropdown fluid placeholder='Hotel' search selection 
-                            options={this.state.opcionesProveedores}
-                            onChange={(event,data)=>{
-                                var servs = this.state.servicios.slice();
-                                servs[index].hotel = data.value;
-                                this.setState({servicios:servs});
-                            }}
-                        />*/}
-
-            </ColumnaTablaIns>
-            <ColumnaTablaIns>
-
-            </ColumnaTablaIns>
-            <ColumnaTablaIns>
-
-            </ColumnaTablaIns>
-            <ColumnaTablaIns>
-            </ColumnaTablaIns>
-            <ColumnaTablaIns>
-            </ColumnaTablaIns>
-            <ColumnaTablaIns>
-
-            </ColumnaTablaIns>
-            <ColumnaTablaIns textAlign="center">
-
-                <Popup
-                    trigger={
-                        <Button icon color='red' onClick={() => {
-                            var lista = this.state.servicios.slice();
-                            lista.splice(index, 1);
-                            this.setState({ servicios: lista });
-                            console.log(this.state.servicios)
-                        }}>
-                            <Icon name='trash' />
-                        </Button>
-                    }
-                    content="Eliminar servicio"
-                    position="top center"
-                />
-
-            </ColumnaTablaIns>
-        </FilaTablaIns>)
+        this.setState({transaccionEnviadaCrearFile:true});
+        console.log("file a enviar: ",obj)
+        console.log("TRANSPORTESSS: ",obj.transportes)
+        Requester.postFile(
+            obj,
+            (rpta)=>{
+                //console.log("exitooo")
+                this.setState({
+                    responseRecibidaCrearFile:true,
+                    rptaTransaccionCrearFile:rpta,
+                    transaccionEnviadaCrearFile:false
+            });
+            },
+            (rpta)=>{
+                //console.log("RPTA!",rpta);
+                this.setState({
+                    responseRecibidaCrearFile:true,
+                    rptaTransaccionCrearFile:rpta,
+                    transaccionEnviadaCrearFile:false
+            });
+            }
+        )
     }
 
-    filaTransporte = (index) => {
-        return (<FilaTablaIns columns={14}>
-            <ColumnaTablaIns textAlign="center" >
-                <Label>{index + 1}</Label>
-            </ColumnaTablaIns>
-            <ColumnaTablaIns>
 
-            </ColumnaTablaIns>
-            <ColumnaTablaIns>
+    EnviarPostCliente = (camposModalCliente) => {
 
-            </ColumnaTablaIns>
-            <ColumnaTablaIns>
+        var newState = { ...this.state.modalCliente };
+        newState.transaccionEnviada = true;
+        this.setState({ modalCliente: newState });
 
-            </ColumnaTablaIns>
-            <ColumnaTablaIns>
+        Requester.postCliente(this.state.camposModalCliente, (rpta) => {
+            var newState = { ...this.state.modalCliente };
+            newState.responseRecibida = true;
+            newState.rptaTransaccion = rpta;
+            this.cargarClientes();
+            this.setState({ modalCliente: newState });
+        }, (rptaError) => {
+            var newState = { ...this.state.modalCliente };
+            newState.responseRecibida = true;
+            newState.rptaTransaccion = rptaError;
+            this.setState({ modalCliente: newState });
+        });
 
-            </ColumnaTablaIns>
-            <ColumnaTablaIns>
-
-            </ColumnaTablaIns>
-            <ColumnaTablaIns>
-
-            </ColumnaTablaIns>
-            <ColumnaTablaIns>
-
-            </ColumnaTablaIns>
-            <ColumnaTablaIns>
-            </ColumnaTablaIns>
-            <ColumnaTablaIns>
-            </ColumnaTablaIns>
-            <ColumnaTablaIns>
-
-            </ColumnaTablaIns>
-            <ColumnaTablaIns>
-
-            </ColumnaTablaIns>
-            <ColumnaTablaIns>
-
-            </ColumnaTablaIns>
-            <ColumnaTablaIns textAlign="center">
-                <Button icon color='red' onClick={() => {
-                    var lista = this.state.transportes.slice();
-                    lista.splice(index, 1);
-                    this.setState({ transportes: lista });
-                }}>
-                    <Icon name='trash' />
-                </Button>
-            </ColumnaTablaIns>
-        </FilaTablaIns>)
     }
 
+    // ------------------------------------------------------------------------- Modal clientes
+    
     EnviarPostBiblia = () => {
 
         var newStateModalBiblia = { ...this.state.modalBiblia };
@@ -868,58 +792,11 @@ class CrearFile extends Component {
             console.log(this.state.modalBiblia);
             this.setState({ modalBiblia: newState });
         });
-
-        /*
-                axios.post(Configuracion.ServerUrl+"/biblias", this.state.camposModalBiblia).then((response)=>{
-                    var newState = {...this.state.modalBiblia};
-                    newState.responseRecibida=true;
-                    newState.rptaTransaccion = new RptaTrx(response.data);
-                    this.cargarBiblias();
-                    this.setState({modalBiblia:newState});
-                }).catch(error=>{
-                    //console.log(error.response);
-                    //si hay error manejado por server
-                    if(error.response.data){
-                        var newState = {...this.state.modalBiblia};
-                        newState.responseRecibida=true;
-                        newState.rptaTransaccion = new RptaTrx(error.response.data);
-                        //console.log(newState.rptaTransaccion);
-                        this.setState({modalBiblia:newState});
-                    }else{
-                    //si hay un error donde el server ni responde
-                        var newState = {...this.state.modalBiblia};
-                        newState.responseRecibida=true;
-                        newState.rptaTransaccion= new RptaTrx().set(null,"Servidor inaccesible",null,0);
-                        this.setState({modalBiblia: newState});
-                    }
-                })*/
     }
 
-
-    EnviarPostCliente = (camposModalCliente) => {
-        //console.log(camposModalCliente);
-
-        var newState = { ...this.state.modalCliente };
-        newState.transaccionEnviada = true;
-        this.setState({ modalCliente: newState });
-
-        Requester.postCliente(this.state.camposModalCliente, (rpta) => {
-            var newState = { ...this.state.modalCliente };
-            newState.responseRecibida = true;
-            newState.rptaTransaccion = rpta;
-            this.cargarClientes();
-            this.setState({ modalCliente: newState });
-        }, (rptaError) => {
-            var newState = { ...this.state.modalCliente };
-            newState.responseRecibida = true;
-            newState.rptaTransaccion = rptaError;
-            this.setState({ modalCliente: newState });
-        });
-
-    }
+    // ------------------------------------------------------------------------- Modal proveedores
 
     enEnviarProovedor = () => {
-
         var obj = { ...this.state.modalCrearEditar };
         obj.mensaje.enviado = true;
         this.setState({ modalCrearEditar: obj });
@@ -969,127 +846,6 @@ class CrearFile extends Component {
             this.setState({ modalCrearEditar: obj });
         }
     }
-
-
-    ModalCrearBiblia = () => {
-
-        let msj = <div></div>
-        if (this.state.modalBiblia.transaccionEnviada && !this.state.modalBiblia.responseRecibida) {
-            msj = <Message icon>
-                <Icon name='circle notched' loading />
-                <Message.Content>
-                    <Message.Header>Espere un momento...</Message.Header>
-                    Creando biblia
-                </Message.Content>
-            </Message>
-        } else
-            if (this.state.modalBiblia.responseRecibida) {
-                console.log(this.state.modalBiblia)
-                if (this.state.modalBiblia.rptaTransaccion.transaccionExitosa()) {
-                    msj = <Message success header='Biblia nueva creada'>
-                        <Message.List>
-                            <Message.Item>Puede elegir la biblia nuevo desde las opciones</Message.Item>
-                            {this.state.modalBiblia.rptaTransaccion.msj ? <Message.Item>{this.state.modalBiblia.rptaTransaccion.msj}</Message.Item> : null}
-                        </Message.List>
-                    </Message>
-                } else {
-                    msj = <Message negative>
-                        <Message.Header>Error al crear biblia</Message.Header>
-                        <Message.List>
-                            <Message.Item>{this.state.modalBiblia.rptaTransaccion.msj}</Message.Item>
-                            {this.state.modalBiblia.rptaTransaccion.trace ? <Message.Item>{this.state.modalBiblia.rptaTransaccion.trace}</Message.Item> : null}
-                        </Message.List>
-                    </Message>
-                }
-            }
-
-
-        return (
-            <Modal size="tiny" open={this.state.modalBibliasAbierto} centered={false} onClose={() => { this.setState({ modalBibliasAbierto: false }) }}>
-                <Modal.Header>Nueva biblia</Modal.Header>
-                <Modal.Content>
-                    <ElementoForm titulo="Mes">
-                        <Dropdown placeholder="Junio" fluid search selection options={Constantes.ListaMeses}
-                            onChange={(event, data) => {
-                                var newState = { ...this.state };
-                                newState.camposModalBiblia.mes = data.value;
-                                this.setState(newState);
-                            }} />
-                    </ElementoForm>
-                    <ElementoForm titulo="Año">
-                        <Input fluid placeholder="Año" onChange={(event) => {
-                            var newState = { ...this.state };
-                            newState.camposModalBiblia.anho = event.target.value;
-                            this.setState(newState);
-                        }}></Input>
-                    </ElementoForm>
-                    {msj}
-                </Modal.Content>
-                <Modal.Actions>
-                    <Button negative onClick={() => { this.setState({ modalBibliasAbierto: false }) }}>
-                        Cancelar
-                </Button>
-                    <Button positive icon='checkmark' labelPosition='right' content='Crear' onClick={this.EnviarPostBiblia} />
-                </Modal.Actions>
-            </Modal>)
-    }
-
-
-    ModalCrearCliente = () => {
-        let msj = <div></div>
-        if (this.state.modalCliente.transaccionEnviada && !this.state.modalCliente.responseRecibida) {
-            msj = <Message icon>
-                <Icon name='circle notched' loading />
-                <Message.Content>
-                    <Message.Header>Espere un momento...</Message.Header>
-                    Creando cliente
-                </Message.Content>
-            </Message>
-        } else if (this.state.modalCliente.responseRecibida) {
-            if (this.state.modalCliente.rptaTransaccion.transaccionExitosa()) {
-                msj = <Message success header='Cliente nuevo creado'>
-                    <Message.List>
-                        <Message.Item>Puede elegir al cliente nuevo desde las opciones</Message.Item>
-                        {this.state.modalCliente.rptaTransaccion.msj ? <Message.Item>{this.state.modalCliente.rptaTransaccion.msj}</Message.Item> : null}
-                    </Message.List>
-                </Message>
-            } else {
-                msj = <Message negative>
-                    <Message.Header>Error al crear cliente</Message.Header>
-                    <Message.List>
-                        <Message.Item>{this.state.modalCliente.rptaTransaccion.msj}</Message.Item>
-                        {this.state.modalCliente.rptaTransaccion.trace ? <Message.Item>{this.state.modalCliente.rptaTransaccion.trace}</Message.Item> : null}
-                    </Message.List>
-                </Message>
-            }
-        }
-
-        return (
-            <ModalTrxSimple
-                ref={this.modalClientesRef}
-                titulo="Crear nuevo cliente"
-                size="tiny"
-                textoAceptar="Crear"
-                textoCancelar="Cancelar"
-                enAceptar={() => {
-                    console.log("aceptando!");
-                    this.EnviarPostCliente(this.contenedorCamposModalCliente);
-                }}>
-                <CamposCrearCliente contenedor={this.contenedorCamposModalCliente} />
-                {msj}
-            </ModalTrxSimple>
-        )
-    }
-}
-
-const FilaTablaIns = (props) => {
-    return (
-        <Grid.Row columns={props.columns} style={{ padding: "3px 0px" }}>{props.children}</Grid.Row>
-    );
-}
-
-const ColumnaTablaIns = (props) => {
-    return <Grid.Column verticalAlign="middle" textAlign="center" style={{ padding: "0px 1px" }}>{props.children}</Grid.Column>
 }
 
 export default CrearFile;
