@@ -13,6 +13,7 @@ import ListaBiblias from '../VerBiblias/VerBiblias';
 import MostradorProveedores from '../MostradorProovedores/MostradorProveedores';
 import VerClientes from '../VerClientes/VerClientes';
 import VerCalendario from '../Calendario/VerCalendario';
+import Pruebas from '../Test/Pruebas';
 
  class MainContent extends Component{
 
@@ -28,10 +29,13 @@ import VerCalendario from '../Calendario/VerCalendario';
                         <Grid.Column width={1}></Grid.Column>
                         <Grid.Column width={13}>
                         <br/>
+                            <Route path="/pruebas" exact component={Pruebas}/>
                             <Route path="/inicio" exact component={Inicio}/>
                             <Route path="/huehue" component={() => {return "heheh"}}/>
                             <Route path="/files" exact component={ViewFiles}/>
-                            <Route path="/file/crear" exact component={CrearFile}/>
+                            <Route path="/files/crear" exact component={(a)=>{return <CrearFile modo="crear"/>}}/>
+                            <Route path="/file/ver/:idFile" exact component={(obj)=>{/*console.log("@@@@@@@@",obj);*/return <CrearFile modo="ver" idFile={obj.match.params.idFile} />}}/>
+                            <Route path="/file/editar/:idFile" exact component={(obj)=>{return <CrearFile modo="editar" idFile={obj.match.params.idFile}/>}}/>
                             <Route path="/servicios" exact component={VerServicios}/>
                             <Route path="/servicios/crear" exact component={CrearServicio}/>
                             <Route path="/biblias" exact component={ListaBiblias}/>

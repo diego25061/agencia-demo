@@ -25,6 +25,7 @@ class ViewFiles extends Component{
 		Requester.getListadoFiles(rpta=>{
 			let listaFiles = rpta.cont.map((e,i)=>{
 				return {
+					idFile: e.id,
 					codigo : e.codigo,
 					descripcion : e.descripcion,
 					biblia: e.nombreBiblia,
@@ -40,6 +41,11 @@ class ViewFiles extends Component{
 
 	render(){
     	const cols = [
+			{	
+				Header:'id',
+				accessor:'idFile',
+				show:false
+			},
 			{
 				Header: 'Codigo',
 				accessor: 'codigo' // String-based value accessors!
@@ -71,12 +77,20 @@ class ViewFiles extends Component{
 			}, 
 			{
 				Header: 'Accion',
-				Cell: props => 
-				<Container textAlign="center">
-				<Button circular icon="eye"></Button>
-				<Button circular icon="pencil"></Button>
-				<Button circular color="red" icon="trash"></Button>
-				</Container>
+				Cell: props => {
+					console.log(props);
+					let urlVer = "/file/ver/"+props.row.idFile;
+					let urlEditar="/file/editar/"+props.row.idFile;
+					return <Container textAlign="center">
+					<Link to={urlVer}>
+						<Button circular icon="eye"></Button>
+					</Link>
+					<Link to={urlEditar}>
+						<Button circular icon="pencil"></Button>
+					</Link>
+					<Button circular color="red" icon="trash"></Button>
+					</Container>
+				}
 			}
 		]
 		
@@ -104,7 +118,7 @@ class ViewFiles extends Component{
 			
 			<Header size="large">Files</Header>
 			<Container fluid textAlign>
-				<Link to="/file/crear">
+				<Link to="/files/crear">
 					<Button primary>Nuevo file</Button>
 				</Link>
 			</Container>

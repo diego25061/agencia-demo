@@ -15,6 +15,10 @@ import Requester from '../../../common/Services/Requester';
 import ModalCrearEditarProveedor from '../../MostradorProovedores/ModalCrearEditarProveedor';
 import MensajeTransaccion from '../../../components/MensajeTransaccion/MensajeTransaccion';
 
+import '../CrearFile/CrearFile.css'
+import InputSearchableDataButton from '../../../components/InputSearchableData/InputSearchableData';
+import ModalCrearBiblia from '../../../components/ModalCrearBiblia/ModalCrearBiblia';
+
 const CampoServicio = (props) => {
     return <Segment style={{ padding: "7px" }}><Header style={{ margin: "-2px 0px 4px 0px" }} as="h4">{props.titulo}</Header>{props.componente}</Segment>
 }
@@ -27,15 +31,15 @@ class CrearFile extends Component {
         //this.modalClientesRef = React.createRef();
     }
 
-    servicio = (fecha, ciudad, nombre,  pasajeros, nombrePasajero, tren, alm, observaciones, proveedor) => {
-        return { fecha, ciudad, nombre,  pasajeros, nombrePasajero, tren, alm, observaciones , proveedor};
+    servicio = (fecha, ciudad, nombre, pasajeros, nombrePasajero, tren, alm, observaciones, idProveedor) => {
+        return { fecha, ciudad, nombre, pasajeros, nombrePasajero, tren, alm, observaciones, idProveedor };
     }
-    transporte = (fecha, ciudad, horaRecojo, horaSalida, vuelo, nombre, pasajeros, nombrePasajero, vr, tc, proveedor, observaciones) => {
-        return { fecha, ciudad, horaRecojo, horaSalida, vuelo, nombre, pasajeros, nombrePasajero, vr, tc, proveedor, observaciones };
+    transporte = (fecha, ciudad, horaRecojo, horaSalida, vuelo, nombre, pasajeros, nombrePasajero, vr, tc, idProveedor, observaciones) => {
+        return { fecha, ciudad, horaRecojo, horaSalida, vuelo, nombre, pasajeros, nombrePasajero, vr, tc, idProveedor, observaciones };
     }
 
     servicioDefault = () => {
-        return this.servicio('', '', '',  0, '', '', '', '')
+        return this.servicio('', '', '', 0, '', '', '', '')
     }
     transporteDefault = () => {
         return this.transporte('', '', '', '', '', '', 0, '', '', '', '', '')
@@ -51,22 +55,23 @@ class CrearFile extends Component {
         },
 
         modalBiblia: {
-            //abierto:false,
+            abierto: false,
             transaccionEnviada: false,
             responseRecibida: false,
-            rptaTransaccion: null
-        },
+            rptaTransaccion: null,
 
-        camposModalBiblia: {
-            mes: null,
-            anho: null
+            campos: {
+                mes: null,
+                anho: null
+            }
         },
 
         //datos de file
+        idFile: undefined,
         codigo: '',
         descripcion: '',
-        idBiblia: 0,
-        idCliente: 0,
+        idBiblia: undefined,
+        idCliente: undefined,
 
         servicios: [
             //this.servicioDefault()
@@ -76,22 +81,22 @@ class CrearFile extends Component {
         //opciones a elegir
         bibliasCargaron: false,
         //bibliasCargaronExito: true,
-        opcionesBiblia: [/*{value:1, text:'mayo, 2019'}*/],
 
         clientesCargaron: false,
         //clientesCargaronExito: true,
-        opcionesCliente: [/*{value:1, text:''}*/],
 
         hotelesCargaron: false,
         //hotelesCargaronExito: true,
+
+        opcionesBiblia: [/*{value:1, text:'mayo, 2019'}*/],
+        opcionesCliente: [/*{value:1, text:''}*/],
         opcionesProveedores: [/*{value:1, text:'juancito'}*/],
         opcionesTransportes: [/*{value:1, text:'juancito'}*/],
-
         opcionesCiudades: [],
-
         opcionesPaises: [],
 
-        modalCrearEditar: {
+
+        modalCrearEditarProveedor: {
             //creacion o edicion
             modo: "creacion",
             abierto: false,
@@ -114,12 +119,34 @@ class CrearFile extends Component {
             }
         },
 
-        transaccionEnviadaCrearFile:false,
-        responseRecibidaCrearFile:false,
-        rptaTransaccionCrearFile:null,
-        
-        mensajeCreacionFile:"",
-        creacionFileExitosa:false
+        modalCrearProveedorTransporte: {
+            modo: "creacion",
+            abierto: false,
+
+            mensaje: {
+                enviado: false,
+                recibido: false,
+                respuesta: null
+            },
+
+            campos: {
+                id: '',
+                nombre: '',
+                correo: '',
+                correoAdic: '',
+                num: '',
+                numAdic: '',
+                ciudad: '',
+                tipo: ''
+            }
+        },
+
+        transaccionEnviadaCrearFile: false,
+        responseRecibidaCrearFile: false,
+        rptaTransaccionCrearFile: null,
+
+        mensajeCreacionFile: "",
+        creacionFileExitosa: false
     }
 
 
@@ -128,29 +155,111 @@ class CrearFile extends Component {
         //funcCrearCliente:()=>{}
     }
 
-    
-    
+
+    modoVer = () => {
+        return this.props.modo === "ver";
+    }
+
+    modoEditar = () => {
+        return this.props.modo === "editar";
+    }
+
     componentDidMount() {
-        console.log("wii");
+        console.log("PROPS", this.props);
         //Requester.getListadoFiles(this.filesRecibidos,this.filesError);
-        this.cargarClientes();
-        this.cargarBiblias();
-        this.cargarProveedoresNoTransp();
-        this.cargarTransportes();
-        this.cargarCiudades();
-        //this.cargarPaises();
+
+
+        if (this.props.modo === "ver" || this.props.modo === "editar") {
+            this.cargarFileBase();
+        }
+        if (this.props.modo === "crear" || this.props.modo === "editar") {
+            this.cargarClientes();
+            this.cargarBiblias();
+            this.cargarProveedoresNoTransp();
+            this.cargarTransportes();
+            this.cargarCiudades();
+            //this.cargarPaises();
+        }
     }
 
     render = () => {
+
         let fieldStyle = { margin: "6px 0 4px 0" };
+        let titulo = "Nuevo File";
+        if (this.props.modo === "ver")
+            titulo = "Ver File";
+        else if (this.props.modo === "editar")
+            titulo = "Modificar File";
+
+        let estiloTextArea = {};
+        if (this.modoVer()) {
+            estiloTextArea = { borderStyle: "none", color: "gray" };
+        }
+
+        let eleccionBiblia = {};
+
+        let controlBiblia = <InputSearchableDataButton
+            loading={!this.state.hotelesCargaron}
+            disabled={this.modoVer()}
+            placeholder={this.modoVer() ? "" : 'Elegir Biblia'}
+            datalist={this.state.opcionesBiblia}
+            value={this.state.idBiblia}
+            sideButton={
+                <Button icon primary onClick={() => {
+                    var obj = { ...this.state.modalBiblia };
+                    obj.abierto = true;
+                    this.setState({ modalBiblia: obj });
+                }}>
+                    <Icon name='plus' />
+                </Button>
+            }
+            onChange={(event, data) => {
+                console.log("event", event);
+                console.log("data", data);
+                this.setState({ idBiblia: data.value })
+            }}
+        />
+
+        if (this.modoVer()) {
+            controlBiblia = <Input disabled transparent fluid value={this.state.nombreBiblia} ></Input>
+        }
+
+        let controlCliente = <Dropdown fluid
+            placeholder='Christian'
+            search
+            loading={!this.state.bibliasCargaron}
+            selection
+            value={this.state.idCliente}
+            options={this.state.opcionesCliente}
+            onChange={(event, data) => {
+                this.setState({ idCliente: data.value });
+            }}
+        />
+
+        if (this.modoVer()) {
+            controlCliente = <Input disabled transparent fluid value={this.state.nombreCliente} ></Input>
+        }
+
+
+        let controlDescripcion = <TextArea disabled={this.modoVer()} style={estiloTextArea} placeholder='Descripcion del file' rows={1} value={this.state.descripcion} onChange={(event) => {
+            this.setState({ descripcion: event.target.value });
+        }} />
+
+        if (this.modoVer()) {
+            controlDescripcion = <Input disabled transparent fluid value={this.state.descripcion} />
+        }
+
+
+
         return <div>
-            <Header size="large">Formulario de creacion: Nuevo File</Header>
+            {/*<Button onClick={() => { console.log("state", this.state) }} wee></Button>*/}
+            <Header size="large">{titulo}</Header>
             <Segment>
                 <Grid columns={2} >
                     <Grid.Row>
                         <Grid.Column width={8}>
                             <ElementoForm titulo="Codigo">
-                                <Input fluid placeholder="08-020" value={this.state.codigo} onChange={(event) => {
+                                <Input disabled={this.modoVer()} transparent={this.modoVer()} fluid placeholder="08-020" value={this.state.codigo} onChange={(event) => {
                                     this.setState({ codigo: event.target.value });
                                 }} ></Input>
                             </ElementoForm>
@@ -160,9 +269,8 @@ class CrearFile extends Component {
                             <ElementoForm titulo="Descripcion">
                                 <Form>
                                     {/*style={{ minHeight: 100 }}*/}
-                                    <TextArea placeholder='Descripcion del file' rows={1} value={this.state.descripcion} onChange={(event) => {
-                                        this.setState({ descripcion: event.target.value });
-                                    }} />
+                                    {controlDescripcion}
+
                                 </Form>
                             </ElementoForm>
                         </Grid.Column>
@@ -173,32 +281,9 @@ class CrearFile extends Component {
                             <ElementoForm titulo="Biblia">
                                 <Grid>
                                     <Grid.Row columns='equal'>
-                                        <Grid.Column >
-                                            <Dropdown fluid placeholder='Elegir Biblia'
-                                                search
-                                                loading={!this.state.bibliasCargaron}
-                                                selection
-                                                options={this.state.opcionesBiblia}
-                                                onChange={(event, data) => {
-                                                    this.setState({ idBiblia: data.value });
-                                                }}
-                                            >
-                                            </Dropdown>
 
-                                        </Grid.Column>
-                                        <Grid.Column width={3}>
-                                            <Button fluid icon onClick={
-                                                () => {
-
-                                                    var state = { ...this.state };
-                                                    state.modalBibliasAbierto = true;
-                                                    state.modalBiblia.responseRecibida = false;
-                                                    state.modalBiblia.transaccionEnviada = false;
-                                                    this.setState(state);
-                                                }
-                                            }>
-                                                <Icon name='plus' />
-                                            </Button>
+                                        <Grid.Column width={16}>
+                                            {controlBiblia}
                                         </Grid.Column>
                                     </Grid.Row>
                                 </Grid>
@@ -208,17 +293,7 @@ class CrearFile extends Component {
 
                         <Grid.Column width={8}>
                             <ElementoForm titulo="Cliente">
-                                {/*<Input  type="text" fluid placeholder="Javi"></Input>*/}
-                                <Dropdown fluid
-                                    placeholder='Christian'
-                                    search
-                                    loading={!this.state.bibliasCargaron}
-                                    selection
-                                    options={this.state.opcionesCliente}
-                                    onChange={(event,data)=>{
-                                        this.setState({idCliente:data.value});
-                                    }}
-                                />
+                                {controlCliente}
                             </ElementoForm>
                         </Grid.Column>
                     </Grid.Row>
@@ -230,11 +305,13 @@ class CrearFile extends Component {
                                 //return this.filaServicio(index);
                                 return this.CuerpoServicio({ index: index });
                             })}
-                            <Button content='Agregar servicio' icon='plus' floated="left" labelPosition='right' onClick={() => {
-                                var servs = this.state.servicios.slice();
-                                servs.push(this.servicioDefault());
-                                this.setState({ servicios: servs });
-                            }} />
+                            {this.modoVer() ? <div></div> :
+                                <Button content='Agregar servicio' icon='plus' floated="left" labelPosition='right' onClick={() => {
+                                    var servs = this.state.servicios.slice();
+                                    servs.push(this.servicioDefault());
+                                    this.setState({ servicios: servs });
+                                }} />
+                            }
                         </Grid.Column>
                     </Grid.Row>
                     <Grid.Row>
@@ -244,50 +321,67 @@ class CrearFile extends Component {
                             {this.state.transportes.map((elem, index) => {
                                 return this.CuerpoTransporte({ index: index });
                             })}
-
-                            <Button content='Agregar transporte' icon='plus' labelPosition='right' onClick={() => {
-                                var transps = this.state.transportes.slice();
-                                transps.push(this.transporteDefault());
-                                this.setState({ transportes: transps });
-                            }} />
-                            
+                            {this.modoVer() ? <div></div> :
+                                <Button content='Agregar transporte' icon='plus' labelPosition='right' onClick={() => {
+                                    var transps = this.state.transportes.slice();
+                                    transps.push(this.transporteDefault());
+                                    this.setState({ transportes: transps });
+                                }} />
+                            }
                             <MensajeTransaccion
-                                transaccionEnviada = {this.state.transaccionEnviadaCrearFile} 
-                                responseRecibida = {this.state.responseRecibidaCrearFile}
-                                rptaTransaccion = {this.state.rptaTransaccionCrearFile}
-                                //textoExito = "Puede usar la nueva biblia"
+                                transaccionEnviada={this.state.transaccionEnviadaCrearFile}
+                                responseRecibida={this.state.responseRecibidaCrearFile}
+                                rptaTransaccion={this.state.rptaTransaccionCrearFile}
+                            //textoExito = "Puede usar la nueva biblia"
                             />
-                            
+
                         </Grid.Column>
                     </Grid.Row>
 
                 </Grid>
-                <Grid>
-                    <Grid.Row>
-                        <Grid.Column>
-                            <Button positive onClick={()=>{this.EnviarPostFile()}}>Guardar file</Button>
-                        </Grid.Column>
-                    </Grid.Row>
-                </Grid>
-                
+                {this.modoVer() ? <div></div> :
+                    <Grid>
+                        <Grid.Row>
+                            <Grid.Column>
+                                <Button positive onClick={() => { this.EnviarPostFile() }}>Guardar file</Button>
+                            </Grid.Column>
+                        </Grid.Row>
+                    </Grid>
+                }
+
             </Segment>
             {/*
             {!this.state.bibliasCargaronExito ? <Message error>Error de conexion: Las biblias no se pueden cargar.</Message> : null}
             {!this.state.clientesCargaronExito ? <Message error>Error de conexion: Los clientes no se pueden cargar.</Message> : null}
             {!this.state.hotelesCargaronExito ? <Message error>Error de conexion: Los hoteles no se pueden cargar.</Message> : null}
             */}
-            <hr />
+
 
             <Container fluid textAlign="right">
             </Container>
 
-            <ModalCrearEditarProveedor parent={this} sustantivoTitulo="Proveedor"
+
+            <ModalCrearBiblia parentComponent={this} />
+
+            <ModalCrearEditarProveedor
+                parent={this}
+                pack="modalCrearEditarProveedor"
+                sustantivoTitulo="Proveedor Nuevo"
                 elegirTipo
                 placeholderNombre="Melia"
                 placeholderCorreo="ventas@hotelmelia.com"
                 placeholderCorreoAdic="contacto.melia@gmail.com"
                 enEnviar={this.enEnviarProovedor}
                 enCerrar={this.enCerrarModalProveedor} />
+
+
+            <ModalCrearEditarProveedor parent={this} pack="modalCrearProveedorTransporte" sustantivoTitulo="Transportista Nuevo"
+                placeholderNombre="Transportista"
+                placeholderCorreo="carlos@gmail.com"
+                placeholderCorreoAdic="contacto@transportescarlos.com"
+                enEnviar={this.enEnviarProveedorTransporte}
+                enCerrar={this.enCerrarModalProveedorTransportes} />
+
 
             {/*this.ModalCrearBiblia()*/}
             {/*this.ModalCrearCliente()*/}
@@ -296,11 +390,33 @@ class CrearFile extends Component {
     }
 
     // ------------------------------------------------------------------------- Cargas iniciales
-    
-    cargarClientes() {
+
+    cargarFileBase = () => {
+        //console.log("id:",this.props)
+        Requester.getFile(this.props.idFile,
+            rpta => {
+                //console.log("recibido",rpta)
+                this.setState({
+                    idFile: rpta.cont.id,
+                    codigo: rpta.cont.codigo,
+                    descripcion: rpta.cont.descripcion,
+                    idBiblia: rpta.cont.idBiblia,
+                    idCliente: rpta.cont.idCliente,
+                    nombreBiblia: rpta.cont.nombreBiblia,
+                    nombreCliente: rpta.cont.nombreCliente,
+                    servicios: rpta.cont.servicios,
+                    transportes: rpta.cont.transportes
+                });
+            },
+            rpta => {
+
+            });
+    }
+
+    cargarClientes = () => {
         Requester.getClientesListaDropdown(rpta => {
             console.log(rpta);
-            var listaOpsCliente = rpta.cont.map(element => { return { value: element.idCliente, text: element.nombre } });
+            var listaOpsCliente = rpta.cont.map(element => { return { value: element.value, text: element.text } });
             this.setState({
                 clientesCargaronExito: false,
                 clientesCargaron: true,
@@ -314,9 +430,9 @@ class CrearFile extends Component {
         });
     }
 
-    cargarBiblias() {
+    cargarBiblias = () => {
         Requester.getBibliasDropdownCompleto((rpta) => {
-            var listaBiblias = rpta.cont.map(element => { return { value: element.idBiblia, text: element.nombre } });
+            var listaBiblias = rpta.cont.map(element => { return { value: element.value, text: element.text } });
             this.setState({ opcionesBiblia: listaBiblias });
             this.setState({
                 bibliasCargaronExito: false,
@@ -332,7 +448,7 @@ class CrearFile extends Component {
             })
     }
 
-    cargarCiudades() {
+    cargarCiudades = () => {
         Requester.getCiudades((rpta) => {
             this.setState({ opcionesCiudades: rpta.cont });
         },
@@ -341,7 +457,7 @@ class CrearFile extends Component {
             })
     }
 
-    cargarPaises() {
+    cargarPaises = () => {
         Requester.getPaises((rpta) => {
             this.setState({ opcionesPaises: rpta.cont });
         },
@@ -350,7 +466,7 @@ class CrearFile extends Component {
             })
     }
 
-    cargarProveedoresNoTransp() {
+    cargarProveedoresNoTransp = () => {
         Requester.getProveedoresMenosTransportes((rpta) => {
             var listaProovs = rpta.cont.map(element => { return { value: element.idProveedor, text: element.nombre } });
             this.setState({
@@ -368,7 +484,7 @@ class CrearFile extends Component {
     }
 
 
-    cargarTransportes() {
+    cargarTransportes = () => {
         Requester.getProveedoresTransportes((rpta) => {
             var listaProovs = rpta.cont.map(element => { return { value: element.idProveedor, text: element.nombre } });
             this.setState({
@@ -379,6 +495,39 @@ class CrearFile extends Component {
     }
 
     CuerpoServicio = (props) => {
+
+        let estiloInputs = {}
+        if (this.modoVer())
+            estiloInputs = { color: "black" };
+
+        let controlProveedor =
+            <InputSearchableDataButton
+                loading={!this.state.hotelesCargaron}
+                disabled={this.modoVer()}
+                placeholder={this.modoVer() ? "" : 'Sheraton'}
+                datalist={this.state.opcionesProveedores}
+                value={this.state.servicios[props.index].idProveedor}
+                sideButton={
+                    <Button style={{ padding: "3px 11px", backgroundColor: "#00000000" }} icon onClick={() => {
+                        let modal = { ...this.state.modalCrearEditarProveedor, abierto: true };
+                        this.setState({ modalCrearEditarProveedor: modal });
+                    }}>
+                        <Icon name='plus' />
+                    </Button>
+                }
+                onChange={(event, data) => {
+                    var servs = this.state.servicios.slice();
+                    servs[props.index].idProveedor = data.value;
+                    this.setState({ servicios: servs });
+                }}
+            />
+
+        if (this.modoVer()) {
+            console.log("cuerpo: ", this.state.servicios[props.index]);
+            controlProveedor = <Input disabled transparent fluid value={this.state.servicios[props.index].proovedor} />
+        }
+
+
         return <Segment.Group>
             <Segment.Group horizontal>
                 <Segment style={{ backgroundColor: "#fff5e6" }}>
@@ -388,13 +537,15 @@ class CrearFile extends Component {
                                 <Header as="h3">Servicio {props.index + 1}</Header>
                             </Grid.Column>
                             <Grid.Column style={{ padding: "0px 8px" }}>
-                                <Button style={{ padding: "8px 14px", margin: "4px 0px" }} floated="right" color="red" onClick={() => {
-                                    var lista = this.state.servicios.slice();
-                                    lista.splice(props.index, 1);
-                                    this.setState({ servicios: lista });
-                                    console.log(this.state.servicios)
-                                }}
-                                >Borrar</Button>
+
+                                {this.modoVer() ? <div></div> :
+                                    <Button style={{ padding: "8px 14px", margin: "4px 0px" }} floated="right" color="red" onClick={() => {
+                                        var lista = this.state.servicios.slice();
+                                        lista.splice(props.index, 1);
+                                        this.setState({ servicios: lista });
+                                        //console.log(this.state.servicios)
+                                    }}>Borrar</Button>
+                                }
                             </Grid.Column>
                         </Grid.Row>
                     </Grid>
@@ -402,8 +553,8 @@ class CrearFile extends Component {
             </Segment.Group>
             <Segment.Group horizontal style={{ backgroundColor: "#fffbf6" }}>
                 <CampoServicio titulo="Nombre" componente={
-                    <Input transparent fluid placeholder="In + city" 
-                    value={this.state.servicios[props.index].nombre}
+                    <Input disabled={this.modoVer()} transparent fluid placeholder={this.modoVer() ? "" : "In + city"}
+                        value={this.state.servicios[props.index].nombre}
                         onChange={(event) => {
                             var servs = this.state.servicios.slice();
                             servs[props.index].nombre = event.target.value;
@@ -412,7 +563,7 @@ class CrearFile extends Component {
                 } />
                 <CampoServicio titulo="Ciudad de destino" componente={
                     <div>
-                        <Input transparent list={'ciudades' + props.index} placeholder='Lima' fluid
+                        <Input disabled={this.modoVer()} transparent list={'ciudades' + props.index} placeholder={this.modoVer() ? "" : 'Lima'} fluid
                             onChange={(event) => {
                                 var servs = this.state.servicios.slice();
                                 servs[props.index].ciudad = event.target.value;
@@ -425,11 +576,12 @@ class CrearFile extends Component {
                 } />
                 <CampoServicio titulo="Fecha" componente={
                     <DateInput
+                        disabled={this.modoVer()}
                         transparent
                         fluid
-                        dateFormat = "YYYY-MM-DD"
+                        dateFormat="YYYY-MM-DD"
                         name="fecha"
-                        placeholder="año-mes-dia"
+                        placeholder={this.modoVer() ? "-" : 'Año-mes-dia'}
                         value={this.state.servicios[props.index].fecha}
                         iconPosition="left"
                         onChange={(event, { name, value }) => {
@@ -442,14 +594,14 @@ class CrearFile extends Component {
                         }}
                     />} />
                 <CampoServicio titulo="Nombre pasajero" componente={
-                    <Input transparent fluid placeholder="Lewis Hamilton" value={this.state.servicios[props.index].nombrePasajero}
+                    <Input transparent disabled={this.modoVer()} placeholder={this.modoVer() ? "" : 'Lewis Hamilton'} fluid value={this.state.servicios[props.index].nombrePasajero}
                         onChange={(event) => {
                             var servs = this.state.servicios.slice();
                             servs[props.index].nombrePasajero = event.target.value;
                             this.setState({ servicios: servs });
                         }}></Input>} />
                 <CampoServicio titulo="Cant. pasajeros" componente={
-                    <Input type="number" transparent fluid placeholder="4" value={this.state.servicios[props.index].pasajeros}
+                    <Input type="number" transparent fluid disabled={this.modoVer()} placeholder={this.modoVer() ? "" : '4'} value={this.state.servicios[props.index].pasajeros}
                         onChange={(event) => {
                             var servs = this.state.servicios.slice();
                             servs[props.index].pasajeros = event.target.value;
@@ -458,58 +610,10 @@ class CrearFile extends Component {
             </Segment.Group>
             <Segment.Group horizontal style={{ backgroundColor: "#fffbf6" }}>
 
-                <CampoServicio titulo="Proveedor" componente={
-                    <div>
-                        <Input /* iconPosition='left'*/ transparent list={'hoteles' + props.index} loading={!this.state.hotelesCargaron} placeholder='Sheraton' fluid
-                            value={this.state.servicios[props.index].hotel}
-                            onBlur={(event, data) => {
-                                /*console.log("event! ",event.target.value);
-                                console.log("data! ",data);*/
-                                if (event.target.value) {
-                                    let found = false;
-                                    let foundVal = this.state.opcionesProveedores.find((val) => {
-                                        /*console.log("vallllllllllllll",val.text);
-                                        if(val.text.includes(event.target.value))
-                                            console.log(val.text);*/
-                                        return val.text.includes(event.target.value)
-                                    });
-                                    if (foundVal) {
-                                        var servs = this.state.servicios.slice();
-                                        servs[props.index].proveedor = foundVal.text;
-                                        this.setState({ servicios: servs });
-                                    } else {
-                                        var servs = this.state.servicios.slice();
-                                        servs[props.index].proveedor = "";
-                                        this.setState({ servicios: servs });
-                                    }
-                                } else {
-                                    var servs = this.state.servicios.slice();
-                                    servs[props.index].proveedor = "";
-                                    this.setState({ servicios: servs });
-                                }
-                            }}
-                            onChange={(event) => {
-                                var servs = this.state.servicios.slice();
-                                servs[props.index].proveedor = event.target.value;
-                                this.setState({ servicios: servs });
-                            }}>
-                            {/*
-                            <Icon name='lightning' />*/}
-                            <input />
-                            <Button style={{ padding: "3px 11px" }} icon onClick={() => {
-                                let modal = { ...this.state.modalCrearEditar, abierto: true };
-                                this.setState({ modalCrearEditar: modal });
-                            }}>
-                                <Icon name='plus' />
-                            </Button>
-                        </Input>
-                        <datalist id={'hoteles' + props.index}>
-                            {this.state.opcionesProveedores.map(e => <option value={e.text} />)}
-                        </datalist>
-                    </div>
-                } />
+                <CampoServicio titulo="Proveedor" componente={controlProveedor} />
+
                 <CampoServicio titulo="Tren" componente={
-                    <Input transparent fluid placeholder="Tren" value={this.state.servicios[props.index].tren}
+                    <Input transparent fluid disabled={this.modoVer()} placeholder={this.modoVer() ? "" : 'Tren'} value={this.state.servicios[props.index].tren}
                         onChange={(event) => {
                             var servs = this.state.servicios.slice();
                             servs[props.index].tren = event.target.value;
@@ -517,14 +621,14 @@ class CrearFile extends Component {
                         }}></Input>} />
                 <CampoServicio titulo="ALM" componente={
 
-                    <Input transparent fluid placeholder="ALM" value={this.state.servicios[props.index].alm}
+                    <Input transparent fluid disabled={this.modoVer()} placeholder={this.modoVer() ? "" : 'ALM'} value={this.state.servicios[props.index].alm}
                         onChange={(event) => {
                             var servs = this.state.servicios.slice();
                             servs[props.index].alm = event.target.value;
                             this.setState({ servicios: servs });
                         }}></Input>} />
                 <CampoServicio titulo="Obs" componente={
-                    <Input transparent fluid placeholder="OBS" value={this.state.servicios[props.index].observaciones}
+                    <Input transparent fluid disabled={this.modoVer()} placeholder={this.modoVer() ? "" : 'OBS'} value={this.state.servicios[props.index].observaciones}
                         onChange={(event) => {
                             var servs = this.state.servicios.slice();
                             servs[props.index].observaciones = event.target.value;
@@ -537,6 +641,33 @@ class CrearFile extends Component {
 
 
     CuerpoTransporte = (props) => {
+
+        let controlProveedorTransporte =
+            <InputSearchableDataButton
+                //loading={!this.state.hotelesCargaron}
+                disabled={this.modoVer()}
+                placeholder={this.modoVer() ? "" : 'Transp. Manuel'}
+                datalist={this.state.opcionesTransportes}
+                value={this.state.transportes[props.index].idProveedor}
+                sideButton={
+                    <Button style={{ padding: "3px 11px", backgroundColor: "#00000000" }} icon onClick={() => {
+                        let modal = { ...this.state.modalCrearProveedorTransporte, abierto: true };
+                        this.setState({ modalCrearProveedorTransporte: modal });
+                    }}>
+                        <Icon name='plus' />
+                    </Button>
+                }
+                onChange={(event, data) => {
+                    var transps = this.state.transportes.slice();
+                    transps[props.index].idProveedor = data.value;
+                    this.setState({ transportes: transps });
+                }}
+            />
+        if (this.modoVer()) {
+            controlProveedorTransporte = <Input disabled transparent fluid value={this.state.transportes[props.index].proovedor} />
+        }
+
+
         return <Segment.Group>
             <Segment.Group horizontal>
                 <Segment style={{ backgroundColor: "#ccebff" }}>
@@ -546,12 +677,13 @@ class CrearFile extends Component {
                                 <Header as="h3">Transporte {props.index + 1}</Header>
                             </Grid.Column>
                             <Grid.Column style={{ padding: "0px 8px" }}>
-                                <Button style={{ padding: "8px 14px", margin: "4px 0px" }} floated="right" color="red" onClick={() => {
-                                    var lista = this.state.transportes.slice();
-                                    lista.splice(props.index, 1);
-                                    this.setState({ transportes: lista });
-                                }}
-                                >Borrar</Button>
+                                {this.modoVer() ? <div></div> :
+                                    <Button style={{ padding: "8px 14px", margin: "4px 0px" }} floated="right" color="red" onClick={() => {
+                                        var lista = this.state.transportes.slice();
+                                        lista.splice(props.index, 1);
+                                        this.setState({ transportes: lista });
+                                    }}>Borrar</Button>
+                                }
                             </Grid.Column>
                         </Grid.Row>
                     </Grid>
@@ -559,7 +691,7 @@ class CrearFile extends Component {
             </Segment.Group>
             <Segment.Group horizontal style={{ backgroundColor: "#e6f5ff" }}>
                 <CampoServicio titulo="Nombre" componente={
-                    <Input transparent fluid placeholder="APTO / Four points"
+                    <Input transparent fluid disabled={this.modoVer()} placeholder={this.modoVer() ? "" : 'APTO / Four points'}
                         value={this.state.transportes[props.index].nombre}
                         onChange={(event) => {
                             var trans = this.state.transportes.slice();
@@ -569,7 +701,7 @@ class CrearFile extends Component {
                 } />
                 <CampoServicio titulo="Ciudad de destino" componente={
                     <div>
-                        <Input transparent fluid placeholder="Ciudad"
+                        <Input transparent fluid disabled={this.modoVer()} placeholder={this.modoVer() ? "" : 'Ciudad'}
                             value={this.state.transportes[props.index].ciudad}
                             onChange={(event) => {
                                 var trans = this.state.transportes.slice();
@@ -583,8 +715,9 @@ class CrearFile extends Component {
                         transparent
                         fluid
                         name="fecha"
-                        dateFormat = "YYYY-MM-DD"
-                        placeholder="año-mes-dia"
+                        dateFormat="YYYY-MM-DD"
+                        disabled={this.modoVer()}
+                        placeholder={this.modoVer() ? "" : 'Año-mes-dia'}
                         value={this.state.transportes[props.index].fecha}
                         iconPosition="left"
                         onChange={(event, { name, value }) => {
@@ -598,7 +731,7 @@ class CrearFile extends Component {
                     />} />
                 <CampoServicio titulo="Nombre pasajero" componente={
 
-                    <Input transparent fluid placeholder="Steven Gerrard"
+                    <Input transparent fluid disabled={this.modoVer()} placeholder={this.modoVer() ? "" : 'Steven Gerard'}
                         value={this.state.transportes[props.index].nombrePasajero}
                         onChange={(event) => {
                             var trans = this.state.transportes.slice();
@@ -607,7 +740,7 @@ class CrearFile extends Component {
                         }}></Input>
                 } />
                 <CampoServicio titulo="Cant. pasajeros" componente={
-                    <Input transparent fluid placeholder="4"
+                    <Input transparent fluid disabled={this.modoVer()} placeholder={this.modoVer() ? "" : '4'}
                         value={this.state.transportes[props.index].pasajeros}
                         onChange={(event) => {
                             var trans = this.state.transportes.slice();
@@ -616,9 +749,12 @@ class CrearFile extends Component {
                         }}></Input>} />
             </Segment.Group>
             <Segment.Group horizontal style={{ backgroundColor: "#e6f5ff" }}>
-                <CampoServicio titulo="Proveedor de Transporte" componente={
+                <CampoServicio titulo="Proveedor de Transporte" componente={controlProveedorTransporte
+
+                    /*
                     <div>
-                        <Input icon="lightning" iconPosition="left" list={'transportes' + props.index} transparent fluid placeholder="Transportista"
+                        <Input icon="lightning" iconPosition="left" list={'transportes' + props.index} transparent fluid
+                            disabled={this.modoVer()} placeholder={this.modoVer() ? "" : 'Transportista'}
                             value={this.state.transportes[props.index].proveedor}
                             onChange={(event) => {
                                 var trans = this.state.transportes.slice();
@@ -632,13 +768,13 @@ class CrearFile extends Component {
 
 
 
-                } />
+                        */} />
                 <CampoServicio titulo="Hora recojo" componente={
                     <TimeInput
                         transparent
                         fluid
                         name="hora"
-                        placeholder="0:00"
+                        disabled={this.modoVer()} placeholder={this.modoVer() ? "" : '0:00'}
                         value={this.state.transportes[props.index].horaRecojo}
                         iconPosition="left"
                         onChange={(event, { name, value }) => {
@@ -656,7 +792,7 @@ class CrearFile extends Component {
                         transparent
                         fluid
                         name="hora"
-                        placeholder="0:00"
+                        disabled={this.modoVer()} placeholder={this.modoVer() ? "" : '0:00'}
                         value={this.state.transportes[props.index].horaSalida}
                         iconPosition="left"
                         onChange={(event, { name, value }) => {
@@ -670,8 +806,9 @@ class CrearFile extends Component {
                     />
                 } />
                 <CampoServicio titulo="Vuelo" componente={
-                    <Input transparent fluid placeholder="Vuelo"
+                    <Input transparent fluid
                         value={this.state.transportes[props.index].vuelo}
+                        disabled={this.modoVer()} placeholder={this.modoVer() ? "" : 'Vuelo'}
                         onChange={(event) => {
                             var trans = this.state.transportes.slice();
                             trans[props.index].vuelo = event.target.value;
@@ -680,7 +817,7 @@ class CrearFile extends Component {
                 } />
                 <CampoServicio titulo="V/R" componente={
 
-                    <Input transparent fluid placeholder="V/R"
+                    <Input transparent fluid disabled={this.modoVer()} placeholder={this.modoVer() ? "" : 'V/R'}
                         value={this.state.transportes[props.index].vr}
                         onChange={(event) => {
                             var trans = this.state.transportes.slice();
@@ -689,7 +826,7 @@ class CrearFile extends Component {
                         }}></Input>
                 } />
                 <CampoServicio titulo="TC" componente={
-                    <Input transparent fluid placeholder="TC"
+                    <Input transparent fluid disabled={this.modoVer()} placeholder={this.modoVer() ? "" : 'TC'}
                         value={this.state.transportes[props.index].tc}
                         onChange={(event) => {
                             var trans = this.state.transportes.slice();
@@ -698,7 +835,7 @@ class CrearFile extends Component {
                         }}></Input>
                 } />
                 <CampoServicio titulo="Obs" componente={
-                    <Input transparent fluid placeholder="OBS"
+                    <Input transparent fluid disabled={this.modoVer()} placeholder={this.modoVer() ? "" : 'OBS'}
                         value={this.state.transportes[props.index].observaciones}
                         onChange={(event) => {
                             var trans = this.state.transportes.slice();
@@ -710,37 +847,43 @@ class CrearFile extends Component {
         </Segment.Group>
     }
 
-    EnviarPostFile=()=>{
+    EnviarPostFile = () => {
 
         let obj = {
-            idBiblia:this.state.idBiblia,
-            idCliente:this.state.idCliente,
-            codigo:this.state.codigo,
-            descripcion:this.state.descripcion,
-            servicios:this.state.servicios,
-            transportes:this.state.transportes
+            id: this.state.idFile,
+            idBiblia: this.state.idBiblia,
+            idCliente: this.state.idCliente,
+            codigo: this.state.codigo,
+            descripcion: this.state.descripcion,
+            servicios: this.state.servicios,
+            transportes: this.state.transportes
         };
 
-        this.setState({transaccionEnviadaCrearFile:true});
-        console.log("file a enviar: ",obj)
-        console.log("TRANSPORTESSS: ",obj.transportes)
-        Requester.postFile(
+        this.setState({ transaccionEnviadaCrearFile: true });
+        console.log("file a enviar: ", obj)
+        console.log("TRANSPORTESSS: ", obj.transportes)
+        let func = Requester.postFile;
+
+        if (this.modoEditar())
+            func = Requester.postEditarFile;
+
+        func(
             obj,
-            (rpta)=>{
+            (rpta) => {
                 //console.log("exitooo")
                 this.setState({
-                    responseRecibidaCrearFile:true,
-                    rptaTransaccionCrearFile:rpta,
-                    transaccionEnviadaCrearFile:false
-            });
+                    responseRecibidaCrearFile: true,
+                    rptaTransaccionCrearFile: rpta,
+                    transaccionEnviadaCrearFile: false
+                });
             },
-            (rpta)=>{
-                //console.log("RPTA!",rpta);
+            (rpta) => {
+                console.log("RPTA de error!", rpta);
                 this.setState({
-                    responseRecibidaCrearFile:true,
-                    rptaTransaccionCrearFile:rpta,
-                    transaccionEnviadaCrearFile:false
-            });
+                    responseRecibidaCrearFile: true,
+                    rptaTransaccionCrearFile: rpta,
+                    transaccionEnviadaCrearFile: false
+                });
             }
         )
     }
@@ -768,73 +911,105 @@ class CrearFile extends Component {
     }
 
     // ------------------------------------------------------------------------- Modal clientes
+    /*
+        EnviarPostBiblia = () => {
     
+            var newStateModalBiblia = { ...this.state.modalBiblia };
+            newStateModalBiblia.transaccionEnviada = true;
+            this.setState({ modalBiblias: newStateModalBiblia });
+            console.log(this.state.camposModalBiblia);
+    
+            Requester.postBiblia(this.state.camposModalBiblia, (rpta) => {
+                var newState = { ...this.state.modalBiblia };
+                newState.responseRecibida = true;
+                newState.rptaTransaccion = rpta;
+                this.cargarBiblias();
+                this.setState({ modalBiblia: newState });
+            }, (rptaError) => {
+                console.log("error!")
+                console.log(rptaError)
+                console.log(this.state.modalBiblia);
+                var newState = { ...this.state.modalBiblia };
+                newState.responseRecibida = true;
+                newState.rptaTransaccion = rptaError;
+                console.log(this.state.modalBiblia);
+                this.setState({ modalBiblia: newState });
+            });
+        }
+    */
+
+
     EnviarPostBiblia = () => {
 
         var newStateModalBiblia = { ...this.state.modalBiblia };
         newStateModalBiblia.transaccionEnviada = true;
-        this.setState({ modalBiblias: newStateModalBiblia });
-        console.log(this.state.camposModalBiblia);
+        this.setState({ modalBiblia: newStateModalBiblia });
 
-        Requester.postBiblia(this.state.camposModalBiblia, (rpta) => {
+        Requester.postBiblia(this.state.modalBiblia.campos, (rpta) => {
             var newState = { ...this.state.modalBiblia };
             newState.responseRecibida = true;
             newState.rptaTransaccion = rpta;
             this.cargarBiblias();
             this.setState({ modalBiblia: newState });
         }, (rptaError) => {
-            console.log("error!")
-            console.log(rptaError)
-            console.log(this.state.modalBiblia);
             var newState = { ...this.state.modalBiblia };
             newState.responseRecibida = true;
             newState.rptaTransaccion = rptaError;
-            console.log(this.state.modalBiblia);
+            //console.log(this.state.modalBiblia);
             this.setState({ modalBiblia: newState });
         });
     }
 
-    // ------------------------------------------------------------------------- Modal proveedores
+    // ------------------------------------------------------------------------- Modal proveedores todos
+
+
+    abrirModalProveedor = () => {
+        var obj = { ...this.state.modalCrearEditarProveedor };
+        obj.modo = "creacion";
+        obj.abierto = true;
+        this.setState({ modalCrearEditarProveedor: obj });
+    }
+
 
     enEnviarProovedor = () => {
-        var obj = { ...this.state.modalCrearEditar };
+        var obj = { ...this.state.modalCrearEditarProveedor };
         obj.mensaje.enviado = true;
-        this.setState({ modalCrearEditar: obj });
+        this.setState({ modalCrearEditarProveedor: obj });
 
         Requester.postProveedor(
-            this.state.modalCrearEditar.campos.tipo,
-            this.state.modalCrearEditar.campos.nombre,
-            this.state.modalCrearEditar.campos.correo,
-            this.state.modalCrearEditar.campos.num,
-            this.state.modalCrearEditar.campos.numAdic,
-            this.state.modalCrearEditar.campos.correoAdic,
-            this.state.modalCrearEditar.campos.ciudad,
+            this.state.modalCrearEditarProveedor.campos.tipo,
+            this.state.modalCrearEditarProveedor.campos.nombre,
+            this.state.modalCrearEditarProveedor.campos.correo,
+            this.state.modalCrearEditarProveedor.campos.num,
+            this.state.modalCrearEditarProveedor.campos.numAdic,
+            this.state.modalCrearEditarProveedor.campos.correoAdic,
+            this.state.modalCrearEditarProveedor.campos.ciudad,
             (rpta) => {
-                var obj = { ...this.state.modalCrearEditar };
+                var obj = { ...this.state.modalCrearEditarProveedor };
                 obj.mensaje.recibido = true;
                 obj.mensaje.respuesta = rpta;
-                this.setState({ modalCrearEditar: obj });
+                this.setState({ modalCrearEditarProveedor: obj });
                 this.cargarProveedoresNoTransp();
                 //this.cargarProovs();
             },
             (rptaError) => {
                 console.log("err!");
-                var obj = { ...this.state.modalCrearEditar };
+                var obj = { ...this.state.modalCrearEditarProveedor };
                 obj.mensaje.recibido = true;
                 obj.mensaje.respuesta = rptaError;
-                this.setState({ modalCrearEditar: obj });
+                this.setState({ modalCrearEditarProveedor: obj });
             })
     }
 
 
     enCerrarModalProveedor = () => {
-        var obj = { ...this.state.modalCrearEditar };
+        var obj = { ...this.state.modalCrearEditarProveedor };
         obj.mensaje.recibido = false;
         obj.mensaje.enviado = false;
         obj.mensaje.respuesta = null;
 
-        if (this.state.modalCrearEditar.modo === "edicion") {
-            var obj = { ...this.state.modalCrearEditar };
+        if (this.state.modalCrearEditarProveedor.modo === "edicion") {
+            var obj = { ...this.state.modalCrearEditarProveedor };
             obj.campos.tipo = '';
             obj.campos.id = '';
             obj.campos.nombre = '';
@@ -846,6 +1021,68 @@ class CrearFile extends Component {
             this.setState({ modalCrearEditar: obj });
         }
     }
+
+    // ------------------------------------------------------------------------- Modal proveedores transportes
+
+    abrirModalProveedorTransporte = () => {
+        var obj = { ...this.state.modalCrearProveedorTransporte };
+        obj.modo = "creacion";
+        obj.abierto = true;
+        this.setState({ modalCrearProveedorTransporte: obj });
+    }
+
+    enEnviarProveedorTransporte = () => {
+
+        var obj = { ...this.state.modalCrearProveedorTransporte };
+        obj.mensaje.enviado = true;
+        this.setState({ modalCrearProveedorTransporte: obj });
+
+        Requester.postProvTransporte(
+            this.state.modalCrearProveedorTransporte.campos.nombre,
+            this.state.modalCrearProveedorTransporte.campos.correo,
+            this.state.modalCrearProveedorTransporte.campos.num,
+            this.state.modalCrearProveedorTransporte.campos.numAdic,
+            this.state.modalCrearProveedorTransporte.campos.correoAdic,
+            this.state.modalCrearProveedorTransporte.campos.ciudad,
+            (rpta) => {
+                console.log(this.state.modalCrearProveedorTransporte.campos);
+                console.log("success!");
+                console.log(rpta);
+                var obj = { ...this.state.modalCrearProveedorTransporte };
+                obj.mensaje.recibido = true;
+                obj.mensaje.respuesta = rpta;
+                this.setState({ modalCrearProveedorTransporte: obj });
+                this.cargarTransportes();
+            },
+            (rptaError) => {
+                console.log("err!");
+                var obj = { ...this.state.modalCrearProveedorTransporte };
+                obj.mensaje.recibido = true;
+                obj.mensaje.respuesta = rptaError;
+                this.setState({ modalCrearProveedorTransporte: obj });
+            })
+    }
+
+
+    enCerrarModalProveedorTransportes = () => {
+        var obj = { ...this.state.modalCrearProveedorTransporte };
+        obj.mensaje.recibido = false;
+        obj.mensaje.enviado = false;
+        obj.mensaje.respuesta = null;
+
+        if (this.state.modalCrearProveedorTransporte.modo === "edicion") {
+            var obj = { ...this.state.modalCrearProveedorTransporte };
+            obj.campos.id = '';
+            obj.campos.nombre = '';
+            obj.campos.correo = '';
+            obj.campos.correoAdic = '';
+            obj.campos.num = '';
+            obj.campos.numAdic = '';
+            obj.campos.ciudad = '';
+            this.setState({ modalCrearProveedorTransporte: obj });
+        }
+    }
+
 }
 
 export default CrearFile;

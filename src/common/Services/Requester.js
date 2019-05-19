@@ -53,6 +53,7 @@ class Requester {
                     console.log(err);
                 }
             }).catch(error => {
+                console.error("Error en POST!",error);
                 if (funcError) {
                     if (error.response) {
                         if (error.response.data) {
@@ -77,9 +78,18 @@ class Requester {
     static postFile = (file, funcSuccess, funcError, funcAlways) => {
         this.requestBasicoPost(Configuracion.ServerUrl + "/files", file, funcSuccess, funcError, funcAlways);
     }
+    
+    static postEditarFile = (file, funcSuccess, funcError, funcAlways) => {
+        this.requestBasicoPost(Configuracion.ServerUrl + "/files/editar/", file, funcSuccess, funcError, funcAlways);
+    }
+
 
     static getListadoFiles = (funcSuccess, funcError, funcAlways) => {
         this.requestBasicoGet(Configuracion.ServerUrl + "/files", funcSuccess, funcError, funcAlways);
+    }
+
+    static getFile = (idFile, funcSuccess, funcError, funcAlways) => {
+        this.requestBasicoGet(Configuracion.ServerUrl + "/files/"+idFile, funcSuccess, funcError, funcAlways);
     }
 
     static getHoteles = (funcSuccess, funcError, funcAlways) => {

@@ -128,6 +128,10 @@ class RptaTrx{
             this.msj = response.msj;
             this.trace = response.trace;
             this.cod = response.cod;
+
+            if(!this.cont || !this.cod)
+                this.cod=0;
+
         }
     }
 
