@@ -32,16 +32,22 @@ class TablaBuscador extends Component{
     render(){
 
         //filtrando data
+        console.log("reupdate!")
         let dataFiltrada = this.props.data;
 
-		if (this.state.queryBusqueda) 
+        let query = this.state.queryBusqueda;
+
+        if(this.props.queryForzado)
+            query=this.props.queryForzado;
+
+		if (query) 
             if(dataFiltrada)
                 dataFiltrada = dataFiltrada.filter(objetoFila => {
                     for (var property in objetoFila) {
                         if (objetoFila.hasOwnProperty(property)) {
                             let val = objetoFila[property];
                             if(val){
-                                if(String(val).toLowerCase().includes(this.state.queryBusqueda.toLowerCase()))
+                                if(String(val).toLowerCase().includes(query.toLowerCase()))
                                     return true;
                             }
                         }
@@ -55,8 +61,12 @@ class TablaBuscador extends Component{
                 Buscar registros:{"      "}
                 <Input style={{padding:"0px 0px 12px 0px"}}
                     placeholder="Buscar..."
-                    value={this.state.queryBusqueda}
-                    onChange={e => this.setState({queryBusqueda: e.target.value})}/>
+                    value={query}
+                    onChange={e => {
+                        if(this.props.queryForzado)
+                            this.props.vaciarQueryForzado(); 
+                        this.setState({queryBusqueda: e.target.value})
+                    }}/>
                 <br/>
                 <ReactTable
                     data={dataFiltrada}

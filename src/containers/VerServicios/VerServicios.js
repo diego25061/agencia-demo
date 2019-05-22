@@ -8,6 +8,8 @@ import TablaBuscador from '../TablaBuscador/TablaBuscador';
 import ModalCrearServicio from './ModalCrearServicio';
 import CONSTANTES_GLOBALES from '../../common/Constantes';
 import Requester from '../../common/Services/Requester';
+import moment from 'moment'
+import momentTz from 'moment-timezone'
 
 class VerServicios extends Component{
 
@@ -65,7 +67,9 @@ class VerServicios extends Component{
                 pasajero: "Ctm",
                 transportista: "Javi" 
             }*/
-        ] 
+        ],
+         queryForzadoServs:"",
+         queryForzadoTransps:""
      }
 
 
@@ -116,19 +120,43 @@ class VerServicios extends Component{
                     this.setState({modalServicio:obj});
                 } }>Nuevo Servicio</Button>
             */}
-
+            <Header size="small">Servicios al día de...</Header>
+            <Button onClick={()=>{
+                    let fecha = moment().tz('America/Lima').format('Y-MM-DD')
+                    this.setState({queryForzadoServs:fecha,queryForzadoTransps:fecha})
+                }}>Hoy</Button>
+            <Button onClick={()=>{
+                    let fecha = moment().tz('America/Lima').add(1,'days').format('Y-MM-DD')
+                    this.setState({queryForzadoServs:fecha,queryForzadoTransps:fecha})
+                }}>Mañana</Button>
+            <Button onClick={()=>{
+                    this.setState({queryForzadoServs:"",queryForzadoTransps:""})
+                }}   secondary>Todos</Button>
                 <Header size="medium">Servicios generales programados</Header> 
                 <Segment>
-                    
-                    <TablaBuscador data={this.state.serviciosServ} columns={cols} />
+                    <TablaBuscador 
+                        queryForzado={this.state.queryForzadoServs} 
+                        vaciarQueryForzado={this.vaciarQueryForzadoServs}
+                        data={this.state.serviciosServ} 
+                        columns={cols} />
                 </Segment>
                 <Header size="medium">Servicios de transporte programados</Header> 
                 <Segment>
-                    <TablaBuscador data={this.state.serviciosTransp} columns={cols} />
+                    <TablaBuscador 
+                        queryForzado={this.state.queryForzadoTransps} 
+                        vaciarQueryForzado={this.vaciarQueryForzadoTransps}
+                        data={this.state.serviciosTransp} columns={cols} />
                 </Segment>
                 {/*<ModalCrearServicio parentComp={this}/>*/}
             </div>
         )
+    }
+
+    vaciarQueryForzadoServs = () =>{
+        this.setState({queryForzadoServs:''})
+    }
+    vaciarQueryForzadoTransps = () =>{
+        this.setState({queryForzadoTransps:''})
     }
 
     enviarServicio = () => {

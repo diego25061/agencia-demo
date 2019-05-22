@@ -92,10 +92,16 @@ const CONSTANTES_GLOBALES={
     
 }
 
+
+const Rol_Admin="Admin";
+const Rol_Gerente="Gerente";
+const Rol_Operador="Operador";
+const Rol_Observador = "Observador";
+
 const Configuracion={
     ServerUrl:"http://localhost:65212",
     EnlacesNavBar:[
-        {nombre:"Inicio", valor:"/inicio"},
+        {nombre:"Inicio", valor:"/inicio" },
         {nombre:"Files", valor:"/files"},
         {nombre:"Servicios", valor:"/servicios"},
         {nombre:"Biblias", valor:"/biblias"},

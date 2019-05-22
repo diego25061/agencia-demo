@@ -257,6 +257,11 @@ class CrearFile extends Component {
             <Segment>
                 <Grid columns={2} >
                     <Grid.Row>
+                        <Grid.Column>
+                            <Header >Datos</Header>
+                        </Grid.Column>
+                    </Grid.Row>
+                    <Grid.Row>
                         <Grid.Column width={8}>
                             <ElementoForm titulo="Codigo">
                                 <Input disabled={this.modoVer()} transparent={this.modoVer()} fluid placeholder="08-020" value={this.state.codigo} onChange={(event) => {
@@ -300,7 +305,8 @@ class CrearFile extends Component {
                     {/*<Button positive onClick={() => { console.log(this.state) }}>weeee</Button>*/}
                     <Grid.Row>
                         <Grid.Column width={16}>
-                            <Header size="tiny">Servicios</Header>
+                            <Header >Servicios</Header> 
+                            {this.state.servicios.length==0?<Segment secondary textAlign="center" fluid>No hay servicios en este file</Segment>:''}
                             {this.state.servicios.map((elem, index) => {
                                 //return this.filaServicio(index);
                                 return this.CuerpoServicio({ index: index });
@@ -316,8 +322,9 @@ class CrearFile extends Component {
                     </Grid.Row>
                     <Grid.Row>
                         <Grid.Column width={16}>
-                            <Header size="tiny">Transportes</Header>
+                            <Header >Transportes</Header>
 
+                            {this.state.transportes.length==0?<Segment secondary textAlign="center" fluid>No hay transportes en este file</Segment>:''}
                             {this.state.transportes.map((elem, index) => {
                                 return this.CuerpoTransporte({ index: index });
                             })}

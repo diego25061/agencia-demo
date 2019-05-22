@@ -1,53 +1,92 @@
 import React from 'react'
-import {Component} from 'react';
+import { Component } from 'react';
 import './NavBar.css';
-import {Link} from 'react-router-dom'
-import {Grid, Button, Menu, Image, Header,Container} from 'semantic-ui-react'
-import {Configuracion} from '../../common/Constantes'
+import { Link } from 'react-router-dom'
+import { Grid, Button, Menu, Image, Header, Container, Segment, Flag, Icon } from 'semantic-ui-react'
+import { Configuracion } from '../../common/Constantes'
 
 import LogoYllari from '../../assets/logo_yllari.png'
 
 import { withRouter } from 'react-router-dom'
- 
-  
-class NavBar extends Component{
+import moment from 'moment'
+import momentTz from 'moment-timezone'
+import 'moment/locale/es-us'
 
-    state={
-        enlace:''
+class NavBar extends Component {
+
+    capitalize = (string) => {
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    }
+    state = {
+        enlace: '',
+        usuarioNombre: '',
+        fecha:this.capitalize(moment().tz('America/Lima').format('dddd D')) + ' de ' + moment().tz('America/Lima').format('MMMM'),
+        hora:moment().tz('America/Lima').format('LT')
     }
 
-    componentDidMount(){
+    componentDidMount() {
+        moment().locale("es");
+        this.timerID = setInterval(() => this.tick(), 5000);
     }
 
-    navegar(direccion){
+    tick() {
+        this.setState({
+            fecha:this.capitalize(moment().tz('America/Lima').format('dddd D')) + ' de ' + moment().tz('America/Lima').format('MMMM'),
+            hora:moment().tz('America/Lima').format('LT')
+        });
+    }
+
+    navegar(direccion) {
         this.props.history.push(direccion);
     }
-    render(){
-        return(
-                <div>
-                    <Menu /*style={{backgroundColor:"#ffb366"}}*/ stackable > 
-                            <Menu.Item >
-                                <img src={LogoYllari} />
-                            </Menu.Item>
-                            {Configuracion.EnlacesNavBar.map((element)=>{
-                                return <Menu.Item as='a' active={this.state.enlace === element.nombre} 
-                                    onClick={()=>{this.setState({enlace:element.nombre});this.navegar(element.valor)}}> 
-                                        {element.nombre}
-                                    {/*<Link to={element.valor} style={{color:"black"}}>{element.nombre}</Link>*/}
-                                </Menu.Item>
-                            })}
-                            
-                            <Menu.Item position='right'>
-                            
-                                <Button as='a' >
-                                    Cerrar sesión
-                                </Button>{/*
-                                <Button as='a' style={{ marginLeft: '0.5em' }}>
-                                    Sign Up
-                                </Button>*/}
-                            </Menu.Item> 
-                    </Menu>
-                
+    render() {
+        let nombre = "";
+        let genero = 0;
+        if (this.props.usuario) {
+            nombre = this.props.usuario.nombre;
+            genero = this.props.usuario.genero;
+        }
+        return (
+            <div>
+                <Menu /*style={{backgroundColor:"#ffb366"}}*/ size="huge" stackable >
+                    <Menu.Item >
+                        <img src={LogoYllari} />
+                    </Menu.Item>
+                    {Configuracion.EnlacesNavBar.map((element) => {
+                        return <Menu.Item as='a' active={this.state.enlace === element.nombre}
+                            onClick={() => { this.setState({ enlace: element.nombre }); this.navegar(element.valor) }}>
+                            {element.nombre}
+                            {/*<Link to={element.valor} style={{color:"black"}}>{element.nombre}</Link>*/}
+                        </Menu.Item>
+                    })}
+
+                    <Menu.Menu position='right'>
+                        <Menu.Item style={{ padding: "4px 16px" }}>
+                            <div style={{ lineHeight: "1.4" }}>
+                                <div style={{ fontSize: "11px" }}>{this.state.fecha}{/*Martes, 21 de Mayo*/}</div>
+                                <Flag name='pe' />{' '}<b>{this.state.hora}</b>
+                            </div>
+                        </Menu.Item>
+                        <Menu.Item style={{ padding: "4px 16px" }}>
+                            {genero == 0 ? "Bienvenido" : "Bienvenida"},{' '}<br /><b>{nombre ? nombre : "usuario"}</b>
+                        </Menu.Item>
+                        <Menu.Item>
+                            <Button size="massive" style={{ backgroundColor: "#00000000", padding: "13.3px 5px" }} icon onClick={() => {
+                                this.props.cerrarSesionHandler();
+                            }}>
+                                <Icon size="large" name='power off' />
+                            </Button>
+                            {/*
+                            <Button as='a' onClick={() => {
+                                this.props.cerrarSesionHandler();
+                            }}>
+                                Cerrar sesión
+                                </Button>
+                                */}
+                        </Menu.Item>
+                    </Menu.Menu>
+                </Menu>
+
                 {/*
                 <Grid>
                     <Grid.Row className="Spaced">
@@ -96,7 +135,7 @@ class NavBar extends Component{
                     <Link to="/files">Files</Link>
                     <Link to="/servicios">Servicios</Link>
                 <Link to="/transportes">Transportes</Link>*/}
-                </div>
+            </div>
         );
     }
 }

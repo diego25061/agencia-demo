@@ -7,8 +7,10 @@ import CONSTANTES_GLOBALES, {
 
 class Requester {
 
-    static requestBasicoGet(direccion, funcSuccess, funcError, funcAlways) {
-        axios.get(direccion)
+    static requestBasicoGet(direccion, funcSuccess, funcError, funcAlways, headers) {
+        
+        axios.get(direccion,
+            headers? {headers:headers}: null)
             .then(response => {
                 try {
                     if (funcSuccess)
@@ -38,7 +40,7 @@ class Requester {
 
 
     static requestBasicoPost(direccion, objeto, funcSuccess, funcError, funcAlways) {
-        //console.log("enviando POSTTTTTTTTTTTTTTTTTTTTTTTTTT :",direccion," obj: ",objeto);
+        //console.log({enviandoPost: direccion, contenido: objeto, funcS:funcSuccess, funcE:funcError});
         axios.post(direccion, objeto)
             .then(response => {
                 try {
@@ -50,14 +52,14 @@ class Requester {
                         }
                     }
                 } catch (err) {
-                    console.log(err);
+                    console.error(err);
                 }
             }).catch(error => {
                 console.error("Error en POST!",error);
                 if (funcError) {
                     if (error.response) {
                         if (error.response.data) {
-                            funcError(new RptaTrx(error.response.data));
+                            funcError(new RptaTrx(error.response.data, error));
                         } else {
                             var r = new RptaTrx();
                             r.set(null, "Servidor inaccesible", null, 0);
@@ -72,6 +74,21 @@ class Requester {
                 }
             })
     }
+    //------------------------ MISC -----------------------------------
+
+    static getPing = (funcSuccess, funcError, funcAlways ) => {
+        this.requestBasicoGet(Configuracion.ServerUrl + "/misc/ping", funcSuccess, funcError, funcAlways);
+    }
+
+    static getInfo = (funcSuccess, funcError, funcAlways, token) => {
+        this.requestBasicoGet(Configuracion.ServerUrl + "/misc/info", funcSuccess, funcError, funcAlways,{Authorization:"Bearer "+token});
+    }
+
+    //------------------------ AUTH -----------------------------------
+
+    static postLogin = (obj, funcSuccess, funcError, funcAlways) => {
+        this.requestBasicoPost(Configuracion.ServerUrl + "/usuarios/authenticate/", obj, funcSuccess, funcError, funcAlways);
+    }
 
     //------------------------ FILES -----------------------------------
 
@@ -83,6 +100,9 @@ class Requester {
         this.requestBasicoPost(Configuracion.ServerUrl + "/files/editar/", file, funcSuccess, funcError, funcAlways);
     }
 
+    static postBorrarFile = (idFile, funcSuccess, funcError, funcAlways) => {
+        this.requestBasicoPost(Configuracion.ServerUrl + "/files/eliminar/"+idFile, null, funcSuccess, funcError, funcAlways);
+    }
 
     static getListadoFiles = (funcSuccess, funcError, funcAlways) => {
         this.requestBasicoGet(Configuracion.ServerUrl + "/files", funcSuccess, funcError, funcAlways);

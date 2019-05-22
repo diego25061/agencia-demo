@@ -4,3 +4,12 @@ body{
   /*background-color: #fff5e6;*/
   background-attachment: fixed;
 }
+
+#root{
+  height: 100%;
+}
+
+.LoginContent,
+.LoginContent > div {
+  height: 100%;
+}
