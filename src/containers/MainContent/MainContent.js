@@ -5,7 +5,7 @@ import ViewFiles from '../ViewFiles/ViewFiles'
 
 import './MainContent.css';
 import CrearFile from '../ViewFiles/CrearFile/CrearFile';
-import { Grid, Segment } from 'semantic-ui-react'
+import { Grid, Segment, Loader, Dimmer } from 'semantic-ui-react'
 import Inicio from '../Inicio/Inicio';
 import VerServicios from '../VerServicios/VerServicios';
 import CrearServicio from '../VerServicios/CrearServicio/CrearServicio';
@@ -17,6 +17,7 @@ import Pruebas from '../Test/Pruebas';
 import NavBar from '../../components/NavBar/NavBar';
 import Auth from '../Auth/Auth';
 import Requester from '../../common/Services/Requester';
+import Mostrador404 from '../../components/Mostrador404/Mostrador404';
 
 class MainContent extends Component {
 
@@ -40,6 +41,8 @@ class MainContent extends Component {
 
     loggedInHandler = (obj) => {
         //console.log("aaaaaaaa: "+obj);
+        Requester.store.token = obj.token;
+        Requester.store.usuario = obj.usuario;
         this.setState({
             token: obj.token,
             mostrarContenido: true,
@@ -52,6 +55,7 @@ class MainContent extends Component {
         var token = localStorage.getItem("token");
         if (token) {
             console.log("HAY TOKEN!!!!!")
+            Requester.store.token = token;
             //si hay token guardado
             Requester.getInfo((rpta) => {
                 console.log("Info:", rpta.cont)
@@ -82,8 +86,12 @@ class MainContent extends Component {
 
     render() {
         if (!this.state.mostrarContenido)
-            return <div>Cargando!</div>
-
+            return (<div style={{height:"100%"}}>
+                <Dimmer inverted active>
+                <Loader size="massive" content="" />
+                </Dimmer>
+                </div> 
+                );
         let contenido = (
             <div>
                 <Route component={(props) => { return <NavBar usuario={this.state.usuario} history={props.history} cerrarSesionHandler={this.cerrarSesion} /> }} />
@@ -91,7 +99,7 @@ class MainContent extends Component {
                     <Grid>
                         <Grid.Row>
                             <Grid.Column width={1}></Grid.Column>
-                            <Grid.Column width={13}>
+                            <Grid.Column width={14}>
                                 {/*<br />*/}
                                 <Switch>
                                     <Route path="/pruebas" exact component={Pruebas} />
@@ -105,9 +113,11 @@ class MainContent extends Component {
                                     <Route path="/biblias" exact component={ListaBiblias} />
                                     <Route path="/proveedores" exact component={MostradorProveedores} />
                                     <Route path="/clientes" exact component={VerClientes} />
-                                    <Route path="/calendario" exact component={VerCalendario} />
+                                    <Route path="/calendario/" exact component={(obj) => { return <VerCalendario/> }} />
+                                    <Route path="/calendario/:anho/:mes" component={(obj) => { return <VerCalendario
+                                        fechaDefault={new Date(obj.match.params.anho,obj.match.params.mes-1,1)}/> }} />
                                     <Route path="/" exact component={Inicio} />
-                                    <Route component={() => { return <div>404!</div> }} />
+                                    <Route component={Mostrador404 /*() => { return <div>404!</div> }*/} />
                                 </Switch>
                             </Grid.Column>
                             <Grid.Column width={1}></Grid.Column>

@@ -4,13 +4,13 @@ import CONSTANTES_GLOBALES, {
     Configuracion
 } from '../Constantes';
 
-
 class Requester {
 
-    static requestBasicoGet(direccion, funcSuccess, funcError, funcAlways, headers) {
-        
+    static store = {}
+
+    static requestBasicoGet(direccion, funcSuccess, funcError, funcAlways, auth=true) {
         axios.get(direccion,
-            headers? {headers:headers}: null)
+            auth ? {headers:{Authorization:"Bearer "+ this.store.token}}: null)
             .then(response => {
                 try {
                     if (funcSuccess)
@@ -39,9 +39,9 @@ class Requester {
     }
 
 
-    static requestBasicoPost(direccion, objeto, funcSuccess, funcError, funcAlways) {
-        //console.log({enviandoPost: direccion, contenido: objeto, funcS:funcSuccess, funcE:funcError});
-        axios.post(direccion, objeto)
+    static requestBasicoPost(direccion, objeto, funcSuccess, funcError, funcAlways, auth=true) {
+        axios.post(direccion, objeto,
+            auth ? {headers:{Authorization:"Bearer "+ this.store.token}}: null)
             .then(response => {
                 try {
                     if (funcSuccess) {
@@ -80,14 +80,14 @@ class Requester {
         this.requestBasicoGet(Configuracion.ServerUrl + "/misc/ping", funcSuccess, funcError, funcAlways);
     }
 
-    static getInfo = (funcSuccess, funcError, funcAlways, token) => {
-        this.requestBasicoGet(Configuracion.ServerUrl + "/misc/info", funcSuccess, funcError, funcAlways,{Authorization:"Bearer "+token});
+    static getInfo = (funcSuccess, funcError, funcAlways) => {
+        this.requestBasicoGet(Configuracion.ServerUrl + "/misc/info", funcSuccess, funcError, funcAlways);
     }
 
     //------------------------ AUTH -----------------------------------
 
     static postLogin = (obj, funcSuccess, funcError, funcAlways) => {
-        this.requestBasicoPost(Configuracion.ServerUrl + "/usuarios/authenticate/", obj, funcSuccess, funcError, funcAlways);
+        this.requestBasicoPost(Configuracion.ServerUrl + "/usuarios/authenticate/", obj, funcSuccess, funcError, funcAlways, false);
     }
 
     //------------------------ FILES -----------------------------------
@@ -124,7 +124,7 @@ class Requester {
     }
 
     static getBibliasDetalle = (funcSuccess, funcError, funcAlways) => {
-        this.requestBasicoGet(Configuracion.ServerUrl + "/biblias/", funcSuccess, funcError, funcAlways);
+        this.requestBasicoGet(Configuracion.ServerUrl + "/biblias/", funcSuccess, funcError, funcAlways , true);
     }
 
 
@@ -133,6 +133,16 @@ class Requester {
     }
 
     //------------------------ SERVICIOS -----------------------------------
+
+    
+    static getServiciosTodos = (funcSuccess, funcError, funcAlways) => {
+        this.requestBasicoGet(Configuracion.ServerUrl + "/servicios", funcSuccess, funcError, funcAlways);
+    }
+
+
+    static getServiciosPorMes = (mes, funcSuccess, funcError, funcAlways) => {
+        this.requestBasicoGet(Configuracion.ServerUrl + "/servicios/mes/"+mes, funcSuccess, funcError, funcAlways);
+    }
 
     static getServiciosGeneralesDetalle = (funcSuccess, funcError, funcAlways) => {
         this.requestBasicoGet(Configuracion.ServerUrl + "/servicios/generales", funcSuccess, funcError, funcAlways);

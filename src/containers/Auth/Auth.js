@@ -55,6 +55,8 @@ class Auth extends Component {
                                             (rpta) => {
 
                                                 var token = rpta.cont.token;
+                                                Requester.store.token = token;
+                                                console.log("Requester store: ",Requester.store)
 
                                                 localStorage.setItem("token", token);
                                                 var pack = { token: token };

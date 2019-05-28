@@ -747,7 +747,7 @@ class CrearFile extends Component {
                         }}></Input>
                 } />
                 <CampoServicio titulo="Cant. pasajeros" componente={
-                    <Input transparent fluid disabled={this.modoVer()} placeholder={this.modoVer() ? "" : '4'}
+                    <Input type="number" transparent fluid disabled={this.modoVer()} placeholder={this.modoVer() ? "" : '4'}
                         value={this.state.transportes[props.index].pasajeros}
                         onChange={(event) => {
                             var trans = this.state.transportes.slice();
