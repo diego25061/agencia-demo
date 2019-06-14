@@ -263,7 +263,7 @@ class CrearFile extends Component {
                     </Grid.Row>
                     <Grid.Row>
                         <Grid.Column width={8}>
-                            <ElementoForm titulo="Codigo">
+                            <ElementoForm titulo="Codigo *">
                                 <Input disabled={this.modoVer()} transparent={this.modoVer()} fluid placeholder="08-020" value={this.state.codigo} onChange={(event) => {
                                     this.setState({ codigo: event.target.value });
                                 }} ></Input>
@@ -283,7 +283,7 @@ class CrearFile extends Component {
                     </Grid.Row>
                     <Grid.Row>
                         <Grid.Column width={8}>
-                            <ElementoForm titulo="Biblia">
+                            <ElementoForm titulo="Biblia *">
                                 <Grid>
                                     <Grid.Row columns='equal'>
 
@@ -297,7 +297,7 @@ class CrearFile extends Component {
                         </Grid.Column>
 
                         <Grid.Column width={8}>
-                            <ElementoForm titulo="Cliente">
+                            <ElementoForm titulo="Cliente *">
                                 {controlCliente}
                             </ElementoForm>
                         </Grid.Column>
@@ -382,7 +382,10 @@ class CrearFile extends Component {
                 enCerrar={this.enCerrarModalProveedor} />
 
 
-            <ModalCrearEditarProveedor parent={this} pack="modalCrearProveedorTransporte" sustantivoTitulo="Transportista Nuevo"
+            <ModalCrearEditarProveedor 
+                parent={this} 
+                pack="modalCrearProveedorTransporte" 
+                sustantivoTitulo="Transportista Nuevo"
                 placeholderNombre="Transportista"
                 placeholderCorreo="carlos@gmail.com"
                 placeholderCorreoAdic="contacto@transportescarlos.com"
@@ -559,7 +562,7 @@ class CrearFile extends Component {
                 </Segment>
             </Segment.Group>
             <Segment.Group horizontal style={{ backgroundColor: "#fffbf6" }}>
-                <CampoServicio titulo="Nombre" componente={
+                <CampoServicio titulo="Nombre *" componente={
                     <Input disabled={this.modoVer()} transparent fluid placeholder={this.modoVer() ? "" : "In + city"}
                         value={this.state.servicios[props.index].nombre}
                         onChange={(event) => {
@@ -581,14 +584,14 @@ class CrearFile extends Component {
                         </datalist>
                     </div>
                 } />
-                <CampoServicio titulo="Fecha" componente={
+                <CampoServicio titulo="Fecha ejecución *" componente={
                     <DateInput
                         disabled={this.modoVer()}
                         transparent
                         fluid
                         dateFormat="YYYY-MM-DD"
                         name="fecha"
-                        placeholder={this.modoVer() ? "-" : 'Año-mes-dia'}
+                        placeholder={this.modoVer() ? "-" : 'aaaa-mm-dd'}
                         value={this.state.servicios[props.index].fecha}
                         iconPosition="left"
                         onChange={(event, { name, value }) => {
@@ -607,7 +610,7 @@ class CrearFile extends Component {
                             servs[props.index].nombrePasajero = event.target.value;
                             this.setState({ servicios: servs });
                         }}></Input>} />
-                <CampoServicio titulo="Cant. pasajeros" componente={
+                <CampoServicio titulo="Cant. pasajeros *" componente={
                     <Input type="number" transparent fluid disabled={this.modoVer()} placeholder={this.modoVer() ? "" : '4'} value={this.state.servicios[props.index].pasajeros}
                         onChange={(event) => {
                             var servs = this.state.servicios.slice();
@@ -697,7 +700,7 @@ class CrearFile extends Component {
                 </Segment>
             </Segment.Group>
             <Segment.Group horizontal style={{ backgroundColor: "#e6f5ff" }}>
-                <CampoServicio titulo="Nombre" componente={
+                <CampoServicio titulo="Nombre *" componente={
                     <Input transparent fluid disabled={this.modoVer()} placeholder={this.modoVer() ? "" : 'APTO / Four points'}
                         value={this.state.transportes[props.index].nombre}
                         onChange={(event) => {
@@ -717,14 +720,14 @@ class CrearFile extends Component {
                             }}></Input>
                     </div>
                 } />
-                <CampoServicio titulo="Fecha ejecucion" componente={
+                <CampoServicio titulo="Fecha ejecucion *" componente={
                     <DateInput
                         transparent
                         fluid
                         name="fecha"
                         dateFormat="YYYY-MM-DD"
                         disabled={this.modoVer()}
-                        placeholder={this.modoVer() ? "" : 'Año-mes-dia'}
+                        placeholder={this.modoVer() ? "" : 'aaaa-mm-dd'}
                         value={this.state.transportes[props.index].fecha}
                         iconPosition="left"
                         onChange={(event, { name, value }) => {
@@ -746,7 +749,7 @@ class CrearFile extends Component {
                             this.setState({ transportes: trans });
                         }}></Input>
                 } />
-                <CampoServicio titulo="Cant. pasajeros" componente={
+                <CampoServicio titulo="Cant. pasajeros *" componente={
                     <Input type="number" transparent fluid disabled={this.modoVer()} placeholder={this.modoVer() ? "" : '4'}
                         value={this.state.transportes[props.index].pasajeros}
                         onChange={(event) => {
@@ -981,6 +984,7 @@ class CrearFile extends Component {
     enEnviarProovedor = () => {
         var obj = { ...this.state.modalCrearEditarProveedor };
         obj.mensaje.enviado = true;
+        obj.mensaje.recibido=false;
         this.setState({ modalCrearEditarProveedor: obj });
 
         Requester.postProveedor(
@@ -1014,7 +1018,7 @@ class CrearFile extends Component {
         obj.mensaje.recibido = false;
         obj.mensaje.enviado = false;
         obj.mensaje.respuesta = null;
-
+/*
         if (this.state.modalCrearEditarProveedor.modo === "edicion") {
             var obj = { ...this.state.modalCrearEditarProveedor };
             obj.campos.tipo = '';
@@ -1026,7 +1030,21 @@ class CrearFile extends Component {
             obj.campos.numAdic = '';
             obj.campos.ciudad = '';
             this.setState({ modalCrearEditar: obj });
-        }
+        }*/
+        this.resetearCamposModalProveedor();
+    }
+    
+    resetearCamposModalProveedor =() => {
+        var obj = { ...this.state.modalCrearEditarProveedor };
+        obj.campos.id = '';
+        obj.campos.nombre = '';
+        obj.campos.correo = '';
+        obj.campos.correoAdic = '';
+        obj.campos.num = '';
+        obj.campos.numAdic = '';
+        obj.campos.ciudad = '';
+        obj.campos.tipo ='';
+        this.setState({ modalCrearEditarProveedor: obj });
     }
 
     // ------------------------------------------------------------------------- Modal proveedores transportes
@@ -1042,6 +1060,7 @@ class CrearFile extends Component {
 
         var obj = { ...this.state.modalCrearProveedorTransporte };
         obj.mensaje.enviado = true;
+        obj.mensaje.recibido=false;
         this.setState({ modalCrearProveedorTransporte: obj });
 
         Requester.postProvTransporte(
@@ -1059,6 +1078,7 @@ class CrearFile extends Component {
                 obj.mensaje.recibido = true;
                 obj.mensaje.respuesta = rpta;
                 this.setState({ modalCrearProveedorTransporte: obj });
+                //this.resetearCamposModalProveedorTransportes();
                 this.cargarTransportes();
             },
             (rptaError) => {
@@ -1071,13 +1091,27 @@ class CrearFile extends Component {
     }
 
 
+    resetearCamposModalProveedorTransportes =() => {
+        var obj = { ...this.state.modalCrearProveedorTransporte };
+        obj.campos.id = '';
+        obj.campos.nombre = '';
+        obj.campos.correo = '';
+        obj.campos.correoAdic = '';
+        obj.campos.num = '';
+        obj.campos.numAdic = '';
+        obj.campos.ciudad = '';
+        this.setState({ modalCrearProveedorTransporte: obj });
+    }
+
     enCerrarModalProveedorTransportes = () => {
         var obj = { ...this.state.modalCrearProveedorTransporte };
         obj.mensaje.recibido = false;
         obj.mensaje.enviado = false;
         obj.mensaje.respuesta = null;
 
-        if (this.state.modalCrearProveedorTransporte.modo === "edicion") {
+        //if (this.state.modalCrearProveedorTransporte.modo === "edicion") {
+            this.resetearCamposModalProveedorTransportes();
+            /*
             var obj = { ...this.state.modalCrearProveedorTransporte };
             obj.campos.id = '';
             obj.campos.nombre = '';
@@ -1086,8 +1120,8 @@ class CrearFile extends Component {
             obj.campos.num = '';
             obj.campos.numAdic = '';
             obj.campos.ciudad = '';
-            this.setState({ modalCrearProveedorTransporte: obj });
-        }
+            this.setState({ modalCrearProveedorTransporte: obj });*/
+        //}
     }
 
 }

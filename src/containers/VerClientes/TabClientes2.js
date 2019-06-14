@@ -63,7 +63,7 @@ class TabProovs extends Component{
             <Button primary onClick={ this.abrirModal }>Nuevo {this.props.sust}</Button>
             <Header size="small">Lista</Header>
             <TablaBuscador data={this.state.proovs} columns={this.columnasTabla} />
-            {/*this.ModalCrear()*/}
+            {/*this.ModalCrear()*/}asdasdasdasdasdas
             <ModalCrearEditarProveedor parent={this} sustantivoTitulo={this.props.sust}
                 placeholderNombre={this.props.placeholderNombre}
                 placeholderCorreo={this.props.placeholderCorreo}

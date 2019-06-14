@@ -4,18 +4,20 @@ import { Button, Container, Message, Icon, Input, Modal, Grid, Dropdown } from '
 import ElementoForm from '../../components/ElementoForm/ElementoForm';
 import Constantes from '../../common/Constantes';
 import ContainedComponent from '../../components/ContainedComponent';
+import MensajeTransaccion from '../../components/MensajeTransaccion/MensajeTransaccion';
 
 class ModalCrearEditarProveedor extends ContainedComponent {
 
     componentDidMount=()=>{
-        console.log("Contenedor: ",this.getParentContainer());
+        //console.log("Contenedor: ",this.getParentContainer());
     }
+
     render() {
         var CompElegir = ''
         if (this.props.elegirTipo) {
             CompElegir = <Grid.Row>
                 <Grid.Column>
-                    <ElementoForm grid titulo="Tipo de proveedor">
+                    <ElementoForm grid titulo="Tipo de proveedor *">
 
                         <Dropdown fluid placeholder='Elegir Tipo'
                             search
@@ -42,8 +44,17 @@ class ModalCrearEditarProveedor extends ContainedComponent {
         var msjComp = <div></div>
         //console.log("weee");
         //console.log(this.props.parent.state.modalCrearEditar);
-        if (this.getParentContainer() /* this.props.parent.state.modalCrearEditar */ && this.getParentContainer().mensaje /* this.props.parent.state.modalCrearEditar.mensaje */) {
-            var mensaje = /*this.props.parent.state.modalCrearEditar.mensaje;*/this.getParentContainer().mensaje;
+        let asd = 
+        <MensajeTransaccion
+            transaccionEnviada = {this.getParentContainer().mensaje.enviado} 
+            responseRecibida = {this.getParentContainer().mensaje.recibido}
+            rptaTransaccion = {this.getParentContainer().mensaje.respuesta}
+            //textoExito = "Puede usar la nueva biblia"
+        />
+
+        /*{
+        if (this.getParentContainer() && this.getParentContainer().mensaje ) {
+            var mensaje = this.getParentContainer().mensaje;
             if (mensaje.enviado && !mensaje.recibido) {
                 msjComp = <Message icon>
                     <Icon name='circle notched' loading />
@@ -72,7 +83,7 @@ class ModalCrearEditarProveedor extends ContainedComponent {
                         </Message>
                     }
                 }
-        }
+    }*/
 
         return <Modal size="tiny" open={this.getParentContainer().abierto /* this.props.parent.state.modalCrearEditar.abierto*/} centered={true} onClose={() => {
             this.UpdateParentContainer({ ...this.getParentContainer(), abierto:false });
@@ -91,7 +102,7 @@ class ModalCrearEditarProveedor extends ContainedComponent {
                 <Grid>
                     <Grid.Row>
                         <Grid.Column>
-                            <ElementoForm grid titulo="Nombre">
+                            <ElementoForm grid titulo="Nombre *">
                                 <Input fluid placeholder={this.props.placeholderNombre} value={this.getParentContainer().campos.nombre/*this.props.parent.state.modalCrearEditar.campos.nombre*/} onChange={(event) => {
                                     /*var obj = {...this.props.parent.state.modalCrearEditar};
                                     obj.campos.nombre = event.target.value;
@@ -203,7 +214,7 @@ class ModalCrearEditarProveedor extends ContainedComponent {
                     </Grid.Row>
                     {CompElegir}
                 </Grid>
-                {msjComp}
+                {asd}
             </Modal.Content>
 
             <Modal.Actions>
