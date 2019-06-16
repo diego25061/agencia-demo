@@ -54,11 +54,11 @@ class MainContent extends Component {
         //console.log("hah!");
         var token = localStorage.getItem("token");
         if (token) {
-            console.log("HAY TOKEN!!!!!")
+            //console.log("HAY TOKEN!!!!!")
             Requester.store.token = token;
             //si hay token guardado
             Requester.getInfo((rpta) => {
-                console.log("Info:", rpta.cont)
+                //console.log("Info:", rpta.cont)
                 this.setState({
                     usuario:
                     {
@@ -76,7 +76,7 @@ class MainContent extends Component {
                 this.setState({ mostrarContenido: true, usuario: null });
             }, null, token)
         } else {
-            console.log("NO HAY TOKEN!!!!!")
+            //console.log("NO HAY TOKEN!!!!!")
             //si no hay token guardado
             this.setState({ mostrarContenido: true, usuario: null });
         }

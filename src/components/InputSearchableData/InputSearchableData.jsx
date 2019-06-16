@@ -68,7 +68,7 @@ class InputSearchableDataButton extends React.Component {
                 {this.props.sideButton}
             </Input>
             <datalist id={this.props.linkId}>
-                {this.props.datalist.map(e => <option value={e.text} />)}
+                {this.props.datalist.map(e => <option key={e.value} value={e.text} />)}
             </datalist>
         </div>
 

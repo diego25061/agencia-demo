@@ -52,8 +52,8 @@ class NavBar extends Component {
                     <Menu.Item >
                         <img src={LogoYllari} />
                     </Menu.Item>
-                    {Configuracion.EnlacesNavBar.map((element) => {
-                        return <Menu.Item as='a' active={this.state.enlace === element.nombre}
+                    {Configuracion.EnlacesNavBar.map((element,index) => {
+                        return <Menu.Item key={index} as='a' active={this.state.enlace === element.nombre}
                             onClick={() => { this.setState({ enlace: element.nombre }); this.navegar(element.valor) }}>
                             {element.nombre}
                             {/*<Link to={element.valor} style={{color:"black"}}>{element.nombre}</Link>*/}

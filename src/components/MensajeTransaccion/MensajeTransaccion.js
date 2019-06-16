@@ -17,7 +17,7 @@ const MensajeTransaccion = (props) => {
             lineasMensaje = props.rptaTransaccion.msj.split('|');
         }
 
-    console.log("LINEAS MENSAJE:",lineasMensaje);
+    //console.log("LINEAS MENSAJE:",lineasMensaje);
     //props.rptaTransaccion.msj ? <Message.Item> {props.rptaTransaccion.msj} </Message.Item> : null
 
     //console.log(props)

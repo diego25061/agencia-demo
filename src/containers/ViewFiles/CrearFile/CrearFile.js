@@ -221,7 +221,7 @@ class CrearFile extends Component {
         />
 
         if (this.modoVer()) {
-            controlBiblia = <Input disabled transparent fluid value={this.state.nombreBiblia} ></Input>
+            controlBiblia = <Input disabled transparent fluid value={this.state.nombreBiblia ? this.state.nombreBiblia : ""} ></Input>
         }
 
         let controlCliente = <Dropdown fluid
@@ -237,16 +237,16 @@ class CrearFile extends Component {
         />
 
         if (this.modoVer()) {
-            controlCliente = <Input disabled transparent fluid value={this.state.nombreCliente} ></Input>
+            controlCliente = <Input disabled transparent fluid value={this.state.nombreCliente ? this.state.nombreCliente : ""} ></Input>
         }
 
 
-        let controlDescripcion = <TextArea disabled={this.modoVer()} style={estiloTextArea} placeholder='Descripcion del file' rows={1} value={this.state.descripcion} onChange={(event) => {
+        let controlDescripcion = <TextArea disabled={this.modoVer()} style={estiloTextArea} placeholder='Descripcion del file' rows={1} value={this.state.descripcion ? this.state.descripcion : ""} onChange={(event) => {
             this.setState({ descripcion: event.target.value });
         }} />
 
         if (this.modoVer()) {
-            controlDescripcion = <Input disabled transparent fluid value={this.state.descripcion} />
+            controlDescripcion = <Input disabled transparent fluid value={this.state.descripcion ? this.state.descripcion : ""} />
         }
 
 
@@ -264,7 +264,7 @@ class CrearFile extends Component {
                     <Grid.Row>
                         <Grid.Column width={8}>
                             <ElementoForm titulo="Codigo *">
-                                <Input disabled={this.modoVer()} transparent={this.modoVer()} fluid placeholder="08-020" value={this.state.codigo} onChange={(event) => {
+                                <Input disabled={this.modoVer()} transparent={this.modoVer()} fluid placeholder="08-020" value={this.state.codigo ? this.state.codigo : ""} onChange={(event) => {
                                     this.setState({ codigo: event.target.value });
                                 }} ></Input>
                             </ElementoForm>
@@ -306,10 +306,14 @@ class CrearFile extends Component {
                     <Grid.Row>
                         <Grid.Column width={16}>
                             <Header >Servicios</Header> 
-                            {this.state.servicios.length==0?<Segment secondary textAlign="center" fluid>No hay servicios en este file</Segment>:''}
+                            {this.state.servicios.length==0?<Segment secondary textAlign="center">No hay servicios en este file</Segment>:''}
                             {this.state.servicios.map((elem, index) => {
                                 //return this.filaServicio(index);
-                                return this.CuerpoServicio({ index: index });
+                                let key = 0;
+                                if(this.state.servicios[index])
+                                    key = this.state.servicios[index].idServicio;
+
+                                return this.CuerpoServicio({ index: index, key : key });
                             })}
                             {this.modoVer() ? <div></div> :
                                 <Button content='Agregar servicio' icon='plus' floated="left" labelPosition='right' onClick={() => {
@@ -324,9 +328,12 @@ class CrearFile extends Component {
                         <Grid.Column width={16}>
                             <Header >Transportes</Header>
 
-                            {this.state.transportes.length==0?<Segment secondary textAlign="center" fluid>No hay transportes en este file</Segment>:''}
+                            {this.state.transportes.length==0?<Segment secondary textAlign="center">No hay transportes en este file</Segment>:''}
                             {this.state.transportes.map((elem, index) => {
-                                return this.CuerpoTransporte({ index: index });
+                                let key = 0;
+                                if(this.state.transportes[index])
+                                    key = this.state.transportes[index].idServicio;
+                                return this.CuerpoTransporte({ index: index, key : key });
                             })}
                             {this.modoVer() ? <div></div> :
                                 <Button content='Agregar transporte' icon='plus' labelPosition='right' onClick={() => {
@@ -425,7 +432,7 @@ class CrearFile extends Component {
 
     cargarClientes = () => {
         Requester.getClientesListaDropdown(rpta => {
-            console.log(rpta);
+            //console.log(rpta);
             var listaOpsCliente = rpta.cont.map(element => { return { value: element.value, text: element.text } });
             this.setState({
                 clientesCargaronExito: false,
@@ -534,11 +541,11 @@ class CrearFile extends Component {
 
         if (this.modoVer()) {
             console.log("cuerpo: ", this.state.servicios[props.index]);
-            controlProveedor = <Input disabled transparent fluid value={this.state.servicios[props.index].proovedor} />
+            controlProveedor = <Input disabled transparent fluid value={this.state.servicios[props.index].proovedor ? this.state.servicios[props.index].proovedor : ""} />
         }
 
 
-        return <Segment.Group>
+        return <Segment.Group key={props.key}>
             <Segment.Group horizontal>
                 <Segment style={{ backgroundColor: "#fff5e6" }}>
                     <Grid columns="equal">
@@ -564,7 +571,7 @@ class CrearFile extends Component {
             <Segment.Group horizontal style={{ backgroundColor: "#fffbf6" }}>
                 <CampoServicio titulo="Nombre *" componente={
                     <Input disabled={this.modoVer()} transparent fluid placeholder={this.modoVer() ? "" : "In + city"}
-                        value={this.state.servicios[props.index].nombre}
+                        value={this.state.servicios[props.index].nombre ? this.state.servicios[props.index].nombre : ""}
                         onChange={(event) => {
                             var servs = this.state.servicios.slice();
                             servs[props.index].nombre = event.target.value;
@@ -574,6 +581,8 @@ class CrearFile extends Component {
                 <CampoServicio titulo="Ciudad de destino" componente={
                     <div>
                         <Input disabled={this.modoVer()} transparent list={'ciudades' + props.index} placeholder={this.modoVer() ? "" : 'Lima'} fluid
+                        
+                            value={this.state.servicios[props.index].ciudad ? this.state.servicios[props.index].ciudad : ""}
                             onChange={(event) => {
                                 var servs = this.state.servicios.slice();
                                 servs[props.index].ciudad = event.target.value;
@@ -588,11 +597,12 @@ class CrearFile extends Component {
                     <DateInput
                         disabled={this.modoVer()}
                         transparent
+                        closable
                         fluid
                         dateFormat="YYYY-MM-DD"
                         name="fecha"
                         placeholder={this.modoVer() ? "-" : 'aaaa-mm-dd'}
-                        value={this.state.servicios[props.index].fecha}
+                        value={this.state.servicios[props.index].fecha ? this.state.servicios[props.index].fecha : ""}
                         iconPosition="left"
                         onChange={(event, { name, value }) => {
                             if (name === "fecha") {
@@ -604,14 +614,16 @@ class CrearFile extends Component {
                         }}
                     />} />
                 <CampoServicio titulo="Nombre pasajero" componente={
-                    <Input transparent disabled={this.modoVer()} placeholder={this.modoVer() ? "" : 'Lewis Hamilton'} fluid value={this.state.servicios[props.index].nombrePasajero}
+                    <Input transparent disabled={this.modoVer()} placeholder={this.modoVer() ? "" : 'Lewis Hamilton'} fluid 
+                        value={this.state.servicios[props.index].nombrePasajero ? this.state.servicios[props.index].nombrePasajero : ""}
                         onChange={(event) => {
                             var servs = this.state.servicios.slice();
                             servs[props.index].nombrePasajero = event.target.value;
                             this.setState({ servicios: servs });
                         }}></Input>} />
                 <CampoServicio titulo="Cant. pasajeros *" componente={
-                    <Input type="number" transparent fluid disabled={this.modoVer()} placeholder={this.modoVer() ? "" : '4'} value={this.state.servicios[props.index].pasajeros}
+                    <Input type="number" transparent fluid disabled={this.modoVer()} placeholder={this.modoVer() ? "" : '4'} 
+                        value={this.state.servicios[props.index].pasajeros ? this.state.servicios[props.index].pasajeros : 0}
                         onChange={(event) => {
                             var servs = this.state.servicios.slice();
                             servs[props.index].pasajeros = event.target.value;
@@ -623,7 +635,8 @@ class CrearFile extends Component {
                 <CampoServicio titulo="Proveedor" componente={controlProveedor} />
 
                 <CampoServicio titulo="Tren" componente={
-                    <Input transparent fluid disabled={this.modoVer()} placeholder={this.modoVer() ? "" : 'Tren'} value={this.state.servicios[props.index].tren}
+                    <Input transparent fluid disabled={this.modoVer()} placeholder={this.modoVer() ? "" : 'Tren'}
+                        value={this.state.servicios[props.index].tren ? this.state.servicios[props.index].tren : ""}
                         onChange={(event) => {
                             var servs = this.state.servicios.slice();
                             servs[props.index].tren = event.target.value;
@@ -631,14 +644,16 @@ class CrearFile extends Component {
                         }}></Input>} />
                 <CampoServicio titulo="ALM" componente={
 
-                    <Input transparent fluid disabled={this.modoVer()} placeholder={this.modoVer() ? "" : 'ALM'} value={this.state.servicios[props.index].alm}
+                    <Input transparent fluid disabled={this.modoVer()} placeholder={this.modoVer() ? "" : 'ALM'} 
+                        value={this.state.servicios[props.index].alm ? this.state.servicios[props.index].alm  :""}
                         onChange={(event) => {
                             var servs = this.state.servicios.slice();
                             servs[props.index].alm = event.target.value;
                             this.setState({ servicios: servs });
                         }}></Input>} />
                 <CampoServicio titulo="Obs" componente={
-                    <Input transparent fluid disabled={this.modoVer()} placeholder={this.modoVer() ? "" : 'OBS'} value={this.state.servicios[props.index].observaciones}
+                    <Input transparent fluid disabled={this.modoVer()} placeholder={this.modoVer() ? "" : 'OBS'} 
+                        value={this.state.servicios[props.index].observaciones ? this.state.servicios[props.index].observaciones : ""}
                         onChange={(event) => {
                             var servs = this.state.servicios.slice();
                             servs[props.index].observaciones = event.target.value;
@@ -674,11 +689,11 @@ class CrearFile extends Component {
                 }}
             />
         if (this.modoVer()) {
-            controlProveedorTransporte = <Input disabled transparent fluid value={this.state.transportes[props.index].proovedor} />
+            controlProveedorTransporte = <Input disabled transparent fluid value={this.state.transportes[props.index].proovedor ? this.state.transportes[props.index].proovedor : ""} />
         }
 
 
-        return <Segment.Group>
+        return <Segment.Group key={props.key}>
             <Segment.Group horizontal>
                 <Segment style={{ backgroundColor: "#ccebff" }}>
                     <Grid columns="equal">
@@ -702,7 +717,7 @@ class CrearFile extends Component {
             <Segment.Group horizontal style={{ backgroundColor: "#e6f5ff" }}>
                 <CampoServicio titulo="Nombre *" componente={
                     <Input transparent fluid disabled={this.modoVer()} placeholder={this.modoVer() ? "" : 'APTO / Four points'}
-                        value={this.state.transportes[props.index].nombre}
+                        value={this.state.transportes[props.index].nombre ? this.state.transportes[props.index].nombre : ""}
                         onChange={(event) => {
                             var trans = this.state.transportes.slice();
                             trans[props.index].nombre = event.target.value;
@@ -712,7 +727,7 @@ class CrearFile extends Component {
                 <CampoServicio titulo="Ciudad de destino" componente={
                     <div>
                         <Input transparent fluid disabled={this.modoVer()} placeholder={this.modoVer() ? "" : 'Ciudad'}
-                            value={this.state.transportes[props.index].ciudad}
+                            value={this.state.transportes[props.index].ciudad ? this.state.transportes[props.index].ciudad : ""}
                             onChange={(event) => {
                                 var trans = this.state.transportes.slice();
                                 trans[props.index].ciudad = event.target.value;
@@ -724,11 +739,12 @@ class CrearFile extends Component {
                     <DateInput
                         transparent
                         fluid
+                        closable
                         name="fecha"
                         dateFormat="YYYY-MM-DD"
                         disabled={this.modoVer()}
                         placeholder={this.modoVer() ? "" : 'aaaa-mm-dd'}
-                        value={this.state.transportes[props.index].fecha}
+                        value={this.state.transportes[props.index].fecha ? this.state.transportes[props.index].fecha : ""}
                         iconPosition="left"
                         onChange={(event, { name, value }) => {
                             if (name === "fecha") {
@@ -742,7 +758,7 @@ class CrearFile extends Component {
                 <CampoServicio titulo="Nombre pasajero" componente={
 
                     <Input transparent fluid disabled={this.modoVer()} placeholder={this.modoVer() ? "" : 'Steven Gerard'}
-                        value={this.state.transportes[props.index].nombrePasajero}
+                        value={this.state.transportes[props.index].nombrePasajero ? this.state.transportes[props.index].nombrePasajero : ""}
                         onChange={(event) => {
                             var trans = this.state.transportes.slice();
                             trans[props.index].nombrePasajero = event.target.value;
@@ -751,7 +767,7 @@ class CrearFile extends Component {
                 } />
                 <CampoServicio titulo="Cant. pasajeros *" componente={
                     <Input type="number" transparent fluid disabled={this.modoVer()} placeholder={this.modoVer() ? "" : '4'}
-                        value={this.state.transportes[props.index].pasajeros}
+                        value={this.state.transportes[props.index].pasajeros ? this.state.transportes[props.index].pasajeros : 0}
                         onChange={(event) => {
                             var trans = this.state.transportes.slice();
                             trans[props.index].pasajeros = event.target.value;
@@ -785,7 +801,7 @@ class CrearFile extends Component {
                         fluid
                         name="hora"
                         disabled={this.modoVer()} placeholder={this.modoVer() ? "" : '0:00'}
-                        value={this.state.transportes[props.index].horaRecojo}
+                        value={this.state.transportes[props.index].horaRecojo?this.state.transportes[props.index].horaRecojo:""}
                         iconPosition="left"
                         onChange={(event, { name, value }) => {
                             if (name === "hora") {
@@ -803,7 +819,7 @@ class CrearFile extends Component {
                         fluid
                         name="hora"
                         disabled={this.modoVer()} placeholder={this.modoVer() ? "" : '0:00'}
-                        value={this.state.transportes[props.index].horaSalida}
+                        value={this.state.transportes[props.index].horaSalida?this.state.transportes[props.index].horaSalida:""}
                         iconPosition="left"
                         onChange={(event, { name, value }) => {
                             if (name === "hora") {
@@ -817,7 +833,7 @@ class CrearFile extends Component {
                 } />
                 <CampoServicio titulo="Vuelo" componente={
                     <Input transparent fluid
-                        value={this.state.transportes[props.index].vuelo}
+                        value={this.state.transportes[props.index].vuelo ? this.state.transportes[props.index].vuelo:""}
                         disabled={this.modoVer()} placeholder={this.modoVer() ? "" : 'Vuelo'}
                         onChange={(event) => {
                             var trans = this.state.transportes.slice();
@@ -828,7 +844,7 @@ class CrearFile extends Component {
                 <CampoServicio titulo="V/R" componente={
 
                     <Input transparent fluid disabled={this.modoVer()} placeholder={this.modoVer() ? "" : 'V/R'}
-                        value={this.state.transportes[props.index].vr}
+                        value={this.state.transportes[props.index].vr ? this.state.transportes[props.index].vr : ""}
                         onChange={(event) => {
                             var trans = this.state.transportes.slice();
                             trans[props.index].vr = event.target.value;
@@ -837,7 +853,7 @@ class CrearFile extends Component {
                 } />
                 <CampoServicio titulo="TC" componente={
                     <Input transparent fluid disabled={this.modoVer()} placeholder={this.modoVer() ? "" : 'TC'}
-                        value={this.state.transportes[props.index].tc}
+                        value={this.state.transportes[props.index].tc ? this.state.transportes[props.index].tc : ""}
                         onChange={(event) => {
                             var trans = this.state.transportes.slice();
                             trans[props.index].tc = event.target.value;
@@ -846,7 +862,7 @@ class CrearFile extends Component {
                 } />
                 <CampoServicio titulo="Obs" componente={
                     <Input transparent fluid disabled={this.modoVer()} placeholder={this.modoVer() ? "" : 'OBS'}
-                        value={this.state.transportes[props.index].observaciones}
+                        value={this.state.transportes[props.index].observaciones ? this.state.transportes[props.index].observaciones : ""}
                         onChange={(event) => {
                             var trans = this.state.transportes.slice();
                             trans[props.index].observaciones = event.target.value;
@@ -869,9 +885,9 @@ class CrearFile extends Component {
             transportes: this.state.transportes
         };
 
-        this.setState({ transaccionEnviadaCrearFile: true });
+        this.setState({ transaccionEnviadaCrearFile: true , responseRecibidaCrearFile: false});
         console.log("file a enviar: ", obj)
-        console.log("TRANSPORTESSS: ", obj.transportes)
+        //console.log("TRANSPORTESSS: ", obj.transportes)
         let func = Requester.postFile;
 
         if (this.modoEditar())
@@ -1015,9 +1031,22 @@ class CrearFile extends Component {
 
     enCerrarModalProveedor = () => {
         var obj = { ...this.state.modalCrearEditarProveedor };
+        obj.abierto = false;
         obj.mensaje.recibido = false;
         obj.mensaje.enviado = false;
         obj.mensaje.respuesta = null;
+
+        obj.campos.id = '';
+        obj.campos.nombre = '';
+        obj.campos.correo = '';
+        obj.campos.correoAdic = '';
+        obj.campos.num = '';
+        obj.campos.numAdic = '';
+        obj.campos.ciudad = '';
+        obj.campos.tipo ='';
+        
+        this.setState({modalCrearEditarProveedor:obj});
+
 /*
         if (this.state.modalCrearEditarProveedor.modo === "edicion") {
             var obj = { ...this.state.modalCrearEditarProveedor };
@@ -1031,9 +1060,9 @@ class CrearFile extends Component {
             obj.campos.ciudad = '';
             this.setState({ modalCrearEditar: obj });
         }*/
-        this.resetearCamposModalProveedor();
+        //this.resetearCamposModalProveedor();
     }
-    
+    /*
     resetearCamposModalProveedor =() => {
         var obj = { ...this.state.modalCrearEditarProveedor };
         obj.campos.id = '';
@@ -1045,7 +1074,7 @@ class CrearFile extends Component {
         obj.campos.ciudad = '';
         obj.campos.tipo ='';
         this.setState({ modalCrearEditarProveedor: obj });
-    }
+    }*/
 
     // ------------------------------------------------------------------------- Modal proveedores transportes
 
@@ -1106,11 +1135,21 @@ class CrearFile extends Component {
     enCerrarModalProveedorTransportes = () => {
         var obj = { ...this.state.modalCrearProveedorTransporte };
         obj.mensaje.recibido = false;
+        obj.abierto=false;
         obj.mensaje.enviado = false;
         obj.mensaje.respuesta = null;
 
+        obj.campos.id = '';
+        obj.campos.nombre = '';
+        obj.campos.correo = '';
+        obj.campos.correoAdic = '';
+        obj.campos.num = '';
+        obj.campos.numAdic = '';
+        obj.campos.ciudad = '';
+
+        this.setState({ modalCrearProveedorTransporte: obj });
         //if (this.state.modalCrearProveedorTransporte.modo === "edicion") {
-            this.resetearCamposModalProveedorTransportes();
+            //this.resetearCamposModalProveedorTransportes();
             /*
             var obj = { ...this.state.modalCrearProveedorTransporte };
             obj.campos.id = '';

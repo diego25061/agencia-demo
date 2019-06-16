@@ -26,7 +26,7 @@ import MensajeTransaccion from '../MensajeTransaccion/MensajeTransaccion';
  */
 const ModalCrearBiblia = (props) => {
            
-    console.log("props:",props);
+    //console.log("props:",props);
     return (
     <Modal size="tiny" open ={props.parentComponent.state.modalBiblia.abierto} centered={true} onClose={() => {var obj = {...props.parentComponent.state.modalBiblia};
         obj.abierto=false;

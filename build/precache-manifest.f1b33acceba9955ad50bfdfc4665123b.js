@@ -4,7 +4,7 @@ self.__precacheManifest = [
     "url": "/static/media/logo_yllari.5229e823.png"
   },
   {
-    "revision": "070acc029ec96a203ac9",
+    "revision": "796f1c99e9b99fdc7cd5",
     "url": "/static/css/main.cce2c6c0.chunk.css"
   },
   {
@@ -20,8 +20,8 @@ self.__precacheManifest = [
     "url": "/static/js/2.386e3c7e.chunk.js"
   },
   {
-    "revision": "070acc029ec96a203ac9",
-    "url": "/static/js/main.8cd46ab0.chunk.js"
+    "revision": "796f1c99e9b99fdc7cd5",
+    "url": "/static/js/main.1ae34c7e.chunk.js"
   },
   {
     "revision": "1782fcc0a53a0ffab58a5e6d4d122076",
@@ -40,7 +40,7 @@ self.__precacheManifest = [
     "url": "/static/css/2.7c8a27fb.chunk.css"
   },
   {
-    "revision": "fefbb97e6027c2b766f34c7d26d7e9c1",
+    "revision": "ebc61fd1ab39459c607da2a9ae255149",
     "url": "/index.html"
   }
 ];
