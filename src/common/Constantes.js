@@ -40,7 +40,8 @@ const CONSTANTES_GLOBALES={
 
     TiposServicios:[
         { key: 1, text: 'Servicio general', value: 1 },
-        { key: 2, text: 'Transporte', value: 2 }
+        { key: 2, text: 'Transporte', value: 2 },
+        { key: 1, text: 'Hospedaje', value: 1 },
     ],
     TiposProveedores:[
         { key: 1, text: 'Persona', value: "PERSO"},
@@ -86,7 +87,8 @@ const CONSTANTES_GLOBALES={
 
     AliasServicios:{
         TRANSPORTE:"TRANS",
-        SERVICIO:"SERVI"
+        SERVICIO:"SERVI",
+        HOSPEDAJE:"HOSPE"
     }
 
     
@@ -99,8 +101,8 @@ const Rol_Operador="Operador";
 const Rol_Observador = "Observador";
 
 const Configuracion={
-    //ServerUrl:"http://localhost:65212",
-    ServerUrl:"http://diego25061-001-site2.itempurl.com",
+    ServerUrl:"http://localhost:65212",
+    //ServerUrl:"http://diego25061-001-site2.itempurl.com",
     EnlacesNavBar:[
         {nombre:"Inicio", valor:"/inicio" },
         {nombre:"Files", valor:"/files"},

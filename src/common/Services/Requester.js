@@ -152,6 +152,12 @@ class Requester {
         this.requestBasicoGet(Configuracion.ServerUrl + "/servicios/transportes", funcSuccess, funcError, funcAlways);
     }
 
+    
+    static getServiciosHospedaje = (funcSuccess, funcError, funcAlways) => {
+        this.requestBasicoGet(Configuracion.ServerUrl + "/servicios/hospedajes", funcSuccess, funcError, funcAlways);
+    }
+
+
     static postServicio = (
         idFile,
         idProveedor,
@@ -262,6 +268,9 @@ class Requester {
         this.requestBasicoGet(Configuracion.ServerUrl + "/proveedores/tipos?incluir=trans", funcSuccess, funcError, funcAlways);
     }
 
+    static getProveedoresHoteles = (funcSuccess, funcError, funcAlways) => {
+        this.requestBasicoGet(Configuracion.ServerUrl + "/proveedores/tipos?incluir=hotel", funcSuccess, funcError, funcAlways);
+    }
 
     static getProveedoresDropdown = (tipoProveedor, funcSuccess, funcError, funcAlways) => {
         this.requestBasicoGet(Configuracion.ServerUrl + "/proveedores/dropdown/" + tipoProveedor, funcSuccess, funcError, funcAlways);

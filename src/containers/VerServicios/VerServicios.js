@@ -68,8 +68,11 @@ class VerServicios extends Component{
                 transportista: "Javi" 
             }*/
         ],
+        serviciosHospedajes:[
+        ],
          queryForzadoServs:"",
-         queryForzadoTransps:""
+         queryForzadoTransps:"",
+         queryForzadoHospedajes:""
      }
 
 
@@ -123,14 +126,14 @@ class VerServicios extends Component{
             <Header size="small">Servicios al día de...</Header>
             <Button onClick={()=>{
                     let fecha = moment().tz('America/Lima').format('Y-MM-DD')
-                    this.setState({queryForzadoServs:fecha,queryForzadoTransps:fecha})
+                    this.setState({queryForzadoServs:fecha,queryForzadoTransps:fecha,queryForzadoHospedajes:fecha})
                 }}>Hoy</Button>
             <Button onClick={()=>{
                     let fecha = moment().tz('America/Lima').add(1,'days').format('Y-MM-DD')
-                    this.setState({queryForzadoServs:fecha,queryForzadoTransps:fecha})
+                    this.setState({queryForzadoServs:fecha,queryForzadoTransps:fecha,queryForzadoHospedajes:fecha})
                 }}>Mañana</Button>
             <Button onClick={()=>{
-                    this.setState({queryForzadoServs:"",queryForzadoTransps:""})
+                    this.setState({queryForzadoServs:"",queryForzadoTransps:"",queryForzadoHospedajes:""})
                 }}   secondary>Todos</Button>
                 <Header size="medium">Servicios generales programados</Header> 
                 <Segment>
@@ -147,6 +150,14 @@ class VerServicios extends Component{
                         vaciarQueryForzado={this.vaciarQueryForzadoTransps}
                         data={this.state.serviciosTransp} columns={cols} />
                 </Segment>
+                
+                <Header size="medium">Hospedajes programados</Header> 
+                <Segment>
+                    <TablaBuscador 
+                        queryForzado={this.state.queryForzadoHospedajes} 
+                        vaciarQueryForzado={this.vaciarQueryForzadoHospedajes}
+                        data={this.state.serviciosHospedajes} columns={cols} />
+                </Segment>
                 {/*<ModalCrearServicio parentComp={this}/>*/}
             </div>
         )
@@ -157,6 +168,9 @@ class VerServicios extends Component{
     }
     vaciarQueryForzadoTransps = () =>{
         this.setState({queryForzadoTransps:''})
+    }
+    vaciarQueryForzadoHospedajes = () =>{
+        this.setState({queryForzadoHospedajes:''})
     }
 
     enviarServicio = () => {
@@ -180,6 +194,7 @@ class VerServicios extends Component{
                 */
                this.cargarServsGenerales();
         this.cargarServsTransportes();
+        this.cargarHospedajes();
     }
 
     cargarServsGenerales = () => {
@@ -232,6 +247,29 @@ class VerServicios extends Component{
                 };
             });
             this.setState({serviciosTransp:servs});
+        },(rptaError)=>{
+            console.log("error!");
+        });
+    }
+
+    
+    cargarHospedajes = () => {
+        Requester.getServiciosHospedaje((rpta)=>{
+            console.log("rpta! hospedajes: ",rpta)
+            var servs = rpta.cont.map((e,i)=>{
+                return {
+                    idServicio : e.idServicio,
+                    nombre : e.nombre,
+                    file: e.codigoFile,
+                    fecha : e.fecha,
+                    ciudad : e.ciudad,
+                    horaRecojo : e.horaRecojo,
+                    cantPasajeros : e.pasajeros,
+                    pasajero : e.nombrePasajero,
+                    transportista : e.transporte
+                };
+            });
+            this.setState({serviciosHospedajes:servs});
         },(rptaError)=>{
             console.log("error!");
         });
