@@ -4,7 +4,7 @@ self.__precacheManifest = [
     "url": "/static/media/logo_yllari.5229e823.png"
   },
   {
-    "revision": "796f1c99e9b99fdc7cd5",
+    "revision": "8ea270033d6cd6f4f8d8",
     "url": "/static/css/main.cce2c6c0.chunk.css"
   },
   {
@@ -16,12 +16,12 @@ self.__precacheManifest = [
     "url": "/static/media/fondo-tic-tac-toe.a2e9b7c1.png"
   },
   {
-    "revision": "b8f7a40e819601041c17",
-    "url": "/static/js/2.386e3c7e.chunk.js"
+    "revision": "6ce50e7eb2bf859e6db4",
+    "url": "/static/js/2.f7019121.chunk.js"
   },
   {
-    "revision": "796f1c99e9b99fdc7cd5",
-    "url": "/static/js/main.1ae34c7e.chunk.js"
+    "revision": "8ea270033d6cd6f4f8d8",
+    "url": "/static/js/main.535d9313.chunk.js"
   },
   {
     "revision": "1782fcc0a53a0ffab58a5e6d4d122076",
@@ -36,11 +36,11 @@ self.__precacheManifest = [
     "url": "/static/media/costaverdehd.b67f036a.png"
   },
   {
-    "revision": "b8f7a40e819601041c17",
-    "url": "/static/css/2.7c8a27fb.chunk.css"
+    "revision": "6ce50e7eb2bf859e6db4",
+    "url": "/static/css/2.8b62fc27.chunk.css"
   },
   {
-    "revision": "ebc61fd1ab39459c607da2a9ae255149",
+    "revision": "8b6c6ce30468e0ea6057d1b07a3c8bb2",
     "url": "/index.html"
   }
 ];

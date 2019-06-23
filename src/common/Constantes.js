@@ -101,8 +101,8 @@ const Rol_Operador="Operador";
 const Rol_Observador = "Observador";
 
 const Configuracion={
-    ServerUrl:"http://localhost:65212",
-    //ServerUrl:"http://diego25061-001-site2.itempurl.com",
+    //ServerUrl:"http://localhost:65212",
+    ServerUrl:"http://diego25061-001-site2.itempurl.com",
     EnlacesNavBar:[
         {nombre:"Inicio", valor:"/inicio" },
         {nombre:"Files", valor:"/files"},
