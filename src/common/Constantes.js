@@ -1,18 +1,18 @@
 
 const CONSTANTES_GLOBALES={
     ListaMeses: [
-        { key: 1, text: 'Enero', value: 1 },
-        { key: 2, text: 'Febrero', value: 2 },
-        { key: 3, text: 'Marzo', value: 3 },
-        { key: 4, text: 'Abril', value: 4 },
-        { key: 5, text: 'Mayo', value: 5 },
-        { key: 6, text: 'Junio', value: 6 },
-        { key: 7, text: 'Julio', value: 7 },
-        { key: 8, text: 'Agosto', value: 8 },
-        { key: 9, text: 'Septiembre', value: 9 },
-        { key: 10, text: 'Octubre', value: 10 },
-        { key: 11, text: 'Noviembre', value: 11 },
-        { key: 12   , text: 'Diciembre', value: 12 },
+        { key: 1 , text: 'Enero', value: 'enero' },
+        { key: 2 , text: 'Febrero', value: 'febrero' },
+        { key: 3 , text: 'Marzo', value: 'marzo' },
+        { key: 4 , text: 'Abril', value: 'abril' },
+        { key: 5 , text: 'Mayo', value: 'mayo' },
+        { key: 6 , text: 'Junio', value: 'junio' },
+        { key: 7 , text: 'Julio', value: 'julio' },
+        { key: 8 , text: 'Agosto', value: 'agosto' },
+        { key: 9 , text: 'Septiembre', value: 'septiembre' },
+        { key: 10, text: 'Octubre', value: 'octubre' },
+        { key: 11, text: 'Noviembre', value: 'noviembre'},
+        { key: 12, text: 'Diciembre', value: 'diciembre' },
     ],
     
     
@@ -102,7 +102,7 @@ const Rol_Observador = "Observador";
 
 const Configuracion={
     //ServerUrl:"http://localhost:65212",
-    ServerUrl:"http://diego25061-001-site2.itempurl.com",
+    ServerUrl:"http://192.168.1.8:1337",
     EnlacesNavBar:[
         {nombre:"Inicio", valor:"/inicio" },
         {nombre:"Files", valor:"/files"},
@@ -126,6 +126,25 @@ const CodigoMesATexto = (codigoMes) => {
     }
 }
 
+const MesANumero=(mes)=>{
+    switch(mes.toLowerCase()){
+        case "enero": return 1; break;
+        case "febrero": return 2; break;
+        case "marzo": return 3; break;
+        case "abril": return 4; break;
+        case "mayo": return 5; break;
+        case "junio": return 6; break;
+        case "julio": return 7; break;
+        case "agosto": return 8; break;
+        case "septiembre": return 9; break;
+        case "octubre": return 10; break;
+        case "noviembre": return 11; break;
+        case "diciembre": return 12; break;
+        default:return 0;
+    }
+}
+
+
 class RptaTrx{
     cont;
     msj;
@@ -133,10 +152,10 @@ class RptaTrx{
     cod;
     constructor(response){
         if(response){
-            this.cont = response.cont;
-            this.msj = response.msj;
-            this.trace = response.trace;
-            this.cod = response.cod;
+            this.cont = {};
+            this.msj = response.message;
+            this.trace = response.error;
+            this.cod = response.statusCode;
 
             if(!this.cont || !this.cod)
                 this.cod=0;
@@ -156,5 +175,5 @@ class RptaTrx{
     }
 }
 
-export {Configuracion, RptaTrx, CodigoMesATexto};
+export {Configuracion, RptaTrx, CodigoMesATexto, MesANumero};
 export default CONSTANTES_GLOBALES;

@@ -1,11 +1,9 @@
 import React from 'react'
 import {Component} from 'react'
-import { Button, Container, Header, Menu } from 'semantic-ui-react';
-import ReactTable from "react-table";
+import { Header } from 'semantic-ui-react';
 import Requester from '../../../common/Services/Requester';
-import Constantes from '../../../common/Constantes';
 import TablaBuscador from '../../TablaBuscador/TablaBuscador';
-
+import ClientModel from './../../../common/Models/Apis/ClientModel';
 
 class TabTodosClientes extends Component{
 
@@ -13,7 +11,6 @@ class TabTodosClientes extends Component{
         clientes:[
         ]
     }
-    
 
     columnasTabla = [ 
         { Header: 'Nombre', accessor: 'nombre' },
@@ -34,23 +31,39 @@ class TabTodosClientes extends Component{
     }
 
     cargarTodos = () =>{ 
-        Requester.getClientesFullDetallado( "" , (rpta)=>{
+        let cls = [];
+        Requester.getClientes( {"clase":"directo"},(rpta)=>{
+            //console.log("RPTA > ",rpta)
             var clientes=rpta.cont.map((e,i)=>{
-                var h = {
-                    idCliente:e.idCliente,
-                    nombre:e.nombre,
-                    correo:e.correoContacto?e.correoContacto:"-",
-                    correoAdicional:e.correoAdicional?e.correoAdicional:"-",
-                    numeroContacto:e.numeroContacto?e.numeroContacto:"-",
-                    numeroAdicional:e.numeroAdicional?e.numeroAdicional:"-",
-                    ciudad:e.ciudad?e.ciudad:"-",
-                    pais:e.pais?e.pais:"-",
-                    tipo: e.tipo?Constantes.aliasATextoClientes(e.tipo):'-'
-                }
-                return h;
+                //console.log("obj: ",new ClientModel(e));
+                return {
+                     ...new ClientModel(e),
+                     tipo : "Clientes directos"
+                };
             });
-            this.setState({clientes:clientes});
+            cls = [...cls,...clientes]
+                    //console.log("asd1",cls);
+        },()=>{},
+        ()=>{
+            Requester.getClientesOpMin( (rpta) => {
+                var clientes=rpta.cont.map((e,i)=>{
+                    return { ...new ClientModel(e),tipo : "Operadores minoristas" };
+                }); 
+                cls = [...cls,...clientes]
+                    //console.log("asd2",cls);
+            },()=>{},()=>{
+                Requester.getClientesOpMay( (rpta)=> {
+                    var clientes=rpta.cont.map((e,i)=>{
+                        return { ...new ClientModel(e),tipo : "Operadores mayoristas" };
+                    });
+                    cls = [...cls,...clientes];
+                },()=>{},()=>{
+                    //console.log("asd",cls);
+                    this.setState({clientes:cls});
+                });
+            });
         });
+
         console.log("clientes",this.state.clientes)
     }
 

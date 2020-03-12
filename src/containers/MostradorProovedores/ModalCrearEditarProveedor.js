@@ -52,39 +52,6 @@ class ModalCrearEditarProveedor extends ContainedComponent {
             //textoExito = "Puede usar la nueva biblia"
         />
 
-        /*{
-        if (this.getParentContainer() && this.getParentContainer().mensaje ) {
-            var mensaje = this.getParentContainer().mensaje;
-            if (mensaje.enviado && !mensaje.recibido) {
-                msjComp = <Message icon>
-                    <Icon name='circle notched' loading />
-                    <Message.Content>
-                        <Message.Header>Espere un momento...</Message.Header>
-                        Completando la transacción
-                    </Message.Content>
-                </Message>
-            } else
-                if (mensaje.recibido) {
-                    if (mensaje.respuesta.transaccionExitosa()) {
-                        msjComp = <Message success >
-                            <Message.Header>Transaccion exitosa</Message.Header>
-                            <Message.List>
-                                <Message.Item>{msjSuccess}</Message.Item>
-                                {mensaje.respuesta.msj ? <Message.Item> {mensaje.respuesta.msj} </Message.Item> : null}
-                            </Message.List>
-                        </Message>
-                    } else {
-                        msjComp = <Message negative>
-                            <Message.Header>Error en transaccion</Message.Header>
-                            <Message.List>
-                                <Message.Item>{mensaje.respuesta.msj}</Message.Item>
-                                {mensaje.respuesta.trace ? <Message.Item>{mensaje.respuesta.trace}</Message.Item> : null}
-                            </Message.List>
-                        </Message>
-                    }
-                }
-    }*/
-
         return <Modal size="tiny" open={this.getParentContainer().abierto /* this.props.parent.state.modalCrearEditar.abierto*/} centered={true} onClose={() => {
             this.UpdateParentContainer({ ...this.getParentContainer(), abierto:false });
             this.props.enCerrar();
@@ -120,12 +87,12 @@ class ModalCrearEditarProveedor extends ContainedComponent {
                             <ElementoForm grid titulo="Correo electrónico">
                                 <Input
                                     fluid
-                                    iconPosition="left" placeholder={this.props.placeholderCorreo} value={this.getParentContainer().campos.correo/*this.props.parent.state.modalCrearEditar.campos.correo*/} onChange={(event) => {
+                                    iconPosition="left" placeholder={this.props.placeholderCorreo} value={this.getParentContainer().campos.correoContacto/*this.props.parent.state.modalCrearEditar.campos.correo*/} onChange={(event) => {
                                         /*var obj = {...this.props.parent.state.modalCrearEditar};
                                         obj.campos.correo = event.target.value;
                                         this.props.parent.setState({modalCrearEditar:obj});*/
                                         let obj = this.getParentContainer();
-                                        obj.campos.correo = event.target.value;
+                                        obj.campos.correoContacto = event.target.value;
                                         this.UpdateParentContainer(obj);
                                     }}>
                                     <Icon name="at"></Icon>
@@ -137,12 +104,12 @@ class ModalCrearEditarProveedor extends ContainedComponent {
                             <ElementoForm grid titulo="Correo electrónico adicional">
                                 <Input
                                     fluid
-                                    iconPosition="left" placeholder={this.props.placeholderCorreoAdic} value={this.getParentContainer().campos.correoAdic/*this.props.parent.state.modalCrearEditar.campos.correoAdic*/} onChange={(event) => {
+                                    iconPosition="left" placeholder={this.props.placeholderCorreoAdic} value={this.getParentContainer().campos.correoAdicional/*this.props.parent.state.modalCrearEditar.campos.correoAdic*/} onChange={(event) => {
                                         /*var obj = {...this.props.parent.state.modalCrearEditar};
                                         obj.campos.correoAdic = event.target.value;
                                         this.props.parent.setState({modalCrearEditar:obj});*/
                                         let obj = this.getParentContainer();
-                                        obj.campos.correoAdic = event.target.value;
+                                        obj.campos.correoAdicional = event.target.value;
                                         this.UpdateParentContainer(obj);
                                     }}>
                                     <Icon name="at"></Icon>
@@ -160,12 +127,12 @@ class ModalCrearEditarProveedor extends ContainedComponent {
                                     fluid
                                     placeholder="98957845"
                                     iconPosition="left"
-                                    value={this.getParentContainer().campos.num/*this.props.parent.state.modalCrearEditar.campos.num*/} onChange={(event) => {
+                                    value={this.getParentContainer().campos.numeroContacto/*this.props.parent.state.modalCrearEditar.campos.num*/} onChange={(event) => {
                                         /*var obj = {...this.props.parent.state.modalCrearEditar};
                                         obj.campos.num = event.target.value;
                                         this.props.parent.setState({modalCrearEditar:obj});*/
                                         let obj = this.getParentContainer();
-                                        obj.campos.num = event.target.value;
+                                        obj.campos.numeroContacto = event.target.value;
                                         this.UpdateParentContainer(obj);
                                     }}>
                                     <Icon name="phone"></Icon>
@@ -179,13 +146,13 @@ class ModalCrearEditarProveedor extends ContainedComponent {
                                     fluid
                                     placeholder="564-8790"
                                     iconPosition="left"
-                                    value={this.getParentContainer().campos.numAdic/*this.props.parent.state.modalCrearEditar.campos.numAdic*/} onChange={(event) => {
+                                    value={this.getParentContainer().campos.numeroContactoAdicional/*this.props.parent.state.modalCrearEditar.campos.numAdic*/} onChange={(event) => {
                                         /*
                                         var obj = {...this.props.parent.state.modalCrearEditar};
                                         obj.campos.numAdic = event.target.value;
                                         this.props.parent.setState({modalCrearEditar:obj});*/
                                         let obj = this.getParentContainer();
-                                        obj.campos.numAdic = event.target.value;
+                                        obj.campos.numeroContactoAdicional = event.target.value;
                                         this.UpdateParentContainer(obj);
                                     }}>
                                     <Icon name="phone"></Icon>

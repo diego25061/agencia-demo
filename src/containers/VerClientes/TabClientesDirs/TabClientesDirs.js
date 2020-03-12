@@ -27,9 +27,7 @@ class TabClientesDirs extends Component{
 
             campos:{
             }
-            
         }
-
     }
     
     columnasTabla = [ 
@@ -96,18 +94,21 @@ class TabClientesDirs extends Component{
     }
 
     confirmarEliminar = (cliente) =>{
-        console.log("eliminando cliente ", cliente)
+        console.log("Eliminando cliente ", cliente)
         this.setState({
             confirmacionEliminarAbierta:false,
             idEliminar:null
         })
 
         if(cliente){
-            Requester.postEliminarCliente(cliente.idCliente,
+            Requester.eliminarCliente(cliente.idCliente,
                 (rpta)=>{
-                    this.cargarClientes();
+                    //this.cargarClientes();
                 },
                 (rptaError)=>{
+                },
+                ()=>{
+                    this.cargarClientes();
                 }
             );
         }

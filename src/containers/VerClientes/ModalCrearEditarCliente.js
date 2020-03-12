@@ -43,9 +43,9 @@ class ModalCrearEditarCliente extends Component{
                         <ElementoForm grid titulo="Correo electrónico">
                                 <Input 
                                     fluid
-                                    iconPosition="left" placeholder={this.props.placeholderCorreo} value={this.props.parent.state.modalCrearEditar.campos.correo} onChange={(event)=>{
+                                    iconPosition="left" placeholder={this.props.placeholderCorreo} value={this.props.parent.state.modalCrearEditar.campos.correoContacto} onChange={(event)=>{
                                         var obj = {...this.props.parent.state.modalCrearEditar};
-                                        obj.campos.correo = event.target.value;
+                                        obj.campos.correoContacto = event.target.value;
                                         this.props.parent.setState({modalCrearEditar:obj});}}
                                     >
                                     <Icon name="at"></Icon>
@@ -57,7 +57,7 @@ class ModalCrearEditarCliente extends Component{
                             <ElementoForm grid titulo="Correo electrónico adicional">
                                 <Input 
                                     fluid
-                                    iconPosition="left" placeholder={this.props.placeholderCorreoAdic} value={this.props.parent.state.modalCrearEditar.campos.correoAdic} onChange={(event)=>{
+                                    iconPosition="left" placeholder={this.props.placeholderCorreoAdic} value={this.props.parent.state.modalCrearEditar.campos.correoAdicional} onChange={(event)=>{
                                         var obj = {...this.props.parent.state.modalCrearEditar};
                                         obj.campos.correoAdicional = event.target.value;
                                         this.props.parent.setState({modalCrearEditar:obj});}}>
@@ -76,9 +76,9 @@ class ModalCrearEditarCliente extends Component{
                                     fluid
                                     placeholder="+57 98 957 0845"
                                     iconPosition="left"
-                                    value={this.props.parent.state.modalCrearEditar.campos.num} onChange={(event)=>{
+                                    value={this.props.parent.state.modalCrearEditar.campos.numeroContacto} onChange={(event)=>{
                                         var obj = {...this.props.parent.state.modalCrearEditar};
-                                        obj.campos.numero = event.target.value;
+                                        obj.campos.numeroContacto = event.target.value;
                                         this.props.parent.setState({modalCrearEditar:obj});}}>
                                     <Icon name="phone"></Icon>
                                     <input />
@@ -91,9 +91,9 @@ class ModalCrearEditarCliente extends Component{
                                     fluid
                                     placeholder="564-8790"
                                     iconPosition="left"
-                                    value={this.props.parent.state.modalCrearEditar.campos.numAdic} onChange={(event)=>{
+                                    value={this.props.parent.state.modalCrearEditar.campos.numeroContactoAdicional} onChange={(event)=>{
                                         var obj = {...this.props.parent.state.modalCrearEditar};
-                                        obj.campos.numeroAdicional = event.target.value;
+                                        obj.campos.numeroContactoAdicional = event.target.value;
                                         this.props.parent.setState({modalCrearEditar:obj});}}>
                                     <Icon name="phone"></Icon>
                                     <input />

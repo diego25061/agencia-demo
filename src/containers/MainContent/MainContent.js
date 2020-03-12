@@ -126,15 +126,15 @@ class MainContent extends Component {
                 </div>
             </div>);
 
+/*
         if (!this.state.usuario) {
             contenido = (
                 <div className="LoginContent">
                     <Switch>
-                        {/*<Route path="/calendario" exact component={VerCalendario} />*/}
                         <Route component={() => { return <Auth loggedInHandler={this.loggedInHandler} /> }} />
                     </Switch>
                 </div>);
-        }
+        }*/
 
         return (contenido);
     }

@@ -1271,7 +1271,7 @@ class CrearFile extends Component {
         newStateModalBiblia.transaccionEnviada = true;
         this.setState({ modalBiblia: newStateModalBiblia });
 
-        Requester.postBiblia(this.state.modalBiblia.campos, (rpta) => {
+        Requester.crearBiblia(this.state.modalBiblia.campos, (rpta) => {
             var newState = { ...this.state.modalBiblia };
             newState.responseRecibida = true;
             newState.rptaTransaccion = rpta;

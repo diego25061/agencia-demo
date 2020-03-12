@@ -8,6 +8,7 @@ import Requester from '../../common/Services/Requester';
 import TablaBuscador from '../TablaBuscador/TablaBuscador';
 import ModalCrearEditarCliente from './ModalCrearEditarCliente';
 import Constantes from '../../common/Constantes';
+import ClientModel from './../../common/Models/Apis/ClientModel';
 
 
 class TabClientes extends Component{
@@ -37,10 +38,10 @@ class TabClientes extends Component{
     
     columnasTabla = [ 
         { Header: 'Nombre', accessor: 'nombre', Cell: props => props.value ? props.value:"-" },
-        { Header: 'Correo', accessor: 'correo', Cell: props => props.value ? props.value:"-" },
+        { Header: 'Correo', accessor: 'correoContacto', Cell: props => props.value ? props.value:"-" },
         { Header: 'Correo Adic.',accessor: 'correoAdicional', Cell: props => props.value ? props.value:"-" }, 
         { Header: 'Numero contacto',accessor: 'numeroContacto', Cell: props => props.value ? props.value:"-" }, 
-        { Header: 'Numero contacto adicional', accessor: 'numeroAdicional', Cell: props => props.value ? props.value:"-" },
+        { Header: 'Numero contacto adicional', accessor: 'numeroContactoAdicional', Cell: props => props.value ? props.value:"-" },
         { Header: 'Ciudad', accessor: 'ciudad', Cell: props => props.value ? props.value:"-" },
         { Header: 'Pais', accessor: 'pais', Cell: props => props.value ? props.value:"-" },
         { Header: 'Accion', Cell: props => {
@@ -100,20 +101,23 @@ class TabClientes extends Component{
 
     confirmarEliminar = (cliente) =>{
         console.log("eliminando cliente ", cliente)
+
+        if(cliente){
+            Requester.eliminarCliente(cliente.idCliente,
+                (rpta)=>{ 
+                },
+                (rptaError)=>{
+                },
+                ()=>{ 
+                    this.cargarClientes();
+                }
+            );
+        }
+        
         this.setState({
             confirmacionEliminarAbierta:false,
             idEliminar:null
         })
-
-        if(cliente){
-            Requester.postEliminarCliente(cliente.idCliente,
-                (rpta)=>{
-                    this.cargarClientes();
-                },
-                (rptaError)=>{
-                }
-            );
-        }
     }
 
     cerrarConfirmacionEliminar = () =>{
@@ -124,19 +128,12 @@ class TabClientes extends Component{
     }
 
     abrirModalEdicion= (cliente)=>{
-        console.log(cliente);
+        console.log("abriendo modal:" , cliente);
         if(cliente){
             var obj = {...this.state.modalCrearEditar};
             obj.modo="edicion";
             obj.abierto=true;
-            obj.campos.idCliente = cliente.idCliente;
-            obj.campos.nombre = cliente.nombre;
-            obj.campos.correo = cliente.correo;
-            obj.campos.correoAdicional = cliente.correoAdicional;
-            obj.campos.nummeroContacto = cliente.numeroContacto;
-            obj.campos.numeroAdicional = cliente.numeroAdicional;
-            obj.campos.ciudad = cliente.ciudad;
-            obj.campos.pais = cliente.pais;
+            obj.campos = {...cliente};
             console.log(obj);
             this.setState({modalCrearEditar:obj});
         }
@@ -154,17 +151,11 @@ class TabClientes extends Component{
         var obj = {...this.state.modalCrearEditar};
         obj.transaccionEnviada=true;
         this.setState({modalCrearEditar:obj});
-
+        var enviar = ClientModel.toApiObj(this.state.modalCrearEditar.campos);
+        enviar.clase = this.props.tipo;
         //Requester.postCliente(
         this.props.funcEnviar(
-            this.props.alias,
-            this.state.modalCrearEditar.campos.nombre,
-            this.state.modalCrearEditar.campos.correo,
-            this.state.modalCrearEditar.campos.numero,
-            this.state.modalCrearEditar.campos.numeroAdicional,
-            this.state.modalCrearEditar.campos.correoAdicional,
-            this.state.modalCrearEditar.campos.ciudad,
-            this.state.modalCrearEditar.campos.pais,
+            enviar,
             (rpta)=>{
                 var obj = {...this.state.modalCrearEditar};
                 obj.responseRecibida=true;
@@ -187,16 +178,8 @@ class TabClientes extends Component{
         obj.transaccionEnviada=true;
         this.setState({modalCrearEditar:obj});
         //console.log("::::::::: ",this.state.modalCrearEditar.campos);
-        Requester.postEditarCliente( 
-            this.props.alias,
-            this.state.modalCrearEditar.campos.idCliente,
-            this.state.modalCrearEditar.campos.nombre,
-            this.state.modalCrearEditar.campos.correo,
-            this.state.modalCrearEditar.campos.numero,
-            this.state.modalCrearEditar.campos.numeroAdicional,
-            this.state.modalCrearEditar.campos.correoAdicional,
-            this.state.modalCrearEditar.campos.ciudad,
-            this.state.modalCrearEditar.campos.pais,
+        Requester.editarCliente(this.state.modalCrearEditar.campos.idCliente,
+            ClientModel.toApiObj(this.state.modalCrearEditar.campos),
             (rpta)=>{
                 console.log(this.state.modalCrearEditar.campos);
                 console.log("edicion success!");
@@ -213,27 +196,34 @@ class TabClientes extends Component{
                 obj.responseRecibida = true;
                 obj.rptaTransaccion = rptaError;
                 this.setState({modalCrearEditar:obj});
-            })
+            }
+        );
     }
 
     cargarClientes= () =>{
-        //console.log("aweeeee");
-        Requester.getClientesFullDetallado(this.props.alias, (rpta)=>{
-            var clientesDirs=rpta.cont.map((e,i)=>{
-                var h = {
-                    idCliente:e.idCliente,
-                    nombre:e.nombre,
-                    correo:e.correoContacto,
-                    correoAdicional:e.correoAdicional,
-                    numeroContacto:e.numeroContacto,
-                    numeroAdicional:e.numeroAdicional,
-                    ciudad:e.ciudad,
-                    pais:e.pais,
-                }
-                return h;
+        if(this.props.tipo==="directo"){
+            Requester.getClientes(
+                {"clase":"directo"},
+                (rpta)=>{
+                    var clientesDirs=rpta.cont.map((e,i)=>{ return new ClientModel(e);});
+                    this.setState({clientesDirs:clientesDirs});
             });
-            this.setState({clientesDirs:clientesDirs});
-        });
+            /*
+            Requester.getClientesFullDetallado((rpta)=>{
+                var clientesDirs=rpta.cont.map((e,i)=>{ return new ClientModel(e);});
+                this.setState({clientesDirs:clientesDirs});
+            });*/
+        }else if ( this.props.tipo==="minorista"){
+            Requester.getClientesOpMin((rpta)=>{
+                var clientesDirs=rpta.cont.map((e,i)=>{ return new ClientModel(e);});
+                this.setState({clientesDirs:clientesDirs});
+            });
+        }else if ( this.props.tipo==="mayorista"){
+            Requester.getClientesOpMay((rpta)=>{
+                var clientesDirs=rpta.cont.map((e,i)=>{ return new ClientModel(e);});
+                this.setState({clientesDirs:clientesDirs});
+            });
+        }
     }
 
     componentDidMount = () => {
@@ -248,14 +238,9 @@ class TabClientes extends Component{
 
         if(this.state.modalCrearEditar.modo === "edicion"){
             var obj = {...this.state.modalCrearEditar};
-            obj.campos.id=null;
-            obj.campos.nombre=null;
-            obj.campos.correo=null;
-            obj.campos.correoAdic=null;
-            obj.campos.num=null;
-            obj.campos.numAdic=null;
-            obj.campos.ciudad=null;
-            obj.campos.pais=null;
+            for(var key in obj.campos){
+                obj.campos[key]='';
+            }
             this.setState({modalCrearEditar:obj});
         }
     }

@@ -50,7 +50,8 @@ class MostradorProveedores extends Component{
                         placeholderCorreo="correo@arawi.com" 
                         placeholderCorreoAdic="arawi.ventas@gmail.com"
                         alias = {Constantes.AliasProovedores.HOTEL}
-                        funcEnviar = {Requester.postProvHotel}
+                        funcEnviar = {Requester.crearProveedor}
+                        tipo="hotel"
                         />
                 </Tab.Pane>},
         },
@@ -69,7 +70,8 @@ class MostradorProveedores extends Component{
                         placeholderCorreo="ventas@puntoazul.com" 
                         placeholderCorreoAdic="contacto@puntoazul.com"
                         alias = {Constantes.AliasProovedores.RESTAURANTE}
-                        funcEnviar = {Requester.postProvRestaurante}
+                        funcEnviar = {Requester.crearProveedor}
+                        tipo="restaurante"
                         />
                 </Tab.Pane>},
         },
@@ -87,7 +89,8 @@ class MostradorProveedores extends Component{
                         placeholderCorreo="javier.tran@gmail.com" 
                         placeholderCorreoAdic="javier.tran@hotmail.com"
                         alias = {Constantes.AliasProovedores.TRANSPORTE}
-                        funcEnviar = {Requester.postProvTransporte}
+                        funcEnviar = {Requester.crearProveedor}
+                        tipo="transporte"
                         />
                 </Tab.Pane>},
         },
@@ -105,7 +108,8 @@ class MostradorProveedores extends Component{
                         placeholderCorreo="carlos.guia@gmail.com" 
                         placeholderCorreoAdic="carlos.guia@hotmail.com"
                         alias = {Constantes.AliasProovedores.GUIA}
-                        funcEnviar = {Requester.postProvGuia}
+                        funcEnviar = {Requester.crearProveedor}
+                        tipo="guia"
                         />
                 </Tab.Pane>},
         },
@@ -124,7 +128,8 @@ class MostradorProveedores extends Component{
                         placeholderCorreo="correo@gmail.com" 
                         placeholderCorreoAdic="correo.ventas@gmail.com"
                         alias = {Constantes.AliasProovedores.OPERADOR}
-                        funcEnviar = {Requester.postProvOperador}
+                        funcEnviar = {Requester.crearProveedor}
+                        tipo="operador"
                         />
                 </Tab.Pane>},
         },
@@ -143,7 +148,8 @@ class MostradorProveedores extends Component{
                         placeholderCorreo="empresa@gmail.com" 
                         placeholderCorreoAdic="correo.ventas@gmail.com"
                         alias = {Constantes.AliasProovedores.EMPRESA}
-                        funcEnviar = {Requester.postProvEmpresa}
+                        funcEnviar = {Requester.crearProveedor}
+                        tipo="empresa"
                         />
                 </Tab.Pane>},
         },
@@ -164,7 +170,8 @@ class MostradorProveedores extends Component{
                         placeholderCorreo="christian@gmail.com" 
                         placeholderCorreoAdic="cuevita@gmail.com"
                         alias = {Constantes.AliasProovedores.PERSONA}
-                        funcEnviar = {Requester.postProvPersona}
+                        funcEnviar = {Requester.crearProveedor}
+                        tipo="persona"
                         />
                 </Tab.Pane>},
         },

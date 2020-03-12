@@ -33,7 +33,9 @@ const panes = [
                     placeholderCorreo="Juan@gmail.com" 
                     placeholderCorreoAdic="juan.agencia@gmail.com"
                     alias = {Constantes.AliasClientes.CLIENTE_DIRECTO}
-                    funcEnviar = {Requester.postCliente}
+                    funcEnviar = {Requester.crearCliente}
+                    tipo="directo"
+
                     />
             </Tab.Pane>},
     },
@@ -52,7 +54,8 @@ const panes = [
                     placeholderCorreo="mariana@nts.com.gt" 
                     placeholderCorreoAdic="-"
                     alias = {Constantes.AliasClientes.OPERADOR_MINORISTA}
-                    funcEnviar = {Requester.postCliente}
+                    funcEnviar = {Requester.crearCliente}
+                    tipo="minorista"
                     />
             </Tab.Pane>},
     },
@@ -71,7 +74,8 @@ const panes = [
                     placeholderCorreo="acaiminagua@eurolatina.com.ec" 
                     placeholderCorreoAdic="achala@eurolatina.com.ec"
                     alias = {Constantes.AliasClientes.OPERADOR_MAYORISTA}
-                    funcEnviar = {Requester.postCliente}
+                    funcEnviar = {Requester.crearCliente}
+                    tipo="mayorista"
                     />
             </Tab.Pane>},
     }

@@ -5,9 +5,11 @@ import CrearFile from '../ViewFiles/CrearFile/CrearFile';
 import { Segment, Header, Icon, Card, Grid, Message, Dropdown, Modal, Button, Input } from 'semantic-ui-react';
 import { Link } from 'react-router-dom'
 import Requester from '../../common/Services/Requester';
-import CONSTANTES_GLOBALES, { CodigoMesATexto } from '../../common/Constantes';
+import CONSTANTES_GLOBALES, { CodigoMesATexto, MesANumero } from '../../common/Constantes';
 import ElementoForm from '../../components/ElementoForm/ElementoForm';
 import ModalCrearBiblia from '../../components/ModalCrearBiblia/ModalCrearBiblia';
+import BibliaModel from './../../common/Models/Apis/BibliaModel';
+import CardBiblia from '../CardBiblias/CardBiblia';
 
 
 class ListaBiblias extends Component {
@@ -64,9 +66,7 @@ class ListaBiblias extends Component {
     }
 
     cargarBiblias = () => {
-
-
-        Requester.getBibliasDetalle((rpta) => {
+        Requester.getBiblias({},(rpta) => {
             var anhos = rpta.cont.map((e) => { return e.anho });
             var anhosUnique = anhos.filter(this.onlyUnique);
             //console.log(anhosUnique);
@@ -75,14 +75,10 @@ class ListaBiblias extends Component {
                     return biblia.anho == e;
                 });
                 meses = meses.map((e) => {
-                    return {
-                        mes: CodigoMesATexto(e.mes),
-                        files: e.cantidadFiles,
-                        codigoMes:e.mes
-                    }
+                    return new BibliaModel(e);
                 })
                 meses = meses.sort((a, b) => {
-                    return a.mes - b.mes;
+                    return MesANumero(a.mes) - MesANumero(b.mes);
                 })
                 //console.log(meses)
                 return { anho: e, meses: meses };
@@ -94,6 +90,7 @@ class ListaBiblias extends Component {
             this.setState({ biblias: biblias });
         });
     }
+
     componentDidMount = () => {
         this.cargarBiblias();
     }
@@ -117,6 +114,9 @@ class ListaBiblias extends Component {
                                 {e.meses.map((mes, i) => {
                                     if (i < 6)
                                         return <Grid.Column>
+                                            <CardBiblia mes={mes.mes} anho={e.anho} funcNavegar={this.navegar}/>
+                                            
+                                            {/*
                                             <Card>
                                                 <Card.Content header={mes.mes} />
                                                 <Card.Content extra style={{ backgroundColor: "#00000000", padding: "5px 7px" }}>
@@ -130,7 +130,7 @@ class ListaBiblias extends Component {
                                                         <Icon fitted size="large" name="angle right" />
                                                     </Button>
                                                 </Card.Content>
-                                            </Card>
+                                            </Card>*/}
                                         </Grid.Column>
                                 })}
                             </Grid.Row>
@@ -179,7 +179,7 @@ class ListaBiblias extends Component {
         newStateModalBiblia.transaccionEnviada = true;
         this.setState({ modalBiblia: newStateModalBiblia });
 
-        Requester.postBiblia(this.state.modalBiblia.campos, (rpta) => {
+        Requester.crearBiblia(BibliaModel.toApiObj(this.state.modalBiblia.campos), (rpta) => {
             var newState = { ...this.state.modalBiblia };
             newState.responseRecibida = true;
             newState.rptaTransaccion = rpta;

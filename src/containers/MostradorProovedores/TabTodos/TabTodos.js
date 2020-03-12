@@ -5,6 +5,7 @@ import TablaBuscador from '../../TablaBuscador/TablaBuscador';
 import Requester from '../../../common/Services/Requester';
 import Constantes from '../../../common/Constantes';
 import ModalCrearEditarProveedor from '../ModalCrearEditarProveedor';
+import ProveedorModel from './../../../common/Models/Apis/ProovedorModel';
 
 
 class TabTodos extends Component{
@@ -16,8 +17,8 @@ class TabTodos extends Component{
 
     columnasTabla = [ 
         { Header: 'Nombre', accessor: 'nombre' },
-        { Header: 'Correo', accessor: 'correo' },
-        { Header: 'Correo Adic.',accessor: 'correoAdic' }, 
+        { Header: 'Correo', accessor: 'correoContacto' },
+        { Header: 'Correo Adic.',accessor: 'correoAdicional' }, 
         { Header: 'Numero contacto',accessor: 'numeroContacto' }, 
         { Header: 'Numero contacto adicional', accessor: 'numeroContactoAdicional' },
         { Header: 'Ciudad', accessor: 'ciudad' },
@@ -33,19 +34,9 @@ class TabTodos extends Component{
     }
 
     cargarTodos = () =>{
-        Requester.getProveedores( "" , (rpta)=>{
+        Requester.getProveedores( {}, (rpta)=>{
             var proovs=rpta.cont.map((e,i)=>{
-                var h = {
-                    idProveedor:e.idProveedor,
-                    nombre:e.nombre,
-                    correo:e.correo?e.correo:"-",
-                    correoAdic:e.correoAdicional?e.correoAdicional:"-",
-                    numeroContacto:e.numeroContacto?e.numeroContacto:"-",
-                    numeroContactoAdicional:e.numeroCntctAdicional?e.numeroCntctAdicional:"-",
-                    ciudad:e.ciudad?e.ciudad:"-",
-                    tipo: e.tipoProveedor?Constantes.aliasATextoProovedores(e.tipoProveedor):'-'
-                }
-                return h;
+                return new ProveedorModel(e);
             });
             this.setState({proveedores:proovs});
         });

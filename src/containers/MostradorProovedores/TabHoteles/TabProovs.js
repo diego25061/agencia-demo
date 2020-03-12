@@ -5,6 +5,7 @@ import TablaBuscador from '../../TablaBuscador/TablaBuscador';
 import Requester from '../../../common/Services/Requester';
 import Constantes from '../../../common/Constantes';
 import ModalCrearEditarProveedor from '../ModalCrearEditarProveedor';
+import ProveedorModel from './../../../common/Models/Apis/ProovedorModel';
 
 
 class TabProovs extends Component{
@@ -31,11 +32,12 @@ class TabProovs extends Component{
             campos:{
                 id:'',
                 nombre:'',
-                correo:'',
-                correoAdic:'',
-                num:'',
-                numAdic:'',
-                ciudad:''
+                correoContacto:'',
+                correoAdicional:'',
+                numeroContacto:'',
+                numeroContactoAdicional:'',
+                ciudad:'',
+                clase:''
             }
             
         }
@@ -43,8 +45,8 @@ class TabProovs extends Component{
 
     columnasTabla = [ 
         { Header: 'Nombre', accessor: 'nombre', Cell: props => props.value ? props.value:"-" },
-        { Header: 'Correo', accessor: 'correo', Cell: props => props.value ? props.value:"-" },
-        { Header: 'Correo Adic.',accessor: 'correoAdic', Cell: props => props.value ? props.value:"-" }, 
+        { Header: 'Correo', accessor: 'correoContacto', Cell: props => props.value ? props.value:"-" },
+        { Header: 'Correo Adic.',accessor: 'correoAdicional', Cell: props => props.value ? props.value:"-" }, 
         { Header: 'Numero contacto',accessor: 'numeroContacto', Cell: props => props.value ? props.value:"-" }, 
         { Header: 'Numero contacto adicional', accessor: 'numeroContactoAdicional', Cell: props => props.value ? props.value:"-" },
         { Header: 'Ciudad', accessor: 'ciudad', Cell: props => props.value ? props.value:"-" },
@@ -103,7 +105,7 @@ class TabProovs extends Component{
         })
 
         if(proveedor){
-            Requester.postEliminarProv(proveedor.idProveedor,
+            Requester.eliminarProveedor(proveedor.idProveedor,
                 (rpta)=>{
                     this.cargarProovs();
                 },
@@ -126,14 +128,8 @@ class TabProovs extends Component{
             var obj = {...this.state.modalCrearEditar};
             obj.modo="edicion";
             obj.abierto=true;
-            obj.campos.id = proveedor.idProveedor;
-            obj.campos.nombre = proveedor.nombre;
-            obj.campos.correo = proveedor.correo;
-            obj.campos.correoAdic = proveedor.correoAdic;
-            obj.campos.num = proveedor.numeroContacto;
-            obj.campos.numAdic = proveedor.numeroContactoAdicional;
-            obj.campos.ciudad = proveedor.ciudad;
-            console.log(obj);
+            obj.campos = { ...proveedor }
+            //console.log(obj);
             this.setState({modalCrearEditar:obj});
         }
     }
@@ -152,15 +148,13 @@ class TabProovs extends Component{
         obj.mensaje.enviado=true;
         this.setState({modalCrearEditar:obj});
 
+        let enviar =this.state.modalCrearEditar.campos;
+        enviar.tipo=this.props.tipo;
+
         this.props.funcEnviar( 
-            this.state.modalCrearEditar.campos.nombre,
-            this.state.modalCrearEditar.campos.correo,
-            this.state.modalCrearEditar.campos.num,
-            this.state.modalCrearEditar.campos.numAdic,
-            this.state.modalCrearEditar.campos.correoAdic,
-            this.state.modalCrearEditar.campos.ciudad,
+            ProveedorModel.toApiObj(enviar),
             (rpta)=>{
-                console.log(this.state.modalCrearEditar.campos);
+                console.log(enviar);
                 console.log("success!");
                 console.log(rpta);
                 var obj = {...this.state.modalCrearEditar};
@@ -179,79 +173,70 @@ class TabProovs extends Component{
     }
     
     editarProov = () => { 
-        console.log("editando!");
-        
+        //console.log("editando!");
         var obj = {...this.state.modalCrearEditar};
         obj.mensaje.enviado=true;
         this.setState({modalCrearEditar:obj});
-        console.log(": "+this.state.modalCrearEditar.campos.id);
-        Requester.postEditarProv(
-            this.props.alias,
-            this.state.modalCrearEditar.campos.id,
-            this.state.modalCrearEditar.campos.nombre,
-            this.state.modalCrearEditar.campos.correo,
-            this.state.modalCrearEditar.campos.num,
-            this.state.modalCrearEditar.campos.numAdic,
-            this.state.modalCrearEditar.campos.correoAdic,
-            this.state.modalCrearEditar.campos.ciudad,
+        //console.log(": "+this.state.modalCrearEditar.campos.id);
+        Requester.editarProveedor(
+            this.state.modalCrearEditar.campos.idProveedor,
+            ProveedorModel.toApiObj(this.state.modalCrearEditar.campos),
             (rpta)=>{
-                console.log(this.state.modalCrearEditar.campos);
-                console.log("edicion success!");
-                console.log(rpta);
+                //console.log(this.state.modalCrearEditar.campos);
+                //console.log("edicion success!");
+                //console.log(rpta);
                 var obj = {...this.state.modalCrearEditar};
                 obj.mensaje.recibido=true;
                 obj.mensaje.respuesta = rpta;
                 this.setState({modalCrearEditar:obj});
-                this.cargarProovs();
             },
             (rptaError)=>{
-                console.log("edicion error!");
+                //console.log("edicion error!");
                 var obj = {...this.state.modalCrearEditar};
                 obj.mensaje.recibido=true;
                 obj.mensaje.respuesta = rptaError;
                 this.setState({modalCrearEditar:obj});
-            })
+            },
+            () => {
+                this.cargarProovs();
+            });
     }
 
     cargarProovs= () =>{
-        console.log(this.props.alias);
-        Requester.getProveedores(this.props.alias, (rpta)=>{
+        //console.log(this.props.tipo);
+        Requester.getProveedores({clase:this.props.tipo}, (rpta)=>{
             var proovs=rpta.cont.map((e,i)=>{
-                var h = {
-                    idProveedor:e.idProveedor?e.idProveedor:0,
-                    nombre:e.nombre?e.nombre:'',
-                    correo:e.correo?e.correo:"",
-                    correoAdic:e.correoAdicional?e.correoAdicional:"",
-                    numeroContacto:e.numeroContacto?e.numeroContacto:'',
-                    numeroContactoAdicional:e.numeroContactoAdicional?e.numeroContactoAdicional:"",
-                    ciudad:e.ciudad?e.ciudad:""
-                }
-                return h;
+                return new ProveedorModel(e);
             });
             this.setState({proovs:proovs});
         });
     }
 
     componentDidMount = () => {
-        console.log("weeeee");
         this.cargarProovs();
     }
 
     enCerrarModal = () =>{
+        console.log("cerrandooooo");
         var obj = {...this.state.modalCrearEditar};
+        
         obj.mensaje.recibido=false;
         obj.mensaje.enviado=false;
         obj.mensaje.respuesta=null;
 
         if(this.state.modalCrearEditar.modo==="edicion"){
             var obj = {...this.state.modalCrearEditar};
+            for(var key in obj.campos){
+                obj.campos[key]='';
+            }
+            /*
             obj.campos.id='';
             obj.campos.nombre='';
             obj.campos.correo='';
             obj.campos.correoAdic='';
             obj.campos.num='';
             obj.campos.numAdic='';
-            obj.campos.ciudad='';
+            obj.campos.ciudad='';*/
             this.setState({modalCrearEditar:obj});
         }
     }

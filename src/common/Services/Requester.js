@@ -3,14 +3,111 @@ import CONSTANTES_GLOBALES, {
     RptaTrx,
     Configuracion
 } from '../Constantes';
+import { URLSearchParams } from 'url';
 
 class Requester {
 
     static store = {}
 
+    static api_get(direccion,params,funcSuccess,funcError,funcAlways){
+        let query = "";
+        if(params){
+            //query = '?'+new URLSearchParams(params).toString();
+            query = '?'+Object.keys(params).map(function(key) {
+                return key + '=' + params[key]
+            }).join('&');
+        }
+        return this.strapiRequest("get",Configuracion.ServerUrl+direccion+query,null,funcSuccess,funcError,funcAlways,true);
+    }
+
+    static api_post(direccion,data,funcSuccess,funcError,funcAlways){
+        return this.strapiRequest("post",Configuracion.ServerUrl+direccion,data,funcSuccess,funcError,funcAlways,true);
+    }
+
+    static api_put(direccion,data,funcSuccess,funcError,funcAlways){
+        return this.strapiRequest("put",Configuracion.ServerUrl+direccion,data,funcSuccess,funcError,funcAlways,true);
+    }
+
+    static api_delete(direccion,funcSuccess,funcError,funcAlways){
+        return this.strapiRequest("delete",Configuracion.ServerUrl+direccion,null,funcSuccess,funcError,funcAlways,true);
+    }
+
+    static strapiRequest(mode, direccion, data, funcSuccess, funcError, funcAlways, auth=true) {
+        let string_serv_inaccesible = "Servidor inaccesible";
+        let verbose = true;
+        //test
+        auth=false;
+
+        var callback_then = (response) => {
+            try {
+                if (funcSuccess) {
+                    if (response.data) {
+                        var resp = new RptaTrx();
+                        resp.set(response.data);
+                        funcSuccess(resp);
+                    }
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        var callback_error = (error) => {
+            if(verbose)
+                console.error("Error en post a '",direccion,"' > ",error);
+            if (funcError) {
+                if (error.response) {
+                    if (error.response.data) {
+                        funcError(new RptaTrx(error.response.data, error));
+                    } else {
+                        var r = new RptaTrx();
+                        r.set(null, string_serv_inaccesible, null, 0);
+                        funcError(r);
+                    }
+                } else {
+                    //si hay un error donde el server ni responde
+                    var r = new RptaTrx();
+                    r.set(null, string_serv_inaccesible, null, 0);
+                    funcError(r);
+                }
+            }
+        }
+
+        var callback_finally = (response) => {
+            if(funcAlways)
+                funcAlways();
+        }
+
+        if(mode==="get"){
+            axios.get(direccion,auth ? {headers:{Authorization:"Bearer "+ this.store.token}}: null)
+            .then(callback_then)
+            .catch(callback_error)
+            .finally(callback_finally);
+        }else if (mode==="post"){
+            axios.post(direccion,data,auth ? {headers:{Authorization:"Bearer "+ this.store.token}}: null)
+            .then(callback_then)
+            .catch(callback_error)
+            .finally(callback_finally);
+        }else if (mode==="put"){
+            axios.put(direccion,data,auth ? {headers:{Authorization:"Bearer "+ this.store.token}}: null)
+            .then(callback_then)
+            .catch(callback_error)
+            .finally(callback_finally);
+        }else if (mode==="delete"){
+            axios.delete(direccion,auth ? {headers:{Authorization:"Bearer "+ this.store.token}}: null)
+            .then(callback_then)
+            .catch(callback_error)
+            .finally(callback_finally);
+        }else{
+            console.error("UNKNOWN REQUEST MODE !!!");
+        }
+
+    }
+
     static requestBasicoGet(direccion, funcSuccess, funcError, funcAlways, auth=true) {
-        axios.get(direccion,
-            auth ? {headers:{Authorization:"Bearer "+ this.store.token}}: null)
+        axios.get(direccion
+        //,
+            /*auth ? {headers:{Authorization:"Bearer "+ this.store.token}}: null*/)
             .then(response => {
                 try {
                     if (funcSuccess)
@@ -35,19 +132,22 @@ class Requester {
                         funcError(r);
                     }
                 }
-            }) //.finally(response=>{})
+            }).finally( () => {
+                if(funcAlways)
+                    funcAlways()
+                }); //.finally(response=>{})
     }
 
 
     static requestBasicoPost(direccion, objeto, funcSuccess, funcError, funcAlways, auth=true) {
-        axios.post(direccion, objeto,
-            auth ? {headers:{Authorization:"Bearer "+ this.store.token}}: null)
+        axios.post(direccion, objeto/*,
+            auth ? {headers:{Authorization:"Bearer "+ this.store.token}}: null*/)
             .then(response => {
                 try {
                     if (funcSuccess) {
                         if (response.data) {
                             var resp = new RptaTrx();
-                            resp.set(response.data.cont, response.data.msj, response.data.trace, response.data.cod);
+                            resp.set(response.data, "Success");
                             funcSuccess(resp);
                         }
                     }
@@ -72,7 +172,50 @@ class Requester {
                         funcError(r);
                     }
                 }
-            })
+            }).finally( () => {
+                if(funcAlways)
+                    funcAlways()
+                });
+    }
+
+    
+    static requestPut(direccion, objeto, funcSuccess, funcError, funcAlways, auth=true) {
+        axios.put(direccion, objeto/*,
+            auth ? {headers:{Authorization:"Bearer "+ this.store.token}}: null*/)
+            .then(response => {
+                try {
+                    if (funcSuccess) {
+                        if (response.data) {
+                            var resp = new RptaTrx();
+                            resp.set(response.data, "Success");
+                            funcSuccess(resp);
+                        }
+                    }
+                } catch (err) {
+                    console.error(err);
+                }
+            }).catch(error => {
+                console.error("Error en PUT!",error);
+                if (funcError) {
+                    if (error.response) {
+                        if (error.response.data) {
+                            funcError(new RptaTrx(error.response.data, error));
+                        } else {
+                            var r = new RptaTrx();
+                            r.set(null, "Servidor inaccesible", null, 0);
+                            funcError(r);
+                        }
+                    } else {
+                        //si hay un error donde el server ni responde
+                        var r = new RptaTrx();
+                        r.set(null, "Servidor inaccesible", null, 0);
+                        funcError(r);
+                    }
+                }
+            }).finally( () => {
+                if(funcAlways)
+                    funcAlways()
+                });
     }
     //------------------------ MISC -----------------------------------
 
@@ -91,6 +234,18 @@ class Requester {
     }
 
     //------------------------ FILES -----------------------------------
+
+
+
+    static getCantFiles = (params,funcSuccess, funcError, funcAlways) => {
+        this.api_get("/yfiles/count",params, funcSuccess, funcError, funcAlways);
+    }
+
+    static getFiles = (params, funcSuccess, funcError, funcAlways) => {
+        this.api_get("/yfiles/",params, funcSuccess, funcError, funcAlways);
+    }
+
+
 
     static postFile = (file, funcSuccess, funcError, funcAlways) => {
         this.requestBasicoPost(Configuracion.ServerUrl + "/files", file, funcSuccess, funcError, funcAlways);
@@ -118,6 +273,15 @@ class Requester {
 
     //------------------------ BIBLIAS -----------------------------------
 
+    static getBiblias = (params,funcSuccess, funcError, funcAlways) => {
+        this.api_get("/biblias/",params, funcSuccess, funcError, funcAlways);
+    }
+
+
+    static crearBiblia = (model ,funcSuccess , funcError, funcAlways)=>{
+        this.api_post("/biblias/",model,funcSuccess,funcError,funcAlways);
+    }
+
     ///lista de biblias para elegir
     static getBibliasDropdownCompleto = (funcSuccess, funcError, funcAlways) => {
         this.requestBasicoGet(Configuracion.ServerUrl + "/biblias/dropdown", funcSuccess, funcError, funcAlways);
@@ -127,10 +291,11 @@ class Requester {
         this.requestBasicoGet(Configuracion.ServerUrl + "/biblias/", funcSuccess, funcError, funcAlways , true);
     }
 
-
+/*
     static postBiblia = (objeto, funcSuccess, funcError, funcAlways) => {
         this.requestBasicoPost(Configuracion.ServerUrl + "/biblias/", objeto, funcSuccess, funcError, funcAlways);
     }
+    */
 
     //------------------------ SERVICIOS -----------------------------------
 
@@ -202,12 +367,48 @@ class Requester {
 
     //------------------------ CLIENTES -----------------------------------
 
-    static getClientesFullDetallado = (alias, funcSuccess, funcError, funcAlways) => {
-        this.requestBasicoGet(Configuracion.ServerUrl + "/clientes/" + alias, funcSuccess, funcError, funcAlways);
+    //directos
+    
+
+    static getClientes = ( params, funcSuccess, funcError, funcAlways) => {
+        this.api_get("/clientes",params,funcSuccess,funcError,funcAlways);
     }
 
+    static crearCliente= (model, funcSuccess, funcError, funcAlways) => {
+        this.api_post("/clientes/",model,funcSuccess,funcError,funcAlways);
+    }
+
+    static editarCliente = (id, model, funcSuccess, funcError, funcAlways) => {
+        this.api_put("/clientes/"+id,model,funcSuccess,funcError,funcAlways);
+    }
+
+    static eliminarCliente = (id, funcSuccess, funcError, funcAlways)=>{
+        this.api_delete("/clientes/"+id,funcSuccess,funcError,funcAlways);
+    }
+
+    //-----------
+
+
+    static getClientesFullDetallado = ( funcSuccess, funcError, funcAlways) => {
+        this.api_get("/clientes/",null,funcSuccess,funcError,funcAlways);
+    }
+
+    static getClientesOpMin = ( funcSuccess, funcError, funcAlways) => {
+        this.api_get("/clientes/" ,{clase:"minorista"},funcSuccess, funcError, funcAlways);
+    }
+    
+    static getClientesOpMay = ( funcSuccess, funcError, funcAlways) => {
+        this.api_get( "/clientes/" , {clase:"mayorista"},funcSuccess, funcError, funcAlways);
+    }
+
+
+
     static getClientesListaDropdown = (funcSuccess, funcError, funcAlways) => {
-        this.requestBasicoGet(Configuracion.ServerUrl + "/clientes/dropdown", funcSuccess, funcError, funcAlways);
+        this.api_get( "/clientes/dropdown",null, funcSuccess, funcError, funcAlways);
+    }
+
+    static postCrearCliente = (model, funcSuccess, funcError, funcAlways) => {
+        this.api_post("/clientes/",model,funcSuccess,funcError,funcAlways);
     }
 
     static postCliente = (tipo, nombre, correo, numeroContacto, numeroContactoAdicional, correoAdicional, ciudad, pais, funcSuccess, funcError, funcAlways) => {
@@ -255,9 +456,23 @@ class Requester {
 
     //------------------------ PROVEEDORES -----------------------------------
 
-    static getProveedores = (tipoProveedor, funcSuccess, funcError, funcAlways) => {
-        this.requestBasicoGet(Configuracion.ServerUrl + "/proveedores/" + tipoProveedor, funcSuccess, funcError, funcAlways);
+    static getProveedores = ( params, funcSuccess, funcError, funcAlways) => {
+        this.api_get("/proveedors/" ,params, funcSuccess, funcError, funcAlways);
     }
+
+    static crearProveedor= (model, funcSuccess, funcError, funcAlways) => {
+        this.api_post("/proveedors/",model,funcSuccess,funcError,funcAlways);
+    }
+
+    static editarProveedor = (id, model, funcSuccess, funcError, funcAlways) => {
+        this.api_put("/proveedors/"+id,model,funcSuccess,funcError,funcAlways);
+    }
+
+    static eliminarProveedor = (id, funcSuccess, funcError, funcAlways)=>{
+        this.api_delete("/proveedors/"+id,funcSuccess,funcError,funcAlways);
+    }
+
+    //------
 
 
     static getProveedoresMenosTransportes = (funcSuccess, funcError, funcAlways) => {
