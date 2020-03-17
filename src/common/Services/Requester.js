@@ -12,10 +12,13 @@ class Requester {
     static api_get(direccion,params,funcSuccess,funcError,funcAlways){
         let query = "";
         if(params){
-            //query = '?'+new URLSearchParams(params).toString();
-            query = '?'+Object.keys(params).map(function(key) {
-                return key + '=' + params[key]
-            }).join('&');
+            if(params.hasOwnProperty("raw")){
+                query='?'+params.raw;
+            }else{
+                query = '?'+Object.keys(params).map(function(key) {
+                    return key + '=' + params[key]
+                }).join('&');
+            }
         }
         return this.strapiRequest("get",Configuracion.ServerUrl+direccion+query,null,funcSuccess,funcError,funcAlways,true);
     }
@@ -246,9 +249,13 @@ class Requester {
     }
 
 
+    static getFile = (id ,params, funcSuccess, funcError, funcAlways) => {
+        this.api_get("/yfiles/"+id ,params, funcSuccess, funcError, funcAlways);
+    }
+
 
     static postFile = (file, funcSuccess, funcError, funcAlways) => {
-        this.requestBasicoPost(Configuracion.ServerUrl + "/files", file, funcSuccess, funcError, funcAlways);
+        this.api_post("/yfiles/", file, funcSuccess, funcError, funcAlways);
     }
     
     static postEditarFile = (file, funcSuccess, funcError, funcAlways) => {
@@ -261,10 +268,6 @@ class Requester {
 
     static getListadoFiles = (funcSuccess, funcError, funcAlways) => {
         this.requestBasicoGet(Configuracion.ServerUrl + "/files", funcSuccess, funcError, funcAlways);
-    }
-
-    static getFile = (idFile, funcSuccess, funcError, funcAlways) => {
-        this.requestBasicoGet(Configuracion.ServerUrl + "/files/"+idFile, funcSuccess, funcError, funcAlways);
     }
 
     static getHoteles = (funcSuccess, funcError, funcAlways) => {
@@ -391,6 +394,9 @@ class Requester {
 
     static getClientesFullDetallado = ( funcSuccess, funcError, funcAlways) => {
         this.api_get("/clientes/",null,funcSuccess,funcError,funcAlways);
+    }
+    static getClientes = ( params,funcSuccess, funcError, funcAlways) => {
+        this.api_get("/clientes/",params,funcSuccess,funcError,funcAlways);
     }
 
     static getClientesOpMin = ( funcSuccess, funcError, funcAlways) => {

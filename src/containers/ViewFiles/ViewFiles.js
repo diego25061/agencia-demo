@@ -10,7 +10,7 @@ import Requester from '../../common/Services/Requester';
 import TablaBuscador from '../TablaBuscador/TablaBuscador';
 
 //import { MDBDataTable } from 'mdbreact';
-
+import FileModel from './../../common/Models/Apis/FileModel';
 
 
 class ViewFiles extends Component {
@@ -25,22 +25,27 @@ class ViewFiles extends Component {
 	}
 
 	cargarFiles = () => {
-		Requester.getListadoFiles(rpta => {
+		console.log("weeeeee");
+		Requester.getFiles({},rpta => {
+			console.log("servicios cargados > ",rpta.cont);
 			let listaFiles = rpta.cont.map((e, i) => {
-				return {
-					idFile: e.id,
-					codigo: e.codigo,
-					descripcion: e.descripcion,
-					biblia: e.nombreBiblia,
-					cliente: e.nombreCliente,
-					fecha: e.fechaCreacion.split(" ")[0],
-					cantServicios: e.cantServicios,
-					cantTransportes: e.cantTransportes
+				var fm =  new FileModel(e);
+
+				if(fm.servicios){
+					fm.cantServiciosGenerales = fm.servicios.filter(w=> w.clase==="general").length;
+					fm.cantServiciosTransporte = fm.servicios.filter(w=> w.clase==='transporte').length;
 				}
+				if(fm.biblia){
+					fm.nombreBiblia=fm.biblia.mes + ' - ' +fm.biblia.anho;
+				}
+				
+				return fm;
 			});
+			console.log("servicios transformados > ",listaFiles);
 			this.setState({ files: listaFiles });
 		});
 	}
+
 	componentDidMount() {
 		this.cargarFiles();
 	}
@@ -63,23 +68,23 @@ class ViewFiles extends Component {
 			},
 			{
 				Header: 'Biblia',
-				accessor: 'biblia',
+				accessor: 'nombreBiblia',
 			},
 			{
 				Header: 'Cliente',
-				accessor: 'cliente',
+				accessor: 'cliente.nombre',
 			},
 			{
 				Header: 'Fecha registro',
-				accessor: 'fecha',
+				accessor: 'createdAt',
 			},
 			{
 				Header: 'Cant. servicios',
-				accessor: 'cantServicios',
+				accessor: 'cantServiciosGenerales',
 			},
 			{
 				Header: 'Cant. Transportes',
-				accessor: 'cantTransportes',
+				accessor: 'cantServiciosTransporte',
 			},
 			{
 				Header: 'Accion',
@@ -128,11 +133,12 @@ class ViewFiles extends Component {
 		</div>
 		)
 	}
-
-
+	
 	openConfirm = (idFile, codFile) => this.setState({ open: true, idFileABorrar: idFile, codigoFileABorrar: codFile })
+
 	closeConfirm = () => {
 		this.setState({ open: false, idFileABorrar: 0, codigoFile: '' });
 	}
 }
+
 export default ViewFiles;

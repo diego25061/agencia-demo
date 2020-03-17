@@ -102,7 +102,7 @@ const Rol_Observador = "Observador";
 
 const Configuracion={
     //ServerUrl:"http://localhost:65212",
-    ServerUrl:"http://192.168.1.8:1337",
+    ServerUrl:"http://192.168.1.7:1337",
     EnlacesNavBar:[
         {nombre:"Inicio", valor:"/inicio" },
         {nombre:"Files", valor:"/files"},
