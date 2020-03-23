@@ -102,7 +102,7 @@ const Rol_Observador = "Observador";
 
 const Configuracion={
     //ServerUrl:"http://localhost:65212",
-    ServerUrl:"http://192.168.1.7:1337",
+    ServerUrl:"http://192.168.1.11:1337",
     EnlacesNavBar:[
         {nombre:"Inicio", valor:"/inicio" },
         {nombre:"Files", valor:"/files"},
@@ -164,10 +164,25 @@ class RptaTrx{
     }
 
     set=(cont,msj,trace,cod)=>{
-        this.cont = cont;
-        this.msj = msj;
-        this.trace = trace;
-        this.cod = cod;
+        if(cont)
+            this.cont = cont;
+        else
+            this.cont = {};
+        
+        if(msj)
+            this.msj = msj;
+        else
+            this.msj = "Error"
+
+        if(trace)
+            this.trace = trace;
+        else
+            this.trace="-";
+
+        if(cod)
+            this.cod = cod;
+        else
+            this.cod=0;
     };
 
     transaccionExitosa=()=>{

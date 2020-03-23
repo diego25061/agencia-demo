@@ -1,6 +1,6 @@
 import React from 'react'
 import { Component } from 'react'
-import { Dropdown, Input, TextArea, Form, Grid, Segment, Button, Icon, Label, Table, Message, Popup, Header, Modal, Container } from 'semantic-ui-react'
+import { Dropdown, Input, TextArea, Form, Grid, Segment, Button, Icon, Label, Table, Message, Popup, Header, Modal, Container, Confirm } from 'semantic-ui-react'
 
 import ElementoForm from '../../../components/ElementoForm/ElementoForm';
 import Constantes, { RptaTrx } from '../../../common/Constantes';
@@ -20,18 +20,21 @@ import InputSearchableDataButton from '../../../components/InputSearchableData/I
 import ModalCrearBiblia from '../../../components/ModalCrearBiblia/ModalCrearBiblia';
 import FileModel from './../../../common/Models/Apis/FileModel';
 import { fileURLToPath } from 'url';
+import NotificacionApi from './../../NotificacionApi/NotificacionApi';
+import ServiceRow from '../../ServiceRow/ServiceRow';
+import { mode_view as service_mode_view , mode_added as service_mode_added, mode_edit as service_mode_edit } from '../../ServiceRow/ServiceRow';
+import ServicioModel from './../../../common/Models/Apis/ServicioModel';
+import moment from 'moment';
 
 const CampoServicio = (props) => {
     return <Segment style={{ padding: "7px" }}><Header style={{ margin: "-2px 0px 4px 0px" }} as="h4">{props.titulo}</Header>{props.componente}</Segment>
 }
 
+const mode_create="create"
+const mode_edit="edit"
+const mode_view="view"
 
 class CrearFile extends Component {
-
-    constructor(props) {
-        super(props);
-        //this.modalClientesRef = React.createRef();
-    }
 
     servicio = (tipoServicio, fecha, ciudad, horaInicio, nombre, pasajeros, nombrePasajero, tren, alm, observaciones, idProveedor) => {
         return {tipoServicio,  fecha, ciudad, horaInicio, nombre, pasajeros, nombrePasajero, tren, alm, observaciones, idProveedor };
@@ -43,6 +46,10 @@ class CrearFile extends Component {
         return { tipoServicio, fecha, fechaOut,  horaInicio, horaFin,  nombre, pasajeros, nombrePasajero, idProveedor, observaciones };
     }
 
+    serv = (tipoServicio, nombre, fecha, fechaOut, ciudad,  pasajeros, nombrePasajero, horaInicio, horaFin, tren, alm, vuelo,vr,tc, observaciones, idProveedor) => {
+        return {tipoServicio, nombre, fecha, fechaOut, ciudad,  pasajeros, nombrePasajero, horaInicio, horaFin, tren, alm, vuelo,vr,tc, observaciones, idProveedor};
+    }
+
     servicioDefault = () => {
         return this.servicio(Constantes.AliasServicios.SERVICIO, '', '', '', '', 0, '', '', '', '')
     }
@@ -52,6 +59,10 @@ class CrearFile extends Component {
     
     hospedajeDefault = () => {
         return this.hospedaje(Constantes.AliasServicios.HOSPEDAJE, '', '', '', '', '', 0, '', '', '')
+    }
+
+    servDefault = () => {
+        return this.serv("general",'','','','',0,'','','','','','','','','','');
     }
 
 
@@ -84,11 +95,59 @@ class CrearFile extends Component {
         nombreBiblia:'',
         idCliente: undefined,
 
+
         servicios: [
             //this.servicioDefault()
         ],
         transportes: [],
         hospedajes: [],
+
+//---------------------------------
+        //servicios del file
+        servs:[],
+        //modificandoDatos:false,
+        //fileAbierto:false,
+        mode:mode_view,
+        agregandoServicio:false,
+
+        //apertura de file
+        aperturaFile_mostrarNotificacion:false,
+        aperturaFile_enviando:false,
+        aperturaFile_respuestaRecibida:false,
+        aperturaFile_tituloRespuesta:"-",
+        aperturaFile_contenidoRespuesta:"-",
+        aperturaFile_notif_color:"",
+        aperturaFile_notif_icono:"-",
+        
+        //actualizacion de file
+        actualizacionFile_mostrarNotificacion:false,
+        actualizacionFile_enviando:false,
+        actualizacionFile_respuestaRecibida:false,
+        actualizacionFile_tituloRespuesta:"-",
+        actualizacionFile_contenidoRespuesta:"-",
+        actualizacionFile_notif_color:"",
+        actualizacionFile_notif_icono:"-",
+        
+        //cargando file inicial
+        cargaFileInicial_mostrarNotificacion:false,
+        cargaFileInicial_enviando:false,
+        cargaFileInicial_respuestaRecibida:false,
+        cargaFileInicial_tituloRespuesta:"-",
+        cargaFileInicial_contenidoRespuesta:"-",
+        cargaFileInicial_notif_color:"red",
+        cargaFileInicial_notif_icono:"cancel",
+        
+        //borrado file
+        borradoFile_mostrarNotificacion:false,
+        borradoFile_enviando:false,
+        borradoFile_respuestaRecibida:false,
+        borradoFile_tituloRespuesta:"-",
+        borradoFile_contenidoRespuesta:"-",
+        borradoFile_notif_color:"red",
+        borradoFile_notif_icono:"cancel",
+
+        borradoFile_confirmAbierto:false,
+
 
         //opciones a elegir
         bibliasCargaron: false,
@@ -171,7 +230,8 @@ class CrearFile extends Component {
 
 
     modoVer = () => {
-        return this.props.modo === "ver";
+        return this.state.mode===mode_view;
+        //return this.props.modo === "ver";
     }
 
     modoEditar = () => {
@@ -182,14 +242,24 @@ class CrearFile extends Component {
         console.log("PROPS", this.props);
         //Requester.getListadoFiles(this.filesRecibidos,this.filesError);
 
+            this.cargarClientes();
+            this.cargarFileBase();
+            //this.cargarProveedoresNoTransp();
+            //this.cargarTransportes();
+            //this.cargarHoteles();
+            this.cargarProveedores();
 
-        if (this.props.modo === "ver" || this.props.modo === "editar") {
+            this.cargarBiblias();
+            this.cargarCiudades();
+
+/*
+        if (this.state.mode === mode_view || this.state.mode === mode_edit) {
             this.cargarFileBase();
             this.cargarProveedoresNoTransp();
             this.cargarTransportes();
             this.cargarHoteles();
         }
-        if (this.props.modo === "crear" || this.props.modo === "editar") {
+        if ( this.state.mode ===mode_create || this.state.mode === mode_edit) {
             this.cargarClientes();
             this.cargarBiblias();
             this.cargarProveedoresNoTransp();
@@ -197,7 +267,11 @@ class CrearFile extends Component {
             this.cargarCiudades();
             this.cargarHoteles();
             //this.cargarPaises();
-        }
+        }*/
+
+        var transps = this.state.servs.slice();
+        transps.push(this.servDefault());
+        this.setState({ servs: transps });
     }
 
     render = () => {
@@ -267,143 +341,310 @@ class CrearFile extends Component {
             controlDescripcion = <Input disabled transparent fluid value={this.state.descripcion ? this.state.descripcion : ""} />
         }
 
+        let buttons = <></>
+        if(this.state.mode===mode_view){
+            buttons=<>
+                <Button floated="right" icon color="red" onClick={()=>{
+                    this.AbrirCuadroConfirmacionBorradoFile();
+                }}>
+                    <Icon name="trash alternate outline"></Icon>
+                </Button>
+                <Button floated="right" icon color="yellow" onClick={()=>{
+                    this.setState({mode:mode_edit});
+                }}>
+                    <Icon name="pencil"></Icon>
+                </Button>
+            </>
+        }else if(this.state.mode===mode_create){
+            buttons=<></>
+        }if(this.state.mode===mode_edit){
+            buttons=<>
+                <Button floated="right" icon color="red" onClick={()=>{this.setState({mode:mode_view})} }>
+                    <Icon name="cancel"></Icon>
+                </Button>
+                <Button floated="right" icon color="green" onClick={()=>{
+                    this.EnviarActualizarFile();
+                }}>
+                    <Icon name="save"></Icon>
+                </Button>
+            </>
+        }
+        
 
 
         return <div>
             {/*<Button onClick={() => { console.log("state", this.state) }} wee></Button>*/}
             <Header size="large">{titulo}</Header>
             <Segment>
-                <Grid columns={2} >
+                <Grid>
                     <Grid.Row>
                         <Grid.Column>
                             <Header >Datos</Header>
                         </Grid.Column>
                     </Grid.Row>
                     <Grid.Row>
-                        <Grid.Column width={8}>
-                            <ElementoForm titulo="Codigo *">
-                                <Input disabled={this.modoVer()} transparent={this.modoVer()} fluid placeholder="08-020" value={this.state.codigo ? this.state.codigo : ""} onChange={(event) => {
-                                    this.setState({ codigo: event.target.value });
-                                }} ></Input>
-                            </ElementoForm>
+                        <Grid.Column>
+                            <Segment raised attached>
 
-                        </Grid.Column>
-                        <Grid.Column width={8}>
-                            <ElementoForm titulo="Descripcion">
-                                <Form>
-                                    {/*style={{ minHeight: 100 }}*/}
-                                    {controlDescripcion}
+                                <Grid divided centered>
+                                    <Grid.Row stretched>
+                                        
+                                        <Grid.Column width={8}>
+                                            <Grid>
+                                                <Grid.Row stretched>
 
-                                </Form>
-                            </ElementoForm>
-                        </Grid.Column>
+                                                    <Grid.Column width={8}>
+                                                        <ElementoForm titulo="Codigo *">
+                                                            <Input disabled={this.modoVer()} transparent={this.modoVer()} fluid placeholder="08-020" value={this.state.codigo ? this.state.codigo : ""} onChange={(event) => {
+                                                                this.setState({ codigo: event.target.value });
+                                                            }} ></Input>
+                                                        </ElementoForm>
+                                                    </Grid.Column>
 
-                    </Grid.Row>
-                    <Grid.Row>
-                        <Grid.Column width={8}>
-                            <ElementoForm titulo="Biblia *">
-                                <Grid>
-                                    <Grid.Row columns='equal'>
+                                                    <Grid.Column width={8}>
+                                                        <ElementoForm titulo="Biblia *">
+                                                            <Grid>
+                                                                <Grid.Row columns='equal'>
 
-                                        <Grid.Column width={16}>
-                                            {controlBiblia}
+                                                                    <Grid.Column width={16}>
+                                                                        {controlBiblia}
+                                                                    </Grid.Column>
+                                                                </Grid.Row>
+                                                            </Grid>
+                                                        </ElementoForm>
+                                                    </Grid.Column>
+                                                </Grid.Row>
+                                                <Grid.Row  verticalAlign="bottom">
+
+                                                    <Grid.Column width={16}>
+                                                        <ElementoForm titulo="Cliente *">
+                                                            {controlCliente}
+                                                        </ElementoForm>
+                                                    </Grid.Column>
+
+                                                </Grid.Row>
+                                            </Grid>
+                                        </Grid.Column>
+                                        <Grid.Column width={8}>
+
+                                            <Grid >
+                                                <Grid.Row stretched>
+                                                    <Grid.Column width={16}>
+                                                        <ElementoForm titulo="Descripcion">
+                                                            <Form>
+                                                                {/*style={{ minHeight: 100 }}*/}
+                                                                {controlDescripcion}
+                                                            </Form>
+                                                        </ElementoForm>
+                                                    </Grid.Column>
+                                                </Grid.Row>
+                                                <Grid.Row stretched verticalAlign="bottom">
+                                                    <Grid.Column>
+                                                        <div>
+                                                            {buttons}
+                                                        </div>
+                                                    </Grid.Column>
+                                                </Grid.Row>
+                                            </Grid>
+
                                         </Grid.Column>
                                     </Grid.Row>
                                 </Grid>
+                            </Segment>
+                            {this.state.mode===mode_create?
+                                <Button attached="bottom" primary textAlign="left" onClick={this.EnviarAperturarFile}>Aperturar file</Button>
+                                :<></>}
+                            <NotificacionApi
+                                disabled={!this.state.aperturaFile_mostrarNotificacion}
+                                loading={this.state.aperturaFile_enviando}
+                                color={this.state.aperturaFile_notif_color}
+                                content={this.state.aperturaFile_contenidoRespuesta} 
+                                title={this.state.aperturaFile_tituloRespuesta}
+                                icon={this.state.aperturaFile_notif_icono}>
+                            </NotificacionApi>
+                            <NotificacionApi
+                                disabled={!this.state.actualizacionFile_mostrarNotificacion}
+                                loading={this.state.actualizacionFile_enviando}
+                                color={this.state.actualizacionFile_notif_color}
+                                content={this.state.actualizacionFile_contenidoRespuesta} 
+                                title={this.state.actualizacionFile_tituloRespuesta}
+                                icon={this.state.actualizacionFile_notif_icono}>
+                            </NotificacionApi>
+                            
+                            <NotificacionApi
+                                disabled={!this.state.cargaFileInicial_mostrarNotificacion}
+                                loading={false}
+                                color={this.state.cargaFileInicial_notif_color}
+                                content={this.state.cargaFileInicial_contenidoRespuesta} 
+                                title={this.state.cargaFileInicial_tituloRespuesta}
+                                icon={this.state.cargaFileInicial_notif_icono}>
+                            </NotificacionApi>
 
-                            </ElementoForm>
-                        </Grid.Column>
+                            <NotificacionApi
+                                disabled={!this.state.borradoFile_mostrarNotificacion}
+                                loading={false}
+                                color={this.state.borradoFile_notif_color}
+                                content={this.state.borradoFile_contenidoRespuesta} 
+                                title={this.state.borradoFile_tituloRespuesta}
+                                icon={this.state.borradoFile_notif_icono}>
+                            </NotificacionApi>
 
-                        <Grid.Column width={8}>
-                            <ElementoForm titulo="Cliente *">
-                                {controlCliente}
-                            </ElementoForm>
+                            <Modal dimmer='blurring' size={"mini"} open={this.state.modalAvisoAgregandoServicioAbierto} onClose={this.cerrarAvisoModalCreacionServicio}>
+                                <Modal.Header>Ya se está creando un servicio nuevo</Modal.Header>
+                                <Modal.Content>
+                                    <p>No se puede creando un servicio nuevo mientras ya estás creando otro. Es necesario culminar con el primero</p>
+                                </Modal.Content>
+                                <Modal.Actions>
+                                    <Button color="orange" onClick={this.cerrarAvisoModalCreacionServicio}>
+                                        Aceptar
+                                    </Button>
+                                </Modal.Actions>
+                            </Modal>
+
+                            <Confirm content={"Seguro que deseas eliminar el file '" + this.state.codigo + "' ?"}
+                                open={this.state.borradoFile_confirmAbierto}
+                                onCancel={()=>{this.setState({borradoFile_confirmAbierto:false})}}
+                                onConfirm={()=>{this.EnviarBorradoFile();}} />
                         </Grid.Column>
                     </Grid.Row>
+
                     {/*<Button positive onClick={() => { console.log(this.state) }}>weeee</Button>*/}
                     <Grid.Row>
                         <Grid.Column width={16}>
                             <Header >Servicios</Header> 
-                            {this.state.servicios.length==0?<Segment secondary textAlign="center">No hay servicios en este file</Segment>:''}
-                            {this.state.servicios.map((elem, index) => {
+                            {this.state.servs.length===0?<Segment secondary textAlign="center">No hay servs en este file</Segment>:''}
+                            {this.state.servs.map((elem, index) => {
                                 //return this.filaServicio(index);
                                 let key = 0;
-                                if(this.state.servicios[index])
-                                    key = this.state.servicios[index].idServicio;
+                                let mode = service_mode_view;
+                                if(this.state.servs[index]){
+                                    key = this.state.servs[index].idServicio;
+                                    mode = this.state.servs[index].mode;
+                                }
 
-                                return this.CuerpoServicio({ index: index, key : key });
+                                //return this.Serv({ index: index, key : key });
+//                                console.log("servicio =>>>>>>>",elem);
+                                //console.log(moment("14:03",'HH:mm').format('HH:mm:ss.SSS'));
+                                return <ServiceRow orden={index} idFile={this.state.idFile} mode={mode} service={elem}
+                                    opcionesHoteles = {this.state.opcionesHoteles}
+                                    opcionesProveedores = {this.state.opcionesProveedores}
+                                    opcionesTransportes =  {this.state.opcionesTransportes}
+                                    proovedoresCargaron = {this.state.hotelesCargaron}
+
+                                    onNewServiceSave={()=>{
+
+                                        let serv = this.state.servs[index];
+                                        serv.idFile =this.state.idFile;
+                                        let obj = ServicioModel.toApiObj(serv);
+                                        delete obj._id;
+                                        obj.proveedor=null;
+
+                                        console.log("grabando serv nuevo > ",obj);
+                                        Requester.postServicio(obj, (rpta) => {
+                                            this.setState({
+                                                agregandoServicio:false
+                                            });
+                                            this.cargarFileBase();
+                                        }, (rpta)=>{
+                                            
+                                            //TODO mostrar mensaje error en UI
+                                            this.setState({
+                                                agregandoServicio:false
+                                            });
+                                            this.cargarFileBase();
+                                        });
+                                    }}
+                                    
+                                    onNewServiceCancel={()=>{
+                                        this.setState({
+                                            agregandoServicio:false
+                                        });
+                                        this.cargarFileBase();
+                                    }}
+                                    
+                                    onEditSave={()=>{
+                                        let serv = this.state.servs[index];
+                                        serv.idFile = this.state.idFile;
+                                        //console.log("actualizando serv : ",serv);
+                                        let obj = ServicioModel.toApiObj(serv);
+                                        //console.log("actualizando serv transformado : ",obj);
+                                        Requester.actualizarServicio(elem.idServicio,obj,(rpta) =>{
+                                            console.log("servicio actualizado con exito : ",rpta.cont);
+                                            this.cargarFileBase();
+                                        }, (rpta) => {
+                                            console.error("error al actualizar servicio : ",rpta.cont.message);
+                                            //TODO mostrar mensaje error en UI
+                                        });
+                                    }}
+
+                                    onEditCancel={()=>{
+                                            this.cargarFileBase();
+                                        }
+                                    }
+
+                                    onDelete={()=>{}}
+
+                                    onUpdateValues={( keyPair )=>{
+                                        /*
+                                        let servs = this.state.servs.slice();
+                                        let s = this.state["serv_"+index]
+                                        let result = { ...s , ...keyPair };
+                                        //servs[index] = result;
+
+                                        //console.log("result > ",result);
+                                        //servs[index].mode = service_mode_view;
+                                        this.setState({
+                                            ["serv_"+index] : result,
+                                        });
+
+*/
+                                        console.log("actualizando: ",keyPair);
+
+                                        //console.log("actualizando: ",keyPair);
+                                        let servs = this.state.servs.slice();
+                                        let result = { ...servs[index] , ...keyPair };
+                                        servs[index] = result;
+                                        //console.log("result > ",result);
+                                        //servs[index].mode = service_mode_view;
+                                        this.setState({
+                                            servs : servs,
+                                        });
+                                        
+                                    }}
+
+                                    />
                             })}
                             {this.modoVer() ? <div></div> :
                                 <Button content='Agregar servicio' icon='plus' floated="left" labelPosition='right' onClick={() => {
                                     var servs = this.state.servicios.slice();
+                                    let newServ = this.servicioDefault();
                                     servs.push(this.servicioDefault());
-                                    this.setState({ servicios: servs });
+                                    this.setState({ servs: servs });
                                 }} />
                             }
                         </Grid.Column>
                     </Grid.Row>
                     <Grid.Row>
-                        <Grid.Column width={16}>
-                            <Header >Hospedajes</Header>
-
-                            {this.state.hospedajes.length===0?<Segment secondary textAlign="center">No hay hospedajes programados en este file</Segment>:''}
-                            {this.state.hospedajes.map((elem, index) => {
-                                let key = 0;
-                                if(this.state.hospedajes[index])
-                                    key = this.state.hospedajes[index].idServicio;
-                                return this.CuerpoHospedaje({ index: index, key : key });
-                            })}
-                            {this.modoVer() ? <div></div> :
-                                <Button content='Agregar hospedaje' icon='plus' labelPosition='right' onClick={() => {
-                                    var transps = this.state.hospedajes.slice();
-                                    transps.push(this.hospedajeDefault());
-                                    this.setState({ hospedajes: transps });
-                                }} />
-                            }
-
-                        </Grid.Column>
-                    </Grid.Row>
-                    <Grid.Row>
-                        <Grid.Column width={16}>
-
+                        <Grid.Column>
+                            <Button icon labelPosition='left' onClick={() => {this.onClickAgregarServicio("general")}}>
+                                <Icon name="settings"></Icon>
+                                Agregar servicio general
+                            </Button>
                             
-                            <Header >Transportes</Header>
+                            <Button icon labelPosition="left" onClick={() => {this.onClickAgregarServicio("transporte")}}>
+                                <Icon name="car"></Icon>
+                                Agregar servicio de transporte
+                            </Button>
 
-                            {this.state.transportes.length==0?<Segment secondary textAlign="center">No hay transportes en este file</Segment>:''}
-                            {this.state.transportes.map((elem, index) => {
-                                let key = 0;
-                                if(this.state.transportes[index])
-                                    key = this.state.transportes[index].idServicio;
-                                return this.CuerpoTransporte({ index: index, key : key });
-                            })}
-                            {this.modoVer() ? <div></div> :
-                                <Button content='Agregar transporte' icon='plus' labelPosition='right' onClick={() => {
-                                    var transps = this.state.transportes.slice();
-                                    transps.push(this.transporteDefault());
-                                    this.setState({ transportes: transps });
-                                }} />
-                            }
-                            <MensajeTransaccion
-                                transaccionEnviada={this.state.transaccionEnviadaCrearFile}
-                                responseRecibida={this.state.responseRecibidaCrearFile}
-                                rptaTransaccion={this.state.rptaTransaccionCrearFile}
-                            //textoExito = "Puede usar la nueva biblia"
-                            />
+                            <Button icon labelPosition="left" onClick={() => {this.onClickAgregarServicio("hospedaje")}}>
+                                <Icon name="building"></Icon>
+                                Agregar servicio de hospedaje
+                            </Button>
 
                         </Grid.Column>
                     </Grid.Row>
 
                 </Grid>
-                {this.modoVer() ? <div></div> :
-                    <Grid>
-                        <Grid.Row>
-                            <Grid.Column>
-                                <Button positive onClick={() => { this.EnviarPostFile() }}>Guardar file</Button>
-                            </Grid.Column>
-                        </Grid.Row>
-                    </Grid>
-                }
-
             </Segment>
             {/*
             {!this.state.bibliasCargaronExito ? <Message error>Error de conexion: Las biblias no se pueden cargar.</Message> : null}
@@ -458,17 +699,21 @@ class CrearFile extends Component {
                 let fm = new FileModel(rpta.cont);
                 console.log("file transformado",fm)
 
+                fm.servicios.map( (e,i) => {
+                    e.mode=service_mode_view
+                });
+
                 this.setState({
                     idFile : fm.idFile,
                     codigo : fm.codigo,
                     descripcion : fm.descripcion,
-                    idBiblia : fm.biblia._id,
+                    idBiblia : fm.biblia.id,
                     nombreBiblia : fm.biblia.mes + ' - ' +fm.biblia.anho,
-                    idCliente : fm.cliente._id,
+                    idCliente : fm.cliente.idCliente,
                     nombreCliente: fm.cliente.nombre + ' ( '+fm.cliente.clase+' )',
-                    servicios: fm.servicios.filter(x=>x.clase==="general"),
-                    transportes: fm.servicios.filter(x=>x.clase==="transporte"),
-                    hospedajes: fm.servicios.filter(x=>x.clase==="hospedaje")
+                    servs: fm.servicios,
+                    //transportes: fm.servicios.filter(x=>x.clase==="transporte"),
+                    //hospedajes: fm.servicios.filter(x=>x.clase==="hospedaje")
                     
                     /*
                     idFile: fm.idFile,
@@ -484,6 +729,12 @@ class CrearFile extends Component {
                 });
             },
             rpta => {
+                this.setState({
+                    cargaFileInicial_respuestaRecibida:true,
+                    cargaFileInicial_tituloRespuesta:rpta.cont.error,
+                    cargaFileInicial_mostrarNotificacion:true,
+                    cargaFileInicial_contenidoRespuesta:rpta.cont.message + " ("+rpta.cont.statusCode+")"
+                });
 
             });
     }
@@ -544,6 +795,31 @@ class CrearFile extends Component {
         })*/
     }
 
+    cargarProveedores = () => {
+        Requester.getProveedores(
+            {},
+            (rpta) => {
+            //console.log("todos los proveedores > " ,rpta);
+            var proovs = rpta.cont.map(element => { return { value: element.id, text: element.nombre } });
+            let hoteles = rpta.cont.filter(x=>x.clase==="hotel").map(element => { return { value: element.id, text: element.nombre } });
+            let transportes = rpta.cont.filter(x=>x.clase==="transporte").map(element => { return { value: element.id, text: element.nombre } });
+
+            this.setState({
+                opcionesProveedores: proovs,
+                opcionesHoteles: hoteles,
+                opcionesTransportes : transportes,
+                hotelesCargaronExito: true,
+                hotelesCargaron: true
+            });
+        }, (rptaError) => {
+            //console.log(rptaError);
+            this.setState({
+                hotelesCargaronExito: false,
+                hotelesCargaron: true
+            });
+        });
+    }
+
     cargarProveedoresNoTransp = () => {
         Requester.getProveedores(
             {raw:"clase=hotel&clase=restaurante&clase=guia&clase=operador&clase=empresa&clase=persona"},
@@ -578,6 +854,7 @@ class CrearFile extends Component {
     }
 
     cargarTransportes = () => {
+
         Requester.getProveedores(
             {"clase":"transporte"},(rpta) => {
             var listaProovs = rpta.cont.map(element => { return { value: element.id, text: element.nombre } });
@@ -795,6 +1072,68 @@ class CrearFile extends Component {
             </Segment.Group>
         </Segment.Group>
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    Serv = (props) => {
+        
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     
     CuerpoHospedaje = (props) => {
@@ -1213,6 +1552,148 @@ class CrearFile extends Component {
         </Segment.Group>
     }
 
+    AbrirCuadroConfirmacionBorradoFile =()=>{
+        this.setState({borradoFile_confirmAbierto:true});
+    }
+
+    EnviarBorradoFile = () => {
+        //console.log("props >",this.props);
+
+        
+        this.setState({
+            borradoFile_confirmAbierto:false,
+            borradoFile_enviando:true,
+            borradoFile_notif_color:"",
+            //borradoFile_mostrarNotificacion:true
+        });
+
+        Requester.borrarFile(this.state.idFile, 
+        (rpta)=>{
+            this.props.history.push("/files");
+        },(rpta)=>{
+            //error
+            //console.log("Rpta de error", rpta);
+            this.setState({
+                borradoFile_mostrarNotificacion:true,
+                borradoFile_enviando: false,
+                borradoFile_tituloRespuesta:"Error al borrar file",
+                borradoFile_contenidoRespuesta:rpta.cont.message + " ("+rpta.cont.statusCode+")",
+                borradoFile_notif_color:"red",
+                borradoFile_notif_icono:"warning"
+            });
+        },(rpta)=>{
+        });
+    }
+
+
+    EnviarActualizarFile = ()=>{
+        
+        let obj = {
+            idBiblia: this.state.idBiblia,
+            idCliente: this.state.idCliente,
+            codigo: this.state.codigo,
+            descripcion: this.state.descripcion
+        };
+        console.log("actualizando con obj_> " , obj);
+
+        let model = FileModel.toApiObj(obj);
+
+        model.biblia=model.biblia._id;
+        model.cliente=model.cliente._id;
+        model.servicios = this.state.servs.map((serv,i)=>{return serv.idServicio})
+        
+
+        console.log("actualizando con transformado > " , model);
+
+        this.setState({
+            actualizacionFile_enviando:true,
+            actualizacionFile_notif_color:"",
+            actualizacionFile_mostrarNotificacion:true,
+            mode:mode_view
+        });
+        
+        Requester.actualizarFile(
+            this.state.idFile,
+            model,
+
+            (rpta) => {
+                //console.log("exitooo")
+                this.setState({
+                    actualizacionFile_enviando: false,
+                    actualizacionFile_tituloRespuesta:"File actualizado",
+                    actualizacionFile_contenidoRespuesta:"File actualizado: '"+rpta.cont.codigo+"'",
+                    actualizacionFile_notif_color:"green",
+                    actualizacionFile_notif_icono:"check",
+                    //fileAbierto:true
+                    mode:mode_view
+                });
+            },
+            (rpta) => {
+                console.log("Rpta de error", rpta);
+                this.setState({
+                    actualizacionFile_enviando: false,
+                    actualizacionFile_tituloRespuesta:"Error al actualizar file",
+                    actualizacionFile_contenidoRespuesta:rpta.cont.message + " ("+rpta.cont.statusCode+")",
+                    actualizacionFile_notif_color:"red",
+                    actualizacionFile_notif_icono:"warning"
+                });
+            },
+            ()=>{
+                this.cargarFileBase();
+            }
+        )
+    }
+
+    EnviarAperturarFile = () => {
+        
+        let func = Requester.postFile;
+        
+        let obj = {
+            idBiblia: this.state.idBiblia,
+            idCliente: this.state.idCliente,
+            codigo: this.state.codigo,
+            descripcion: this.state.descripcion
+        };
+        
+        let model = FileModel.toApiObj(obj);
+/*
+        if (this.modoEditar())
+            func = Requester.postEditarFile;
+*/
+        this.setState({
+            aperturaFile_enviando:true,
+            aperturaFile_notif_color:"",
+            aperturaFile_mostrarNotificacion:true
+        });
+
+        func(
+            model,
+
+            (rpta) => {
+                //console.log("exitooo")
+                this.setState({
+                    aperturaFile_enviando: false,
+                    aperturaFile_tituloRespuesta:"File nuevo registrado",
+                    aperturaFile_contenidoRespuesta:"File creado: '"+rpta.cont.codigo+"'",
+                    aperturaFile_notif_color:"green",
+                    aperturaFile_notif_icono:"check",
+                    //fileAbierto:true
+                    mode:mode_view
+                });
+            },
+            (rpta) => {
+                console.log("Rpta de error", rpta);
+                this.setState({
+                    aperturaFile_enviando: false,
+                    aperturaFile_tituloRespuesta:"Error al registrar file nuevo",
+                    aperturaFile_contenidoRespuesta:rpta.cont.message + " ("+rpta.cont.statusCode+")",
+                    aperturaFile_notif_color:"red",
+                    aperturaFile_notif_icono:"warning"
+                });
+            }
+        )
+    }
+
     EnviarPostFile = () => {
 
         let listaTotal = [];
@@ -1512,6 +1993,36 @@ class CrearFile extends Component {
         //}
     }
 
+    abrirAvisoModalCreacionServicio = () => {
+        this.setState({modalAvisoAgregandoServicioAbierto:true});
+    }
+    
+    cerrarAvisoModalCreacionServicio = () => {
+        this.setState({modalAvisoAgregandoServicioAbierto:false});
+    }
+
+    onClickAgregarServicio = (clase, event)=>{
+        //console.log("moment > " ,moment().format('YYYY-MM-DD'));
+        if(!this.state.agregandoServicio){
+            var servs = this.state.servs.slice();
+            let newServ = {
+                ...new ServicioModel({}),
+                mode:service_mode_added,
+                clase:clase,
+                nombre:"Nuevo",
+                cantPasajeros:1,
+                horaInicio:"00:00",
+                horaFinal:"00:00",
+                fechaEjecucion:moment().format('YYYY-MM-DD'),
+                fechaOut:moment().add(1,'days').format('YYYY-MM-DD')
+            }
+
+            servs.push(newServ);
+            this.setState({ servs: servs, agregandoServicio:true });
+        }else{
+            this.abrirAvisoModalCreacionServicio();
+        }
+    }
 }
 
 export default CrearFile;

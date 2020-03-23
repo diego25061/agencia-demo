@@ -44,12 +44,12 @@ class TabProovs extends Component{
     }
 
     columnasTabla = [ 
-        { Header: 'Nombre', accessor: 'nombre', Cell: props => props.value ? props.value:"-" },
-        { Header: 'Correo', accessor: 'correoContacto', Cell: props => props.value ? props.value:"-" },
-        { Header: 'Correo Adic.',accessor: 'correoAdicional', Cell: props => props.value ? props.value:"-" }, 
-        { Header: 'Numero contacto',accessor: 'numeroContacto', Cell: props => props.value ? props.value:"-" }, 
-        { Header: 'Numero contacto adicional', accessor: 'numeroContactoAdicional', Cell: props => props.value ? props.value:"-" },
-        { Header: 'Ciudad', accessor: 'ciudad', Cell: props => props.value ? props.value:"-" },
+        { Header: 'Nombre', accessor: 'nombre', Cell: props => props.value ? props.value:"" },
+        { Header: 'Correo', accessor: 'correoContacto', Cell: props => props.value ? props.value:"" },
+        { Header: 'Correo Adic.',accessor: 'correoAdicional', Cell: props => props.value ? props.value:"" }, 
+        { Header: 'Numero contacto',accessor: 'numeroContacto', Cell: props => props.value ? props.value:"" }, 
+        { Header: 'Numero contacto adicional', accessor: 'numeroContactoAdicional', Cell: props => props.value ? props.value:"" },
+        { Header: 'Ciudad', accessor: 'ciudad', Cell: props => props.value ? props.value:"" },
         { Header: 'Accion', Cell: props => {
             //console.log(props);
             return <Container textAlign="center">

@@ -61,16 +61,18 @@ class Requester {
             if (funcError) {
                 if (error.response) {
                     if (error.response.data) {
-                        funcError(new RptaTrx(error.response.data, error));
+                        var r = new RptaTrx();
+                        r.set(error.response.data);
+                        funcError(r);
                     } else {
                         var r = new RptaTrx();
-                        r.set(null, string_serv_inaccesible, null, 0);
+                        r.set({error:"Error", message:string_serv_inaccesible,statusCode:500}, string_serv_inaccesible, null, 0);
                         funcError(r);
                     }
                 } else {
                     //si hay un error donde el server ni responde
                     var r = new RptaTrx();
-                    r.set(null, string_serv_inaccesible, null, 0);
+                    r.set({error:"Error", message:string_serv_inaccesible,statusCode:500}, string_serv_inaccesible, null, 0);
                     funcError(r);
                 }
             }
@@ -257,6 +259,14 @@ class Requester {
     static postFile = (file, funcSuccess, funcError, funcAlways) => {
         this.api_post("/yfiles/", file, funcSuccess, funcError, funcAlways);
     }
+
+    static borrarFile= (fileId , funcSuccess, funcError, funcAlways) => {
+        this.api_delete("/yfiles/"+fileId ,  funcSuccess, funcError, funcAlways);
+    }
+
+    static actualizarFile = (fileId , file, funcSuccess, funcError, funcAlways) => {
+        this.api_put("/yfiles/"+fileId , file, funcSuccess, funcError, funcAlways);
+    }
     
     static postEditarFile = (file, funcSuccess, funcError, funcAlways) => {
         this.requestBasicoPost(Configuracion.ServerUrl + "/files/editar/", file, funcSuccess, funcError, funcAlways);
@@ -302,7 +312,20 @@ class Requester {
 
     //------------------------ SERVICIOS -----------------------------------
 
-    
+
+    static postServicio = (servicio, funcSuccess, funcError, funcAlways) => {
+        this.api_post("/servicios/", servicio, funcSuccess, funcError, funcAlways);
+    }
+
+    static borrarServicio = (idServicio , funcSuccess, funcError, funcAlways) => {
+        this.api_delete("/servicios/"+idServicio ,  funcSuccess, funcError, funcAlways);
+    }
+
+    static actualizarServicio = (idServicio , servicio, funcSuccess, funcError, funcAlways) => {
+        this.api_put("/servicios/"+idServicio , servicio, funcSuccess, funcError, funcAlways);
+    }
+
+
     static getServiciosTodos = (funcSuccess, funcError, funcAlways) => {
         this.requestBasicoGet(Configuracion.ServerUrl + "/servicios", funcSuccess, funcError, funcAlways);
     }
@@ -325,7 +348,7 @@ class Requester {
         this.requestBasicoGet(Configuracion.ServerUrl + "/servicios/hospedajes", funcSuccess, funcError, funcAlways);
     }
 
-
+/*
     static postServicio = (
         idFile,
         idProveedor,
@@ -366,7 +389,7 @@ class Requester {
             transporte,
             hotel
         }, funcSuccess, funcError, funcAlways);
-    }
+    }*/
 
     //------------------------ CLIENTES -----------------------------------
 

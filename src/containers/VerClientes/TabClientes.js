@@ -2,13 +2,12 @@ import React from 'react'
 import {Component} from 'react'
 import { Button, Container, Header, Menu, Modal, Confirm, Segment } from 'semantic-ui-react';
 import Requester from '../../common/Services/Requester';
-
-
-
 import TablaBuscador from '../TablaBuscador/TablaBuscador';
 import ModalCrearEditarCliente from './ModalCrearEditarCliente';
 import Constantes from '../../common/Constantes';
 import ClientModel from './../../common/Models/Apis/ClientModel';
+import ModalClientes from './ModalClientes';
+import NotificationStateHolder from '../../common/StateHolders/NotificationStateHolder';
 
 
 class TabClientes extends Component{
@@ -25,25 +24,23 @@ class TabClientes extends Component{
             //creacion o edicion
             modo:"creacion",
             abierto:false,
-            transaccionEnviada:false,
-            responseRecibida:false,
-            rptaTransaccion:null,
-
+            //transaccionEnviada:false,
+            //responseRecibida:false,
+            //rptaTransaccion:null,
             campos:{
-            }
-            
-        }
-
+            }  
+        },
+        notificacion_crearEditar_cliente: new NotificationStateHolder()
     }
     
     columnasTabla = [ 
-        { Header: 'Nombre', accessor: 'nombre', Cell: props => props.value ? props.value:"-" },
-        { Header: 'Correo', accessor: 'correoContacto', Cell: props => props.value ? props.value:"-" },
-        { Header: 'Correo Adic.',accessor: 'correoAdicional', Cell: props => props.value ? props.value:"-" }, 
-        { Header: 'Numero contacto',accessor: 'numeroContacto', Cell: props => props.value ? props.value:"-" }, 
-        { Header: 'Numero contacto adicional', accessor: 'numeroContactoAdicional', Cell: props => props.value ? props.value:"-" },
-        { Header: 'Ciudad', accessor: 'ciudad', Cell: props => props.value ? props.value:"-" },
-        { Header: 'Pais', accessor: 'pais', Cell: props => props.value ? props.value:"-" },
+        { Header: 'Nombre', accessor: 'nombre', Cell: props => props.value ? props.value:""},
+        { Header: 'Correo', accessor: 'correoContacto', Cell: props => props.value ? props.value:""},
+        { Header: 'Correo Adic.',accessor: 'correoAdicional', Cell: props => props.value ? props.value:"" }, 
+        { Header: 'Numero contacto',accessor: 'numeroContacto', Cell: props => props.value ? props.value:"" }, 
+        { Header: 'Numero contacto adicional', accessor: 'numeroContactoAdicional', Cell: props => props.value ? props.value:"" },
+        { Header: 'Ciudad', accessor: 'ciudad', Cell: props => props.value ? props.value:"" },
+        { Header: 'Pais', accessor: 'pais', Cell: props => props.value ? props.value:"" },
         { Header: 'Accion', Cell: props => {
             //console.log(props);
             return <Container textAlign="center">
@@ -60,7 +57,7 @@ class TabClientes extends Component{
     ]
 
     render(){
-        
+
         return <div /*style={{backgroundColor:"#f9f9f9"}}*/>
             <Header size="medium">{this.props.sustPlural}</Header> 
             <Button primary onClick={ this.abrirModal }>Nuevo {this.props.sust}</Button>
@@ -68,18 +65,45 @@ class TabClientes extends Component{
             <TablaBuscador data={this.state.clientesDirs} columns={this.columnasTabla} />
             {/*this.ModalCrear()*/}
 
-            <ModalCrearEditarCliente parent={this} sustantivoTitulo={this.props.sust}
+            
+            <ModalClientes
+                modo={this.state.modalCrearEditar.modo}
+                abierto={this.state.modalCrearEditar.abierto}
+                parent={this} 
+                campos = {this.state.modalCrearEditar.campos}
+                
+                onUpdateFields={(keyPair)=>{
+                    let campos = this.state.modalCrearEditar.campos;
+                    let newCampos = {...campos,...keyPair};
+                    //console.log("new campos > ",newCampos);
+                    let obj = {...this.state.modalCrearEditar};
+                    obj.campos = newCampos;
+                    let newObj = obj;
+                    this.setState({modalCrearEditar:newObj});
+                }}
+
+                crearEditarCliente_mostrarNotificacion = {this.state.notificacion_crearEditar_cliente.mostrarNotificacion}
+                crearEditarCliente_enviando = {this.state.notificacion_crearEditar_cliente.enviando}
+                crearEditarCliente_notif_color = {this.state.notificacion_crearEditar_cliente.notif_color}
+                crearEditarCliente_contenidoRespuesta = {this.state.notificacion_crearEditar_cliente.contenidoRespuesta}
+                crearEditarCliente_tituloRespuesta = {this.state.notificacion_crearEditar_cliente.tituloRespuesta}
+                crearEditarCliente_notif_icono = {this.state.notificacion_crearEditar_cliente.notif_icono} 
+
+                sustantivoTitulo={this.props.sust}
                 placeholderNombre={this.props.placeholderNombre}
                 placeholderCorreo={this.props.placeholderCorreo}
                 placeholderCorreoAdic={this.props.placeholderCorreoAdic}
+
                 enEnviar={this.enviarCliente}
                 enEditar={this.editarCliente}
-                enCerrar={this.enCerrarModal}/>
+                enCerrar = {this.enCerrarModal}
+                enCancelar = {this.enCancelarModal}
+                />
             <Confirm
                 open={this.state.confirmacionEliminarAbierta}
                 cancelButton="Cancelar"
                 confirmButton="Eliminar"
-                content={'Seguro que deseas eliminar el '+this.props.sust+' ' + (this.state.idEliminar ? this.state.clientesDirs.find(element => element.idCliente == this.state.idEliminar).nombre
+                content={'Seguro que deseas eliminar el '+this.props.sust+" '" + (this.state.idEliminar ? this.state.clientesDirs.find(element => element.idCliente == this.state.idEliminar).nombre+"'"
                     :"<NULO>") + '?'}
                 onCancel={this.cerrarConfirmacionEliminar}
                 onConfirm={()=>{this.confirmarEliminar(this.state.clientesDirs.find(element => element.idCliente == this.state.idEliminar))}}
@@ -89,7 +113,7 @@ class TabClientes extends Component{
     }
     
     intentarEliminar=(cliente)=>{
-        console.log(cliente);
+        //console.log(cliente);
         
         if(cliente){
             this.setState({
@@ -100,7 +124,7 @@ class TabClientes extends Component{
     }
 
     confirmarEliminar = (cliente) =>{
-        console.log("eliminando cliente ", cliente)
+        console.log("Eliminando cliente ", cliente)
 
         if(cliente){
             Requester.eliminarCliente(cliente.idCliente,
@@ -128,7 +152,7 @@ class TabClientes extends Component{
     }
 
     abrirModalEdicion= (cliente)=>{
-        console.log("abriendo modal:" , cliente);
+        console.log("Abriendo modal:" , cliente);
         if(cliente){
             var obj = {...this.state.modalCrearEditar};
             obj.modo="edicion";
@@ -143,59 +167,56 @@ class TabClientes extends Component{
         var obj = {...this.state.modalCrearEditar};
         obj.modo="creacion";
         obj.abierto = true;
+        obj.campos = {};
         this.setState({modalCrearEditar:obj});
     }
 
     enviarCliente = () => { 
-        //console.log("enviando!");
-        var obj = {...this.state.modalCrearEditar};
-        obj.transaccionEnviada=true;
-        this.setState({modalCrearEditar:obj});
+        console.log("Enviando nuevo cliente!");
+        let notif = this.state.notificacion_crearEditar_cliente;
+        notif.setAsEnviando();
         var enviar = ClientModel.toApiObj(this.state.modalCrearEditar.campos);
         enviar.clase = this.props.tipo;
-        //Requester.postCliente(
+        
         this.props.funcEnviar(
             enviar,
             (rpta)=>{
-                var obj = {...this.state.modalCrearEditar};
-                obj.responseRecibida=true;
-                obj.rptaTransaccion = rpta;
-                this.setState({modalCrearEditar:obj});
+                //console.log("rptaa>",rpta);
+                let notif = this.state.notificacion_crearEditar_cliente;
+                notif.setRecibidoSuccess("Cliente creado","Cliente "+rpta.cont.clase+ " creado: '"+rpta.cont.nombre+"'");
+                this.setState({notificacion_crearEditar_cliente:notif});
                 this.cargarClientes();
             },
             (rptaError)=>{
-                var obj = {...this.state.modalCrearEditar};
-                obj.responseRecibida=true;
-                obj.rptaTransaccion = rptaError;
-                this.setState({modalCrearEditar:obj});
+                console.log("rptaa>",rptaError);
+                let notif = this.state.notificacion_crearEditar_cliente;
+                notif.setRecibidoError("Error al crear cliente",rptaError.cont.message, rptaError.cont.statusCode, rptaError.cont.data);
+                this.setState({notificacion_crearEditar_cliente:notif});
             })
     }
-    
+
+
     editarCliente = () => { 
-        console.log("editando!");
-        
-        var obj = {...this.state.modalCrearEditar};
-        obj.transaccionEnviada=true;
-        this.setState({modalCrearEditar:obj});
-        //console.log("::::::::: ",this.state.modalCrearEditar.campos);
+        console.log("Editando cliente!");
+
+        let notif = this.state.notificacion_crearEditar_cliente;
+        notif.setAsEnviando();
+
+        this.setState({notificacion_crearEditar_cliente:notif});
+
         Requester.editarCliente(this.state.modalCrearEditar.campos.idCliente,
             ClientModel.toApiObj(this.state.modalCrearEditar.campos),
             (rpta)=>{
-                console.log(this.state.modalCrearEditar.campos);
-                console.log("edicion success!");
-                console.log(rpta);
-                var obj = {...this.state.modalCrearEditar};
-                obj.responseRecibida = true;
-                obj.rptaTransaccion = rpta;
-                this.setState({modalCrearEditar:obj});
+                let notif = this.state.notificacion_crearEditar_cliente;
+                notif.setRecibidoSuccess("Cliente actualizado","Cliente '"+rpta.cont.nombre+"' actualizado")
+                this.setState({notificacion_crearEditar_cliente:notif});
+
                 this.cargarClientes();
             },
             (rptaError)=>{
-                //console.log("edicion error!");
-                var obj = {...this.state.modalCrearEditar};
-                obj.responseRecibida = true;
-                obj.rptaTransaccion = rptaError;
-                this.setState({modalCrearEditar:obj});
+                let notif = this.state.notificacion_crearEditar_cliente;
+                notif.setRecibidoError("Error al actualizar cliente",rptaError.cont.message, rptaError.cont.statusCode);
+                this.setState({notificacion_crearEditar_cliente:notif});
             }
         );
     }
@@ -208,18 +229,17 @@ class TabClientes extends Component{
                     var clientesDirs=rpta.cont.map((e,i)=>{ return new ClientModel(e);});
                     this.setState({clientesDirs:clientesDirs});
             });
-            /*
-            Requester.getClientesFullDetallado((rpta)=>{
-                var clientesDirs=rpta.cont.map((e,i)=>{ return new ClientModel(e);});
-                this.setState({clientesDirs:clientesDirs});
-            });*/
         }else if ( this.props.tipo==="minorista"){
-            Requester.getClientesOpMin((rpta)=>{
+            Requester.getClientes(
+                {"clase":"minorista"},
+                (rpta)=>{
                 var clientesDirs=rpta.cont.map((e,i)=>{ return new ClientModel(e);});
                 this.setState({clientesDirs:clientesDirs});
             });
         }else if ( this.props.tipo==="mayorista"){
-            Requester.getClientesOpMay((rpta)=>{
+            Requester.getClientes(
+                {"clase":"mayorista"},
+                (rpta)=>{
                 var clientesDirs=rpta.cont.map((e,i)=>{ return new ClientModel(e);});
                 this.setState({clientesDirs:clientesDirs});
             });
@@ -231,19 +251,31 @@ class TabClientes extends Component{
     }
 
     enCerrarModal = () =>{
+        console.log("Cerrando modal");
+        let notif = this.state.notificacion_crearEditar_cliente;
+        notif.setHidden();
         var obj = {...this.state.modalCrearEditar};
-        obj.responseRecibida=false;
-        obj.transaccionEnviada=false;
-        obj.rptaTransaccion=null;
-
-        if(this.state.modalCrearEditar.modo === "edicion"){
-            var obj = {...this.state.modalCrearEditar};
-            for(var key in obj.campos){
-                obj.campos[key]='';
-            }
-            this.setState({modalCrearEditar:obj});
-        }
+        obj.abierto = false;
+        this.setState({
+            notificacion_crearEditar_cliente:notif,
+            modalCrearEditar:obj
+            });
     }
+
+    enCancelarModal = () =>{
+        console.log("Cancelando modal");
+        let notif = this.state.notificacion_crearEditar_cliente;
+        notif.setHidden();
+
+        var obj = {...this.state.modalCrearEditar};
+        obj.abierto = false;
+        obj.campos = {};
+        this.setState({
+            notificacion_crearEditar_cliente:notif,
+            modalCrearEditar:obj
+            });
+    }
+    
 }
 
 export default TabClientes
