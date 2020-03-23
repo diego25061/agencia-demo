@@ -8,6 +8,7 @@ import Constantes from '../../common/Constantes';
 import ClientModel from './../../common/Models/Apis/ClientModel';
 import ModalClientes from './ModalClientes';
 import NotificationStateHolder from '../../common/StateHolders/NotificationStateHolder';
+import NotificacionApi from './../NotificacionApi/NotificacionApi';
 
 
 class TabClientes extends Component{
@@ -30,7 +31,8 @@ class TabClientes extends Component{
             campos:{
             }  
         },
-        notificacion_crearEditar_cliente: new NotificationStateHolder()
+        notificacion_crearEditar_cliente: new NotificationStateHolder(),
+        notificacion_cargar_clientes: new NotificationStateHolder()
     }
     
     columnasTabla = [ 
@@ -98,7 +100,7 @@ class TabClientes extends Component{
                 enEditar={this.editarCliente}
                 enCerrar = {this.enCerrarModal}
                 enCancelar = {this.enCancelarModal}
-                />
+            />
             <Confirm
                 open={this.state.confirmacionEliminarAbierta}
                 cancelButton="Cancelar"
@@ -108,7 +110,14 @@ class TabClientes extends Component{
                 onCancel={this.cerrarConfirmacionEliminar}
                 onConfirm={()=>{this.confirmarEliminar(this.state.clientesDirs.find(element => element.idCliente == this.state.idEliminar))}}
             />
-            <Modal></Modal>
+            <NotificacionApi
+                disabled={!this.state.notificacion_cargar_clientes.mostrarNotificacion}
+                loading={this.state.notificacion_cargar_clientes.enviando}
+                color={this.state.notificacion_cargar_clientes.notif_color}
+                content={this.state.notificacion_cargar_clientes.contenidoRespuesta} 
+                title={this.state.notificacion_cargar_clientes.tituloRespuesta}
+                icon={this.state.notificacion_cargar_clientes.notif_icono}>
+            </NotificacionApi>
         </div>
     }
     
@@ -175,6 +184,7 @@ class TabClientes extends Component{
         console.log("Enviando nuevo cliente!");
         let notif = this.state.notificacion_crearEditar_cliente;
         notif.setAsEnviando();
+        this.setState({notificacion_crearEditar_cliente:notif});
         var enviar = ClientModel.toApiObj(this.state.modalCrearEditar.campos);
         enviar.clase = this.props.tipo;
         
@@ -215,34 +225,46 @@ class TabClientes extends Component{
             },
             (rptaError)=>{
                 let notif = this.state.notificacion_crearEditar_cliente;
-                notif.setRecibidoError("Error al actualizar cliente",rptaError.cont.message, rptaError.cont.statusCode);
+                notif.setRecibidoError("Error al actualizar cliente",rptaError.cont.message, rptaError.cont.statusCode, rptaError.cont.data);
                 this.setState({notificacion_crearEditar_cliente:notif});
             }
         );
     }
 
     cargarClientes= () =>{
+        let fError = (rptaError) =>{
+            let notif = this.state.notificacion_cargar_clientes;
+            notif.setRecibidoError("Error al leer clientes",rptaError.cont.message, rptaError.cont.statusCode, rptaError.cont.data);
+            notif.mostrarNotificacion=true;
+            this.setState({notificacion_cargar_clientes:notif});
+        }
         if(this.props.tipo==="directo"){
             Requester.getClientes(
                 {"clase":"directo"},
                 (rpta)=>{
                     var clientesDirs=rpta.cont.map((e,i)=>{ return new ClientModel(e);});
-                    this.setState({clientesDirs:clientesDirs});
-            });
+                    let notif = this.state.notificacion_cargar_clientes;
+                    notif.setHidden();
+                    this.setState({clientesDirs:clientesDirs,notificacion_cargar_clientes:notif});
+            },fError);
         }else if ( this.props.tipo==="minorista"){
             Requester.getClientes(
                 {"clase":"minorista"},
                 (rpta)=>{
                 var clientesDirs=rpta.cont.map((e,i)=>{ return new ClientModel(e);});
-                this.setState({clientesDirs:clientesDirs});
-            });
+                let notif = this.state.notificacion_cargar_clientes;
+                    notif.setHidden();
+                    this.setState({clientesDirs:clientesDirs,notificacion_cargar_clientes:notif});
+            },fError);
         }else if ( this.props.tipo==="mayorista"){
             Requester.getClientes(
                 {"clase":"mayorista"},
                 (rpta)=>{
                 var clientesDirs=rpta.cont.map((e,i)=>{ return new ClientModel(e);});
-                this.setState({clientesDirs:clientesDirs});
-            });
+                let notif = this.state.notificacion_cargar_clientes;
+                    notif.setHidden();
+                    this.setState({clientesDirs:clientesDirs,notificacion_cargar_clientes:notif});
+            },fError);
         }
     }
 

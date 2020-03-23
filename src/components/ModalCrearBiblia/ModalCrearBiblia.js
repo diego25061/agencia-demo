@@ -3,6 +3,7 @@ import {  Icon,  Message, Dropdown, Modal, Button, Input, Grid} from 'semantic-u
 import ElementoForm from '../ElementoForm/ElementoForm';
 import CONSTANTES_GLOBALES from '../../common/Constantes';
 import MensajeTransaccion from '../MensajeTransaccion/MensajeTransaccion';
+import NotificacionApi from '../../containers/NotificacionApi/NotificacionApi';
 
 /**
  * 
@@ -59,6 +60,16 @@ const ModalCrearBiblia = (props) => {
                     </Grid.Column>
                 </Grid.Row>
             </Grid>
+
+            <NotificacionApi
+                disabled={!props.crearBiblia_mostrarNotificacion}
+                loading={props.crearBiblia_enviando}
+                color={props.crearBiblia_notif_color}
+                content={props.crearBiblia_contenidoRespuesta} 
+                title={props.crearBiblia_tituloRespuesta}
+                icon={props.crearBiblia_notif_icono}>
+            </NotificacionApi>
+
             <MensajeTransaccion 
                 transaccionEnviada = {props.parentComponent.state.modalBiblia.transaccionEnviada} 
                 responseRecibida = {props.parentComponent.state.modalBiblia.responseRecibida}

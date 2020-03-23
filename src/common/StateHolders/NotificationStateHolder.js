@@ -9,7 +9,7 @@ export default class NotificationStateHolder {
     notif_icono="check";
 
     setDefault = () =>{
-        this.color="";
+        //this.color="";
         this.mostrarNotificacion=false;
         this.enviando=false;
         this.tituloRespuesta="Titulo";
@@ -42,7 +42,7 @@ export default class NotificationStateHolder {
             this.contenidoRespuesta = mensajeRespuesta + " ("+webCode+")";
         else
             this.contenidoRespuesta = mensajeRespuesta ;
-        console.log("strapi error data > ",strapiErrorData);
+        //console.log("strapi error data > ",strapiErrorData);
         if(strapiErrorData)
             if(strapiErrorData.errors){
                 let s =" -> ";

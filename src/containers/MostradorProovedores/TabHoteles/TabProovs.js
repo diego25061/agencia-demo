@@ -6,6 +6,9 @@ import Requester from '../../../common/Services/Requester';
 import Constantes from '../../../common/Constantes';
 import ModalCrearEditarProveedor from '../ModalCrearEditarProveedor';
 import ProveedorModel from './../../../common/Models/Apis/ProovedorModel';
+import ModalProveedores from './../ModalProveedores';
+import NotificationStateHolder from '../../../common/StateHolders/NotificationStateHolder';
+import NotificacionApi from './../../NotificacionApi/NotificacionApi';
 
 
 class TabProovs extends Component{
@@ -23,12 +26,6 @@ class TabProovs extends Component{
             modo:"creacion",
             abierto:false,
 
-            mensaje:{
-                enviado:false,
-                recibido:false,
-                respuesta:null
-            },
-
             campos:{
                 id:'',
                 nombre:'',
@@ -40,7 +37,9 @@ class TabProovs extends Component{
                 clase:''
             }
             
-        }
+        },
+        notificacion_crearEditar_proveedor: new NotificationStateHolder(),
+        notificacion_cargar_proveedores: new NotificationStateHolder()
     }
 
     columnasTabla = [ 
@@ -66,13 +65,41 @@ class TabProovs extends Component{
             <Header size="small">Lista</Header>
             <TablaBuscador data={this.state.proovs} columns={this.columnasTabla} />
             {/*this.ModalCrear()*/}
-            <ModalCrearEditarProveedor pack="modalCrearEditar" parent={this} sustantivoTitulo={this.props.sust}
+
+            
+            <ModalProveedores
+                modo={this.state.modalCrearEditar.modo}
+                abierto={this.state.modalCrearEditar.abierto}
+                campos = {this.state.modalCrearEditar.campos}
+                
+                onUpdateFields={(keyPair)=>{
+                    let campos = this.state.modalCrearEditar.campos;
+                    let newCampos = {...campos,...keyPair};
+                    //console.log("new campos > ",newCampos);
+                    let obj = {...this.state.modalCrearEditar};
+                    obj.campos = newCampos;
+                    let newObj = obj;
+                    this.setState({modalCrearEditar:newObj});
+                }}
+
+                crearEditarProveedor_mostrarNotificacion = {this.state.notificacion_crearEditar_proveedor.mostrarNotificacion}
+                crearEditarProveedor_enviando = {this.state.notificacion_crearEditar_proveedor.enviando}
+                crearEditarProveedor_notif_color = {this.state.notificacion_crearEditar_proveedor.notif_color}
+                crearEditarProveedor_contenidoRespuesta = {this.state.notificacion_crearEditar_proveedor.contenidoRespuesta}
+                crearEditarProveedor_tituloRespuesta = {this.state.notificacion_crearEditar_proveedor.tituloRespuesta}
+                crearEditarProveedor_notif_icono = {this.state.notificacion_crearEditar_proveedor.notif_icono} 
+
+                sustantivoTitulo={this.props.sust}
                 placeholderNombre={this.props.placeholderNombre}
                 placeholderCorreo={this.props.placeholderCorreo}
                 placeholderCorreoAdic={this.props.placeholderCorreoAdic}
+
                 enEnviar={this.enviarProov}
                 enEditar={this.editarProov}
-                enCerrar={this.enCerrarModal}/>
+                enCerrar = {this.enCerrarModal}
+                enCancelar = {this.enCancelarModal}
+            />
+            
             <Confirm
                 open={this.state.confirmacionEliminarAbierta}
                 cancelButton="Cancelar"
@@ -82,7 +109,15 @@ class TabProovs extends Component{
                 onCancel={this.cerrarConfirmacionEliminar}
                 onConfirm={()=>{this.confirmarEliminar(this.state.proovs.find(element => element.idProveedor == this.state.idEliminar))}}
             />
-            <Modal></Modal>
+            
+            <NotificacionApi
+                disabled={!this.state.notificacion_cargar_proveedores.mostrarNotificacion}
+                loading={this.state.notificacion_cargar_proveedores.enviando}
+                color={this.state.notificacion_cargar_proveedores.notif_color}
+                content={this.state.notificacion_cargar_proveedores.contenidoRespuesta} 
+                title={this.state.notificacion_cargar_proveedores.tituloRespuesta}
+                icon={this.state.notificacion_cargar_proveedores.notif_icono}>
+            </NotificacionApi>
         </div>
     }
 
@@ -138,10 +173,12 @@ class TabProovs extends Component{
         var obj = {...this.state.modalCrearEditar};
         obj.modo="creacion";
         obj.abierto = true;
+        obj.campos = {};
         this.setState({modalCrearEditar:obj});
     }
 
     enviarProov = () => { 
+        /*
         console.log("enviando!");
         
         var obj = {...this.state.modalCrearEditar};
@@ -170,10 +207,35 @@ class TabProovs extends Component{
                 obj.mensaje.respuesta = rptaError;
                 this.setState({modalCrearEditar:obj});
             })
+*/
+            
+        console.log("Enviando nuevo proveedor!");
+        let notif = this.state.notificacion_crearEditar_proveedor;
+        notif.setAsEnviando();
+        this.setState({notificacion_crearEditar_proveedor:notif});
+        var enviar = ProveedorModel.toApiObj(this.state.modalCrearEditar.campos);
+        enviar.clase = this.props.tipo;
+        
+        this.props.funcEnviar(
+            enviar,
+            (rpta)=>{
+                //console.log("rptaa>",rpta);
+                let notif = this.state.notificacion_crearEditar_proveedor;
+                notif.setRecibidoSuccess("Proveedor creado","Proveedor "+rpta.cont.clase+ " creado: '"+rpta.cont.nombre+"'");
+                this.setState({notificacion_crearEditar_proveedor:notif});
+                this.cargarProovs();
+            },
+            (rptaError)=>{
+                let notif = this.state.notificacion_crearEditar_proveedor;
+                notif.setRecibidoError("Error al crear proveedor",rptaError.cont.message, rptaError.cont.statusCode, rptaError.cont.data);
+                this.setState({notificacion_crearEditar_proveedor:notif});
+            })
+
     }
     
     editarProov = () => { 
         //console.log("editando!");
+        /*
         var obj = {...this.state.modalCrearEditar};
         obj.mensaje.enviado=true;
         this.setState({modalCrearEditar:obj});
@@ -200,15 +262,45 @@ class TabProovs extends Component{
             () => {
                 this.cargarProovs();
             });
+        */
+            
+        let notif = this.state.notificacion_crearEditar_proveedor;
+        notif.setAsEnviando();
+
+        this.setState({notificacion_crearEditar_proveedor:notif});
+        let enviar = ProveedorModel.toApiObj(this.state.modalCrearEditar.campos);
+
+        Requester.editarProveedor(this.state.modalCrearEditar.campos.idProveedor,
+            enviar,
+            (rpta)=>{
+                let notif = this.state.notificacion_crearEditar_proveedor;
+                notif.setRecibidoSuccess("Proveedor actualizado","Proveedor '"+rpta.cont.nombre+"' actualizado")
+                this.setState({notificacion_crearEditar_proveedor:notif});
+
+                this.cargarProovs();
+            },
+            (rptaError)=>{
+                let notif = this.state.notificacion_crearEditar_proveedor;
+                notif.setRecibidoError("Error al actualizar proveedor",rptaError.cont.message, rptaError.cont.statusCode, rptaError.cont.data);
+                this.setState({notificacion_crearEditar_proveedor:notif});
+            }
+        );
+
     }
 
     cargarProovs= () =>{
-        //console.log(this.props.tipo);
         Requester.getProveedores({clase:this.props.tipo}, (rpta)=>{
             var proovs=rpta.cont.map((e,i)=>{
                 return new ProveedorModel(e);
             });
-            this.setState({proovs:proovs});
+            let notif = this.state.notificacion_cargar_proveedores;
+            notif.setHidden();
+            this.setState({ proovs: proovs,notificacion_cargar_proveedores:notif });
+        },(rptaError)=>{
+            let notif = this.state.notificacion_cargar_proveedores;
+            notif.setRecibidoError("Error al leer proveedores",rptaError.cont.message, rptaError.cont.statusCode, rptaError.cont.data);
+            notif.mostrarNotificacion=true;
+            this.setState({notificacion_cargar_proveedores:notif});      
         });
     }
 
@@ -217,29 +309,29 @@ class TabProovs extends Component{
     }
 
     enCerrarModal = () =>{
-        console.log("cerrandooooo");
+        let notif = this.state.notificacion_crearEditar_proveedor;
+        notif.setHidden();
         var obj = {...this.state.modalCrearEditar};
-        
-        obj.mensaje.recibido=false;
-        obj.mensaje.enviado=false;
-        obj.mensaje.respuesta=null;
-
-        if(this.state.modalCrearEditar.modo==="edicion"){
-            var obj = {...this.state.modalCrearEditar};
-            for(var key in obj.campos){
-                obj.campos[key]='';
-            }
-            /*
-            obj.campos.id='';
-            obj.campos.nombre='';
-            obj.campos.correo='';
-            obj.campos.correoAdic='';
-            obj.campos.num='';
-            obj.campos.numAdic='';
-            obj.campos.ciudad='';*/
-            this.setState({modalCrearEditar:obj});
-        }
+        obj.abierto = false;
+        this.setState({
+            notificacion_crearEditar_proveedor:notif,
+            modalCrearEditar:obj
+            });
     }
+    
+    enCancelarModal = () =>{
+        let notif = this.state.notificacion_crearEditar_proveedor;
+        notif.setHidden();
+
+        var obj = {...this.state.modalCrearEditar};
+        obj.abierto = false;
+        obj.campos = {};
+        this.setState({
+            notificacion_crearEditar_proveedor:notif,
+            modalCrearEditar:obj
+            });
+    }
+    
     
 }
 

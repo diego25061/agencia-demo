@@ -37,6 +37,7 @@ export default class ClientModel {
     }
 
     static toApiObj(obj) {
+        /*
         let o = {
             _id: obj.idCliente,
             nombre: obj.nombre,
@@ -54,6 +55,30 @@ export default class ClientModel {
         //s="_id";if(this.exists(obj,s))o[s]=obj.idCliente;
         //s="nombre";if(this.exists(obj,s))o[s]=obj.idCliente;
         return o;
+
+        */
+        let o = {};
+        
+        AsignarV(o, "_id", obj.idCliente, "");
+        AsignarV(o, "nombre", obj.nombre, "");
+        AsignarV(o, "clase", obj.clase, "");
+
+        let datos = {};
+
+        AsignarV(datos, "correo", obj.correoContacto, "");
+        AsignarV(datos, "correo2", obj.correoAdicional, "");
+        AsignarV(datos, "numero", obj.numeroContacto, "");
+        AsignarV(datos, "numero2", obj.numeroContactoAdicional, "");
+        AsignarV(datos, "ciudad", obj.ciudad, "");
+        AsignarV(datos, "pais", obj.pais, "");
+
+        o.datos = datos;
+
+        //let s ="";
+        //s="_id";if(this.exists(obj,s))o[s]=obj.idCliente;
+        //s="nombre";if(this.exists(obj,s))o[s]=obj.idCliente;
+        return o;
+
     }
 
 /*

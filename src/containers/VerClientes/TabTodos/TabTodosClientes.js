@@ -4,12 +4,15 @@ import { Header } from 'semantic-ui-react';
 import Requester from '../../../common/Services/Requester';
 import TablaBuscador from '../../TablaBuscador/TablaBuscador';
 import ClientModel from './../../../common/Models/Apis/ClientModel';
+import NotificationStateHolder from '../../../common/StateHolders/NotificationStateHolder';
+import NotificacionApi from './../../NotificacionApi/NotificacionApi';
 
 class TabTodosClientes extends Component{
 
     state = {
         clientes:[
-        ]
+        ],
+        notificacion_cargar_clientes: new NotificationStateHolder()
     }
 
     columnasTabla = [ 
@@ -19,7 +22,7 @@ class TabTodosClientes extends Component{
         { Header: 'Numero contacto',accessor: 'numeroContacto' }, 
         { Header: 'Numero contacto adicional', accessor: 'numeroContactoAdicional' },
         { Header: 'Ciudad', accessor: 'ciudad' },
-        { Header: 'Tipo', accessor: 'tipo'  }
+        { Header: 'Tipo', accessor: 'clase'  }
     ]
 
     render = () => {
@@ -27,43 +30,34 @@ class TabTodosClientes extends Component{
             <Header size="medium">Todos los clientes</Header> 
             {/*<Header size="small">Lista</Header>*/}
             <TablaBuscador data={this.state.clientes} columns={this.columnasTabla} />
+            <NotificacionApi
+                disabled={!this.state.notificacion_cargar_clientes.mostrarNotificacion}
+                loading={this.state.notificacion_cargar_clientes.enviando}
+                color={this.state.notificacion_cargar_clientes.notif_color}
+                content={this.state.notificacion_cargar_clientes.contenidoRespuesta} 
+                title={this.state.notificacion_cargar_clientes.tituloRespuesta}
+                icon={this.state.notificacion_cargar_clientes.notif_icono}>
+            </NotificacionApi>
         </div>
     }
 
     cargarTodos = () =>{ 
         let cls = [];
-        Requester.getClientes( {"clase":"directo"},(rpta)=>{
-            //console.log("RPTA > ",rpta)
-            var clientes=rpta.cont.map((e,i)=>{
-                //console.log("obj: ",new ClientModel(e));
-                return {
-                     ...new ClientModel(e),
-                     tipo : "Clientes directos"
-                };
-            });
-            cls = [...cls,...clientes]
-                    //console.log("asd1",cls);
-        },()=>{},
-        ()=>{
-            Requester.getClientesOpMin( (rpta) => {
-                var clientes=rpta.cont.map((e,i)=>{
-                    return { ...new ClientModel(e),tipo : "Operadores minoristas" };
-                }); 
-                cls = [...cls,...clientes]
-                    //console.log("asd2",cls);
-            },()=>{},()=>{
-                Requester.getClientesOpMay( (rpta)=> {
-                    var clientes=rpta.cont.map((e,i)=>{
-                        return { ...new ClientModel(e),tipo : "Operadores mayoristas" };
-                    });
-                    cls = [...cls,...clientes];
-                },()=>{},()=>{
-                    //console.log("asd",cls);
-                    this.setState({clientes:cls});
-                });
-            });
-        });
 
+        Requester.getClientes( {}, (rpta)=>{
+            var clientes=rpta.cont.map((e,i)=>{
+                return new ClientModel(e);
+            });
+            let notif = this.state.notificacion_cargar_clientes;
+            notif.setHidden();
+            this.setState({clientes:clientes,notificacion_cargar_clientes:notif });
+        },(rptaError)=>{
+            let notif = this.state.notificacion_cargar_clientes;
+            notif.setRecibidoError("Error al leer clientes",rptaError.cont.message, rptaError.cont.statusCode, rptaError.cont.data);
+            notif.mostrarNotificacion=true;
+            this.setState({notificacion_cargar_clientes:notif});      
+        });
+        
         console.log("clientes",this.state.clientes)
     }
 
