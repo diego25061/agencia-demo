@@ -1,5 +1,5 @@
 import {
-    AsignarV
+    AsignarV, AsignarCond
 } from "../../Utils";
 
 
@@ -51,14 +51,14 @@ export default class ProveedorModel {
 */
         let o = {};
         
-        AsignarV(o, "_id", obj.id, "");
-        AsignarV(o, "nombre", obj.nombre, "");
-        AsignarV(o, "clase", obj.clase, "");
-        AsignarV(o, "correo", obj.correoContacto, "");
-        AsignarV(o, "correo2", obj.correoAdicional, "");
-        AsignarV(o, "numero", obj.numeroContacto, "");
-        AsignarV(o, "numero2", obj.numeroContactoAdicional, "");
-        AsignarV(o, "ciudad", obj.ciudad, "");
+        AsignarCond(o, "_id", obj.id, null);
+        AsignarCond(o, "nombre", obj.nombre, null);
+        AsignarCond(o, "clase", obj.clase, null);
+        AsignarCond(o, "correo", obj.correoContacto, null);
+        AsignarCond(o, "correo2", obj.correoAdicional, null);
+        AsignarCond(o, "numero", obj.numeroContacto, null);
+        AsignarCond(o, "numero2", obj.numeroContactoAdicional, null);
+        AsignarCond(o, "ciudad", obj.ciudad, null);
 
         //let s ="";
         //s="_id";if(this.exists(obj,s))o[s]=obj.idCliente;

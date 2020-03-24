@@ -1,7 +1,7 @@
 import React from 'react';
 import {Component} from 'react';
 import {Link} from 'react-router-dom'
-import { Label, Button, Container, Header, Segment} from 'semantic-ui-react';
+import { Label, Button, Container, Header, Segment, Message, Icon} from 'semantic-ui-react';
 import ReactTable from "react-table";
 import 'react-table/react-table.css'
 import TablaBuscador from '../TablaBuscador/TablaBuscador';
@@ -10,10 +10,14 @@ import CONSTANTES_GLOBALES from '../../common/Constantes';
 import Requester from '../../common/Services/Requester';
 import moment from 'moment'
 import momentTz from 'moment-timezone'
+import ServicioModel from './../../common/Models/Apis/ServicioModel';
+import NotificationStateHolder from '../../common/StateHolders/NotificationStateHolder';
+import NotificacionApi from '../NotificacionApi/NotificacionApi';
 
 class VerServicios extends Component{
 
     state={
+
         modalServicio:{
             abierto:false,
             transaccionEnviada:false,
@@ -72,7 +76,16 @@ class VerServicios extends Component{
         ],
          queryForzadoServs:"",
          queryForzadoTransps:"",
-         queryForzadoHospedajes:""
+         queryForzadoHospedajes:"",
+         
+        serviciosTranspCargando:false,
+        serviciosSerCargando:false,
+        serviciosHospCargando:false,
+        
+        notificacion_leerServsSer : new NotificationStateHolder(),
+        notificacion_leerServsTransp : new NotificationStateHolder(),
+        notificacion_leerServsHosp : new NotificationStateHolder()
+
      }
 
 
@@ -84,33 +97,53 @@ class VerServicios extends Component{
             Header: 'Nombre', accessor: 'nombre' , Cell: props => props.value ? props.value:"-" 
         },
         {
-            Header: 'File', accessor: 'file', Cell: props => props.value ? props.value:"-" 
+            Header: 'File', Cell: props => { 
+                if(props.original.file)
+                    if(props.original.file.codigo)
+                        return props.original.file.codigo
+                return "-";
+            } 
         },
         {
-            Header: 'Fecha', accessor: 'fecha', Cell: props => props.value ? props.value:"-" 
+            Header: 'Fecha', accessor: 'fechaEjecucion', Cell: props => props.value ? props.value:"-" 
         }, 
         {
             Header: 'Ciudad', accessor: 'ciudad', Cell: props => props.value ? props.value:"-" 
         }, 
         {
-            Header: 'Hora recojo', accessor: 'horaRecojo', Cell: props => props.value ? props.value:"-" 
+            Header: 'Hora Inicio', accessor: 'horaInicio', Cell: props => props.value ? props.value:"-" 
         },
         {
             Header: 'Cant. pasajeros', accessor: 'cantPasajeros', Cell: props => props.value ? props.value:"-" 
         }, 
         {
-            Header: 'Pasajero', accessor: 'pasajero', Cell: props => props.value ? props.value:"-" 
+            Header: 'Pasajero', accessor: 'nombrePasajero', Cell: props => props.value ? props.value:"-" 
         }, 
         {
-            Header: 'Transportista', accessor: 'transportista', Cell: props => props.value ? props.value:"-" 
+            Header: 'Proveedor', Cell: props => {
+                if(props.original.proveedor)
+                    if(props.original.proveedor.nombre)
+                        return props.original.proveedor.nombre + " ("+props.original.proveedor.clase+")"
+                return "-";
+            }
         }, 
         {
             Header: 'Accion',
-            Cell: props => <Container textAlign="center">
-                <Button circular icon="eye"/>
+            Cell: props => { 
+                console.log("props > " ,props.original);
+                let fileId = null;
+                if(props.original && props.original.file && props.original.file.id)
+                    fileId = props.original.file.id;
+                return <Container textAlign="center">
+                    {fileId?
+                    <Link to={"/file/ver/"+fileId/*+"#"+props.original.idServicio*/}>
+                        <Button circular icon="eye"/>
+                    </Link>
+                    :<></>}
                 {/*<Button circular color="yellow" icon="pencil"></Button>
                 <Button circular color="red" icon="trash"></Button>*/}
-            </Container>
+                </Container>
+            }
         }, 
     ]
     
@@ -141,23 +174,60 @@ class VerServicios extends Component{
                         queryForzado={this.state.queryForzadoServs} 
                         vaciarQueryForzado={this.vaciarQueryForzadoServs}
                         data={this.state.serviciosServ} 
-                        columns={cols} />
+                        columns={cols}
+                        loading={this.state.serviciosSerCargando} />
                 </Segment>
+                <NotificacionApi
+                    disabled={!this.state.notificacion_leerServsSer.mostrarNotificacion}
+                    loading={this.state.notificacion_leerServsSer.enviando}
+                    color={this.state.notificacion_leerServsSer.notif_color}
+                    content={this.state.notificacion_leerServsSer.contenidoRespuesta} 
+                    title={this.state.notificacion_leerServsSer.tituloRespuesta}
+                    icon={this.state.notificacion_leerServsSer.notif_icono}>
+                </NotificacionApi>
+
+
                 <Header size="medium">Servicios de transporte programados</Header> 
                 <Segment>
                     <TablaBuscador 
                         queryForzado={this.state.queryForzadoTransps} 
                         vaciarQueryForzado={this.vaciarQueryForzadoTransps}
-                        data={this.state.serviciosTransp} columns={cols} />
+                        data={this.state.serviciosTransp} columns={cols}
+                        loading={this.state.serviciosTranspCargando} />
                 </Segment>
+                <NotificacionApi
+                    disabled={!this.state.notificacion_leerServsTransp.mostrarNotificacion}
+                    loading={this.state.notificacion_leerServsTransp.enviando}
+                    color={this.state.notificacion_leerServsTransp.notif_color}
+                    content={this.state.notificacion_leerServsTransp.contenidoRespuesta} 
+                    title={this.state.notificacion_leerServsTransp.tituloRespuesta}
+                    icon={this.state.notificacion_leerServsTransp.notif_icono}>
+                </NotificacionApi>
                 
+
                 <Header size="medium">Hospedajes programados</Header> 
                 <Segment>
                     <TablaBuscador 
                         queryForzado={this.state.queryForzadoHospedajes} 
                         vaciarQueryForzado={this.vaciarQueryForzadoHospedajes}
-                        data={this.state.serviciosHospedajes} columns={cols} />
+                        data={this.state.serviciosHospedajes} columns={cols} 
+                        loading={this.state.serviciosHospCargando}/>
                 </Segment>
+                <NotificacionApi
+                    disabled={!this.state.notificacion_leerServsHosp.mostrarNotificacion}
+                    loading={this.state.notificacion_leerServsHosp.enviando}
+                    color={this.state.notificacion_leerServsHosp.notif_color}
+                    content={this.state.notificacion_leerServsHosp.contenidoRespuesta} 
+                    title={this.state.notificacion_leerServsHosp.tituloRespuesta}
+                    icon={this.state.notificacion_leerServsHosp.notif_icono}>
+                </NotificacionApi>
+                {/*
+                <Message error icon >
+                    <Icon name="cancel"></Icon>
+                    <Message.Header>
+                        Error al cargar hospedajes
+                    </Message.Header>
+                </Message>*/}
                 {/*<ModalCrearServicio parentComp={this}/>*/}
             </div>
         )
@@ -181,39 +251,25 @@ class VerServicios extends Component{
     }
 
     componentDidMount= () =>{
-/*
-       
-                idServicio=1,
-                nombre: "City tour",
-                file: "02-495",
-                fecha:"02-04-2017", 
-                ciudad:"lima",
-                hotel:"melia" ,
-                cantPasajeros: "2", 
-                pasajero: "Ctm",
-                */
-               this.cargarServsGenerales();
+        this.cargarServsGenerales();
         this.cargarServsTransportes();
         this.cargarHospedajes();
     }
 
     cargarServsGenerales = () => {
-        Requester.getServiciosGeneralesDetalle((rpta)=>{
+        let n = this.state.notificacion_leerServsSer;
+        this.setState({serviciosSerCargando:true});
+        Requester.getServicios({clase:"general"},(rpta)=>{
             var servs = rpta.cont.map((e,i)=>{
-                return {
-                    idServicio : e.idServicio,
-                    nombre : e.nombre,
-                    file: e.codigoFile,
-                    fecha : e.fecha,
-                    ciudad : e.ciudad,
-                    hotel : e.hotel,
-                    cantPasajeros : e.pasajeros,
-                    pasajero : e.nombrePasajero
-                };
+                return new ServicioModel(e);
             });
-            this.setState({serviciosServ:servs});
+            n.setHidden();
+            this.setState({serviciosServ:servs, notificacion_leerServsSer:n, serviciosSerCargando:false});
         },(rptaError)=>{
             console.log("error!");
+            n.setRecibidoError("Error al cargar servicios generales",rptaError.cont.message,rptaError.cont.statusCode);
+            n.mostrarNotificacion=true;
+            this.setState({notificacion_leerServsSer:n, serviciosSerCargando:false});
         });
     }
 
@@ -231,47 +287,41 @@ class VerServicios extends Component{
                 pasajero: "Ctm",
                 transportista: "Javi" 
         */
-        Requester.getServiciosTransporteDetalle((rpta)=>{
+        let n = this.state.notificacion_leerServsTransp;
+        this.setState({serviciosTranspCargando:true});
+        Requester.getServicios({clase:"transporte"},(rpta)=>{
             console.log("rpta! transportes: ",rpta)
             var servs = rpta.cont.map((e,i)=>{
-                return {
-                    idServicio : e.idServicio,
-                    nombre : e.nombre,
-                    file: e.codigoFile,
-                    fecha : e.fecha,
-                    ciudad : e.ciudad,
-                    horaRecojo : e.horaRecojo,
-                    cantPasajeros : e.pasajeros,
-                    pasajero : e.nombrePasajero,
-                    transportista : e.transporte
-                };
+                
+                return new ServicioModel(e);
             });
-            this.setState({serviciosTransp:servs});
+            n.setHidden();
+            this.setState({serviciosTransp:servs, serviciosTranspCargando:false,notificacion_leerServsTransp:n});
         },(rptaError)=>{
-            console.log("error!");
+            //console.log("error!");
+            n.setRecibidoError("Error al cargar transportes",rptaError.cont.message,rptaError.cont.statusCode);
+            n.mostrarNotificacion=true;
+            this.setState({notificacion_leerServsTransp:n ,serviciosTranspCargando:false});
         });
     }
 
     
     cargarHospedajes = () => {
-        Requester.getServiciosHospedaje((rpta)=>{
+        let n = this.state.notificacion_leerServsHosp;
+        this.setState({ serviciosHospCargando:true});
+        Requester.getServicios({clase:"hospedaje"},(rpta)=>{
             console.log("rpta! hospedajes: ",rpta)
             var servs = rpta.cont.map((e,i)=>{
-                return {
-                    idServicio : e.idServicio,
-                    nombre : e.nombre,
-                    file: e.codigoFile,
-                    fecha : e.fecha,
-                    ciudad : e.ciudad,
-                    horaRecojo : e.horaRecojo,
-                    cantPasajeros : e.pasajeros,
-                    pasajero : e.nombrePasajero,
-                    transportista : e.transporte
-                };
+                return new ServicioModel(e);
+                
             });
-            this.setState({serviciosHospedajes:servs});
+            n.setHidden();
+            this.setState({serviciosHospedajes:servs, serviciosHospCargando:false,notificacion_leerServsHosp:n});
         },(rptaError)=>{
             console.log("error!");
+            n.setRecibidoError("Error al cargar hospedajes",rptaError.cont.message,rptaError.cont.statusCode);
+            n.mostrarNotificacion=true;
+            this.setState({serviciosHospCargando:false,notificacion_leerServsHosp:n});
         });
     }
  }

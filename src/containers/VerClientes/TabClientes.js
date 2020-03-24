@@ -32,7 +32,8 @@ class TabClientes extends Component{
             }  
         },
         notificacion_crearEditar_cliente: new NotificationStateHolder(),
-        notificacion_cargar_clientes: new NotificationStateHolder()
+        notificacion_cargar_clientes: new NotificationStateHolder(),
+        cargandoTabla:false
     }
     
     columnasTabla = [ 
@@ -64,7 +65,7 @@ class TabClientes extends Component{
             <Header size="medium">{this.props.sustPlural}</Header> 
             <Button primary onClick={ this.abrirModal }>Nuevo {this.props.sust}</Button>
             <Header size="small">Lista</Header>
-            <TablaBuscador data={this.state.clientesDirs} columns={this.columnasTabla} />
+            <TablaBuscador data={this.state.clientesDirs} columns={this.columnasTabla} loading={this.state.cargandoTabla}/>
             {/*this.ModalCrear()*/}
 
             
@@ -232,11 +233,13 @@ class TabClientes extends Component{
     }
 
     cargarClientes= () =>{
+        this.setState({cargandoTabla:true});
+
         let fError = (rptaError) =>{
             let notif = this.state.notificacion_cargar_clientes;
             notif.setRecibidoError("Error al leer clientes",rptaError.cont.message, rptaError.cont.statusCode, rptaError.cont.data);
             notif.mostrarNotificacion=true;
-            this.setState({notificacion_cargar_clientes:notif});
+            this.setState({notificacion_cargar_clientes:notif, cargandoTabla:false});
         }
         if(this.props.tipo==="directo"){
             Requester.getClientes(
@@ -245,7 +248,7 @@ class TabClientes extends Component{
                     var clientesDirs=rpta.cont.map((e,i)=>{ return new ClientModel(e);});
                     let notif = this.state.notificacion_cargar_clientes;
                     notif.setHidden();
-                    this.setState({clientesDirs:clientesDirs,notificacion_cargar_clientes:notif});
+                    this.setState({clientesDirs:clientesDirs,notificacion_cargar_clientes:notif , cargandoTabla:false});
             },fError);
         }else if ( this.props.tipo==="minorista"){
             Requester.getClientes(
@@ -254,7 +257,7 @@ class TabClientes extends Component{
                 var clientesDirs=rpta.cont.map((e,i)=>{ return new ClientModel(e);});
                 let notif = this.state.notificacion_cargar_clientes;
                     notif.setHidden();
-                    this.setState({clientesDirs:clientesDirs,notificacion_cargar_clientes:notif});
+                    this.setState({clientesDirs:clientesDirs,notificacion_cargar_clientes:notif, cargandoTabla:false});
             },fError);
         }else if ( this.props.tipo==="mayorista"){
             Requester.getClientes(
@@ -263,7 +266,7 @@ class TabClientes extends Component{
                 var clientesDirs=rpta.cont.map((e,i)=>{ return new ClientModel(e);});
                 let notif = this.state.notificacion_cargar_clientes;
                     notif.setHidden();
-                    this.setState({clientesDirs:clientesDirs,notificacion_cargar_clientes:notif});
+                    this.setState({clientesDirs:clientesDirs,notificacion_cargar_clientes:notif, cargandoTabla:false});
             },fError);
         }
     }

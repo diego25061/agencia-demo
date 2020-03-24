@@ -7,6 +7,7 @@ export default class NotificationStateHolder {
     contenidoRespuesta="-";
     notif_color="green";
     notif_icono="check";
+    priv_cargado=true;
 
     setDefault = () =>{
         //this.color="";
@@ -16,17 +17,20 @@ export default class NotificationStateHolder {
         this.contenidoRespuesta="-";
         this.notif_color="green";
         this.notif_icono="check";
+        this.priv_cargado=true;
     }
 
     setAsEnviando = () => {
         this.enviando=true;
         this.notif_color="";
         this.mostrarNotificacion=true;
+        this.priv_cargado=false;
     }
 
     setRecibidoSuccess = (titulo,mensajeRespuesta,webCode) => {
         this.enviando=false;
         this.tituloRespuesta = titulo;
+        this.priv_cargado=true;
         if(webCode)
             this.contenidoRespuesta = mensajeRespuesta + " ("+webCode+")";
         else
@@ -38,6 +42,7 @@ export default class NotificationStateHolder {
     setRecibidoError = (titulo,mensajeRespuesta,webCode,strapiErrorData) => {
         this.enviando=false;
         this.tituloRespuesta = titulo;
+        this.priv_cargado=true;
         if(webCode)
             this.contenidoRespuesta = mensajeRespuesta + " ("+webCode+")";
         else
@@ -55,6 +60,10 @@ export default class NotificationStateHolder {
 
     setHidden = () =>{
         this.setDefault();
+    }
+
+    cargando = () =>{
+        return !this.priv_cargado
     }
 
 }

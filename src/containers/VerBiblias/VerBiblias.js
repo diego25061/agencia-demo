@@ -2,7 +2,7 @@ import React from 'react';
 import { Component } from 'react';
 import VerServicios from '../VerServicios/VerServicios';
 import CrearFile from '../ViewFiles/CrearFile/CrearFile';
-import { Segment, Header, Icon, Card, Grid, Message, Dropdown, Modal, Button, Input } from 'semantic-ui-react';
+import { Segment, Header, Icon, Card, Grid, Message, Dropdown, Modal, Button, Input, Dimmer, Loader } from 'semantic-ui-react';
 import { Link } from 'react-router-dom'
 import Requester from '../../common/Services/Requester';
 import CONSTANTES_GLOBALES, { CodigoMesATexto, MesANumero } from '../../common/Constantes';
@@ -18,6 +18,7 @@ class ListaBiblias extends Component {
 
     state = {
 
+        bibliaCargando:false,
         modalBiblia: {
             abierto: false,
 
@@ -68,6 +69,8 @@ class ListaBiblias extends Component {
     }
 
     cargarBiblias = () => {
+
+        this.setState({ bibliaCargando:true});
         
         Requester.getFiles({},(rpta) => {
             console.log("rpta > ",rpta.cont);
@@ -107,12 +110,12 @@ class ListaBiblias extends Component {
             console.log(biblias);
             let notif = this.state.notificacion_leerBiblia;
             notif.setHidden();
-            this.setState({ biblias: biblias,notificacion_leerBiblia:notif });
+            this.setState({ biblias: biblias,notificacion_leerBiblia:notif , bibliaCargando:false});
         },(rptaError) =>{
             let notif = this.state.notificacion_leerBiblia;
             notif.setRecibidoError("Error al leer biblias",rptaError.cont.message, rptaError.cont.statusCode, rptaError.cont.data);
             notif.mostrarNotificacion=true;
-            this.setState({notificacion_leerBiblia:notif});   
+            this.setState({notificacion_leerBiblia:notif, bibliaCargando:false});   
         });
         /*
         Requester.getBiblias({},(rpta) => {
@@ -162,6 +165,9 @@ class ListaBiblias extends Component {
                 this.setState({ modalBiblia: obj });
             }}>Nueva Biblia</Button>*/}
             <Header size="small">Lista</Header>
+            {this.state.bibliaCargando ? <Segment basic style={{padding:"200px"}}>
+                <Dimmer active inverted><Loader size='huge'>Cargando</Loader></Dimmer>
+            </Segment> : <></>}
             {this.state.biblias.map(e => {
                 var cuadro = (
                     <Segment tertiary>
@@ -252,7 +258,8 @@ class ListaBiblias extends Component {
     EnviarPostBiblia = () => {
         let obj = this.state.notificacion_crearBiblia;
         obj.setAsEnviando();
-        this.setState({notificacion_crearBiblia:obj});
+
+        this.setState({notificacion_crearBiblia:obj });
 
         Requester.crearBiblia(BibliaModel.toApiObj(this.state.modalBiblia.campos), (rpta) => {
             

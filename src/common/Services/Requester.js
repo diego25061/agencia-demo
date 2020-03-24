@@ -325,6 +325,9 @@ class Requester {
         this.api_put("/servicios/"+idServicio , servicio, funcSuccess, funcError, funcAlways);
     }
 
+    static getServicios = (params, funcSuccess, funcError, funcAlways) => {
+        this.api_get("/servicios/",params, funcSuccess, funcError, funcAlways);
+    }
 
     static getServiciosTodos = (funcSuccess, funcError, funcAlways) => {
         this.requestBasicoGet(Configuracion.ServerUrl + "/servicios", funcSuccess, funcError, funcAlways);

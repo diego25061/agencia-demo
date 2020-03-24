@@ -25,9 +25,9 @@ export default class ServicioModel {
         AsignarV(result, "vuelo", obj.vuelo, "");
         AsignarV(result, "vr", obj.vr, "");
         AsignarV(result, "tc", obj.tc, "");
-        AsignarV(result, "idProveedor", obj.proveedor, "");
+        AsignarV(result, "proveedor", obj.proveedor, "");
         AsignarV(result, "clase", obj.clase, "general");
-        AsignarV(result, "idFile", obj.yfile, "");
+        AsignarV(result, "file", obj.yfile, "");
 
         return result;
     }
@@ -54,9 +54,9 @@ export default class ServicioModel {
         AsignarV(result, "vuelo", obj.vuelo, null);
         AsignarV(result, "vr", obj.vr, null);
         AsignarV(result, "tc", obj.tc, null);
-        AsignarV(result, "proveedor", obj.idProveedor, null);
+        AsignarV(result, "proveedor", obj.proveedor, null);
         AsignarV(result, "clase", obj.clase, "general");
-        AsignarV(result, "yfile", obj.idFile, null);
+        AsignarV(result, "yfile", obj.file, null);
 
         return result;
     }

@@ -1,5 +1,5 @@
 import {
-    AsignarV
+    AsignarV, AsignarCond
 } from "../../Utils";
 
 export default class ClientModel {
@@ -11,13 +11,15 @@ export default class ClientModel {
         AsignarV(result, "nombre", e.nombre, "");
         AsignarV(result, "clase", e.clase, "");
         
-        AsignarV(result, "correoContacto", e.datos.correo, "");
-        AsignarV(result, "correoAdicional", e.datos.correo2, "");
-        AsignarV(result, "numeroContacto", e.datos.numero, "");
-        AsignarV(result, "numeroContactoAdicional", e.datos.numero2, "");
-        AsignarV(result, "ciudad", e.datos.ciudad, "");
-        AsignarV(result, "pais", e.datos.pais, "");
- 
+        if(e.hasOwnProperty("datos") && e.datos ){
+            AsignarV(result, "correoContacto", e.datos.correo, "");
+            AsignarV(result, "correoAdicional", e.datos.correo2, "");
+            AsignarV(result, "numeroContacto", e.datos.numero, "");
+            AsignarV(result, "numeroContactoAdicional", e.datos.numero2, "");
+            AsignarV(result, "ciudad", e.datos.ciudad, "");
+            AsignarV(result, "pais", e.datos.pais, "");
+        }
+        
         return result;
         /*
         this.idCliente = e.hasOwnProperty("_id") ? e._id : "";
@@ -59,18 +61,18 @@ export default class ClientModel {
         */
         let o = {};
         
-        AsignarV(o, "_id", obj.idCliente, "");
-        AsignarV(o, "nombre", obj.nombre, "");
-        AsignarV(o, "clase", obj.clase, "");
+        AsignarCond(o, "_id", obj.idCliente, null);
+        AsignarCond(o, "nombre", obj.nombre, null);
+        AsignarCond(o, "clase", obj.clase, null);
 
         let datos = {};
 
-        AsignarV(datos, "correo", obj.correoContacto, "");
-        AsignarV(datos, "correo2", obj.correoAdicional, "");
-        AsignarV(datos, "numero", obj.numeroContacto, "");
-        AsignarV(datos, "numero2", obj.numeroContactoAdicional, "");
-        AsignarV(datos, "ciudad", obj.ciudad, "");
-        AsignarV(datos, "pais", obj.pais, "");
+        AsignarCond(datos, "correo", obj.correoContacto, null);
+        AsignarCond(datos, "correo2", obj.correoAdicional, null);
+        AsignarCond(datos, "numero", obj.numeroContacto, null);
+        AsignarCond(datos, "numero2", obj.numeroContactoAdicional, null);
+        AsignarCond(datos, "ciudad", obj.ciudad, null);
+        AsignarCond(datos, "pais", obj.pais, null);
 
         o.datos = datos;
 

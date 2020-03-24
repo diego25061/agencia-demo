@@ -20,7 +20,8 @@ class TabProovs extends Component{
         
         confirmacionEliminarAbierta:false,
         idEliminar:null,
-        
+        cargandoTabla:false,
+
         modalCrearEditar:{
             //creacion o edicion
             modo:"creacion",
@@ -63,7 +64,7 @@ class TabProovs extends Component{
             <Header size="medium">{this.props.sustPlural}</Header> 
             <Button primary onClick={ this.abrirModal }>Nuevo {this.props.sust}</Button>
             <Header size="small">Lista</Header>
-            <TablaBuscador data={this.state.proovs} columns={this.columnasTabla} />
+            <TablaBuscador data={this.state.proovs} columns={this.columnasTabla} loading={this.state.cargandoTabla} />
             {/*this.ModalCrear()*/}
 
             
@@ -289,18 +290,25 @@ class TabProovs extends Component{
     }
 
     cargarProovs= () =>{
+        this.setState({cargandoTabla:true});
+
         Requester.getProveedores({clase:this.props.tipo}, (rpta)=>{
             var proovs=rpta.cont.map((e,i)=>{
                 return new ProveedorModel(e);
             });
             let notif = this.state.notificacion_cargar_proveedores;
             notif.setHidden();
-            this.setState({ proovs: proovs,notificacion_cargar_proveedores:notif });
+            this.setState({ 
+                proovs: proovs,
+                notificacion_cargar_proveedores:notif,
+                cargandoTabla:false });
         },(rptaError)=>{
             let notif = this.state.notificacion_cargar_proveedores;
             notif.setRecibidoError("Error al leer proveedores",rptaError.cont.message, rptaError.cont.statusCode, rptaError.cont.data);
             notif.mostrarNotificacion=true;
-            this.setState({notificacion_cargar_proveedores:notif});      
+            this.setState({
+                notificacion_cargar_proveedores:notif,
+                cargandoTabla:false });      
         });
     }
 

@@ -404,7 +404,7 @@ export default class ServiceRow extends React.Component {
         let f = "asd";
         let abc = <><input type="text" value={this.props.service[f]} onChange={(e) => { this.props.onUpdateValues({ [f]: e.target.value }) }} ></input></>
 
-        return <Segment.Group key={this.props.service.idServicio}>
+        return <Segment.Group key={this.props.service.idServicio} id={this.props.service.idServicio}>
             <Segment.Group horizontal>
                 <Segment style={{ backgroundColor: colorFondo }}>
                     <Grid columns="equal">

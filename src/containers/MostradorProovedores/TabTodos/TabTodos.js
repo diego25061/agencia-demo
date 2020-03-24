@@ -15,7 +15,8 @@ class TabTodos extends Component{
     state = {
         proveedores:[
         ],
-        notificacion_cargar_proveedores: new NotificationStateHolder()
+        notificacion_cargar_proveedores: new NotificationStateHolder(),
+        cargandoTabla:false
     }
 
     columnasTabla = [ 
@@ -32,7 +33,7 @@ class TabTodos extends Component{
         return <div>
             <Header size="medium">Todos los proveedores</Header> 
             {/*<Header size="small">Lista</Header>*/}
-            <TablaBuscador data={this.state.proveedores} columns={this.columnasTabla} />
+            <TablaBuscador data={this.state.proveedores} columns={this.columnasTabla} loading={this.state.cargandoTabla} />
             
             <NotificacionApi
                 disabled={!this.state.notificacion_cargar_proveedores.mostrarNotificacion}
@@ -46,18 +47,19 @@ class TabTodos extends Component{
     }
 
     cargarTodos = () =>{
+        this.setState({cargandoTabla:true});
         Requester.getProveedores( {}, (rpta)=>{
             var proovs=rpta.cont.map((e,i)=>{
                 return new ProveedorModel(e);
             });
             let notif = this.state.notificacion_cargar_proveedores;
             notif.setHidden();
-            this.setState({proveedores:proovs,notificacion_cargar_proveedores:notif });
+            this.setState({proveedores:proovs,notificacion_cargar_proveedores:notif , cargandoTabla:false});
         },(rptaError)=>{
             let notif = this.state.notificacion_cargar_proveedores;
             notif.setRecibidoError("Error al leer proveedores",rptaError.cont.message, rptaError.cont.statusCode, rptaError.cont.data);
             notif.mostrarNotificacion=true;
-            this.setState({notificacion_cargar_proveedores:notif});      
+            this.setState({notificacion_cargar_proveedores:notif, cargandoTabla:false});
         });
     }
 

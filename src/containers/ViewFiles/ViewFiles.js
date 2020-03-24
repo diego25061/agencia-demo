@@ -96,9 +96,10 @@ class ViewFiles extends Component {
 						<Link to={urlVer}>
 							<Button circular icon="eye"></Button>
 						</Link>
+						{/*
 						<Link to={urlEditar}>
 							<Button circular icon="pencil"></Button>
-						</Link>
+						</Link>*/}
 						<Button circular color="red" icon="trash" onClick={() => { console.log("propss", props); this.openConfirm(props.row.idFile, props.row.codigo) }}>
 						</Button>
 					</Container>
