@@ -19,7 +19,7 @@ export default class CardBiblia extends Component {
                     {' '+this.state.cantFiles+ ' files'}
                     <Button style={{ backgroundColor: "#00000000", padding: "5px" }} icon floated="right"
                         onClick={() => {
-                            this.props.funcNavegar("/calendario/" + this.props.anho + "/" + this.props.mes);
+                            this.props.funcNavegar("/calendario/" + this.props.anho + "/" + this.props.idMes);
                         }}>
                         <Icon fitted size="large" name="angle right" />
                     </Button>

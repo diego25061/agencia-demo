@@ -4,6 +4,7 @@ import { Button, Icon, Input, Segment, Header, Grid, IconGroup } from 'semantic-
 import { DateInput, TimeInput } from 'semantic-ui-calendar-react';
 import Requester from './../../common/Services/Requester';
 import ServicioModel from './../../common/Models/Apis/ServicioModel';
+import { const_colores } from '../../common/Constantes';
 
 export const mode_added = "added";//cuando se esta viendo ya agregado en el file
 export const mode_view = "view";//cuando se esta viendo recien agregado
@@ -78,21 +79,6 @@ export default class ServiceRow extends React.Component {
 
         let clase = this.props.clase;
 
-        let colorFondo = "";//"#b5dec7";
-        let colorFondoLight = "";//"#def0e6";
-
-        if (this.props.service.mode === mode_view) {
-            colorFondo = "#f4f4f4";
-            colorFondoLight = "#f9f9F9";
-            //colorFondo="#e8e8e8";
-            //colorFondoLight="#efefef";
-        } else if (this.props.service.mode === mode_edit) {
-            colorFondo = "#FFF3A4";
-            colorFondoLight = "#FFF7C2";
-        } else if (this.props.service.mode === mode_added) {
-            colorFondo = "#d2ffad";
-            colorFondoLight = "#E7FFD4";
-        }
 
 
         let placeholder = "Proveedor";
@@ -362,11 +348,15 @@ export default class ServiceRow extends React.Component {
 
         let icono = "setting"
         let titulo = "Servicio general"
+        
+        let color = const_colores.servicio_general;
+
         titulo = (this.props.orden + 1) + ". " + this.props.service.nombre;
 
         if (this.props.service.clase === "hospedaje") {
             icono = "building"
             titulo += " ( hospedaje )"
+            color = const_colores.servicio_hospedaje;
             primeraFila = <>
                 {campoNombre}
                 {campoFecha}
@@ -383,6 +373,7 @@ export default class ServiceRow extends React.Component {
         } else if (this.props.service.clase === "transporte") {
             icono = "car"
             titulo += " ( transporte )"
+            color = const_colores.servicio_transporte;
             primeraFila =<>
                 {campoNombre}
                 {campoCiudadDestino}
@@ -403,6 +394,19 @@ export default class ServiceRow extends React.Component {
             titulo += " ( servicio general )"
         }
 
+            //colorFondo = "#f4f4f4";
+            //colorFondoLight = "#f9f9F9";
+        let colorFondo = color;//"#b5dec7";
+        let colorFondoLight = "";//"#def0e6";
+
+        if (this.props.service.mode === mode_edit) {
+            colorFondo = "#fff643";
+            colorFondoLight = "#fff758";
+        } else if (this.props.service.mode === mode_added) {
+            colorFondo = "#5fea3c";
+            colorFondoLight = "#7bff5a";
+        }
+        
         let f = "asd";
         let abc = <><input type="text" value={this.props.service[f]} onChange={(e) => { this.props.onUpdateValues({ [f]: e.target.value }) }} ></input></>
 

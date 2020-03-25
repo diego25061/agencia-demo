@@ -7,7 +7,8 @@ import { Segment, Header } from 'semantic-ui-react';
 
 import 'moment/locale/es'
 import Requester from '../../common/Services/Requester';
-import CONSTANTES_GLOBALES from '../../common/Constantes';
+import CONSTANTES_GLOBALES, { const_colores } from '../../common/Constantes';
+import ServicioModel from './../../common/Models/Apis/ServicioModel';
 
 
 const localizer = BigCalendar.momentLocalizer(moment)
@@ -50,29 +51,23 @@ class VerCalendario extends Component {
     cargarServicios= (mes)=>{
 
         let eventosServ = [];
-        Requester.getServiciosTodos( (rpta) =>{
-            rpta.cont.map((s,i)=>{
-                //let lista = eventosServ ;
-                if(s.tipoServicio===CONSTANTES_GLOBALES.AliasServicios.SERVICIO){
-                    /*console.log("FECHA"+s.fecha.split("-")[0]+ " => " + moment(s.fecha).format("YYYY MM DD") + " =>>< " 
-                    +new Date(s.fecha.split("-")[0],s.fecha.split("-")[1],s.fecha.split("-")[2]) );*/
+        Requester.getServicios({}, (rpta) =>{
+            
+            rpta.cont.map((serv,i)=>{
+                let s = new ServicioModel(serv);
+
+                let color = const_colores.servicio_general;
+                if(s.clase==="transporte") color=const_colores.servicio_transporte;
+                if(s.clase==="hospedaje") color=const_colores.servicio_hospedaje;
+
                 eventosServ.push({
                     title:s.nombre,
-                    
-                    start: moment(s.fecha),
-                    end: moment(s.fecha),
+                    start: moment(s.fechaEjecucion),
+                    end: moment(s.fechaOut),
                     allDay:true,
-                    color:'yellow'
+                    color:color
                 })
-            }else{
-                eventosServ.push({
-                    title:s.nombre,
-                    start:moment(s.fecha),
-                    end:moment(s.fecha),
-                    allDay:true,
-                    color:'lightblue'
-                })
-                }
+
             });
             this.setState({events:eventosServ});
         }, (rpta) => {

@@ -13,6 +13,14 @@ export const ListaMeses = [
         { key: 12, text: 'Diciembre', value: 12 },
     ]
 
+export const const_colores = {
+        servicio_agregando: '#a7ff81',
+        servicio_editando: '#ffec81',
+
+        servicio_general: '#dcedc1',
+        servicio_transporte : '#beebe9',
+        servicio_hospedaje: '#fff1a3'
+    }
 
 const CONSTANTES_GLOBALES={
     ListaMeses: [

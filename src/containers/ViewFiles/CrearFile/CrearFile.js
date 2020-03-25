@@ -770,6 +770,7 @@ class CrearFile extends Component {
                     servicios: servis,
                     transportes: transportes,
                     hospedajes : hospedajes*/
+                    agregandoServicio:false
                 });
             },
             rpta => {
@@ -777,7 +778,8 @@ class CrearFile extends Component {
                     cargaFileInicial_respuestaRecibida: true,
                     cargaFileInicial_tituloRespuesta: rpta.cont.error,
                     cargaFileInicial_mostrarNotificacion: true,
-                    cargaFileInicial_contenidoRespuesta: rpta.cont.message + " (" + rpta.cont.statusCode + ")"
+                    cargaFileInicial_contenidoRespuesta: rpta.cont.message + " (" + rpta.cont.statusCode + ")",
+                    agregandoServicio:false
                 });
 
             });

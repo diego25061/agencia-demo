@@ -84,22 +84,25 @@ class ListaBiblias extends Component {
                         if(mes)
                             bibs.push({
                                 anho : e.anho,
-                                mes:  mes.text
+                                mes:  mes.text,
+                                idMes: mes.value
                             });
                     }
                 }
             }
             var anhos = bibs.map((e) => { return e.anho });
             var anhosUnique = anhos.filter(this.onlyUnique);
-            bibs = bibs.map(x=>x.mes+","+x.anho).filter(this.onlyUnique);
-            bibs = bibs.map(x=>{return {mes: x.split(",")[0],anho:x.split(",")[1]}});
+            bibs = bibs.map(x=>x.mes+","+x.anho+","+x.idMes).filter(this.onlyUnique);
+            bibs = bibs.map(x=>{return {mes: x.split(",")[0],anho:x.split(",")[1],idMes:x.split(",")[2]}});
             //console.log(anhosUnique);
             var biblias = anhosUnique.map((e, i) => {
                 var meses = bibs.filter((biblia) => {
                     return biblia.anho == e;
                 });
                 meses = meses.map((e) => {
-                    return new BibliaModel(e);
+                    let l = new BibliaModel(e);
+                    l.idMes = e.idMes;
+                    return l;
                 })
                 meses = meses.sort((a, b) => {
                     return MesANumero(a.mes) - MesANumero(b.mes);
@@ -110,7 +113,7 @@ class ListaBiblias extends Component {
             biblias.sort((a, b) => {
                 return b.anho - a.anho;
             })
-            console.log(biblias);
+            console.log("BIBLIAS:" ,biblias);
             let notif = this.state.notificacion_leerBiblia;
             notif.setHidden();
             this.setState({ biblias: biblias,notificacion_leerBiblia:notif , bibliaCargando:false});
@@ -180,7 +183,7 @@ class ListaBiblias extends Component {
                                 {e.meses.map((mes, i) => {
                                     if (i < 6)
                                         return <Grid.Column>
-                                            <CardBiblia mes={mes.mes} anho={e.anho} funcNavegar={this.navegar}/>
+                                            <CardBiblia mes={mes.mes} anho={e.anho} funcNavegar={this.navegar}  idMes={mes.idMes}/>
                                             
                                             {/*
                                             <Card>
@@ -204,7 +207,7 @@ class ListaBiblias extends Component {
                                 {e.meses.map((mes, i) => {
                                     if (i > 5)
                                         return <Grid.Column>
-                                            <CardBiblia mes={mes.mes} anho={e.anho} funcNavegar={this.navegar}/>
+                                            <CardBiblia mes={mes.mes} anho={e.anho} funcNavegar={this.navegar} idMes={mes.idMes}/>
                                             {/*
                                             <Card>
                                                 <Card.Content header={mes.mes} />
