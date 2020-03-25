@@ -11,6 +11,7 @@ import TablaBuscador from '../TablaBuscador/TablaBuscador';
 
 //import { MDBDataTable } from 'mdbreact';
 import FileModel from './../../common/Models/Apis/FileModel';
+import cogoToast from 'cogo-toast';
 
 
 class ViewFiles extends Component {
@@ -125,9 +126,14 @@ class ViewFiles extends Component {
 				open={this.state.open}
 				onCancel={this.closeConfirm}
 				onConfirm={() => {
-					Requester.postBorrarFile(this.state.idFileABorrar,
-						(rpta)=>{this.cargarFiles();},
-						(rptaError)=>{this.cargarFiles();});
+					Requester.borrarFile(this.state.idFileABorrar,
+						(rpta)=>{this.cargarFiles();
+                			cogoToast.success("File eliminado",{position:"bottom-center"});
+						},
+						(rptaError)=>{
+							this.cargarFiles();
+							cogoToast.error(<><b>Error</b> al actualizar file : {rptaError.cont.message + " (" + rptaError.cont.statusCode + ")"}</>,{position:"bottom-center"});
+						});
 					this.closeConfirm();
 				}} />
 

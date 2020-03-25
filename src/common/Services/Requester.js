@@ -82,7 +82,11 @@ class Requester {
             if(funcAlways)
                 funcAlways();
         }
-
+        
+        //simulando lag
+        //setTimeout(()=>{ 
+        //}, 1000);
+        
         if(mode==="get"){
             axios.get(direccion,auth ? {headers:{Authorization:"Bearer "+ this.store.token}}: null)
             .then(callback_then)

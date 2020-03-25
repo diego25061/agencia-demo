@@ -105,9 +105,9 @@ class MainContent extends Component {
                                     <Route path="/pruebas" exact component={Pruebas} />
                                     <Route path="/inicio" exact component={Inicio} />
                                     <Route path="/files" exact component={ViewFiles} />
-                                    <Route path="/files/crear" exact component={(a) => { return <CrearFile modo="crear" /> }} />
-                                    <Route path="/file/ver/:idFile" exact component={(obj) => {/*console.log("@@@@@@@@",obj);*/return <CrearFile modo="ver" history={obj.history} idFile={obj.match.params.idFile} /> }} />
-                                    <Route path="/file/editar/:idFile" exact component={(obj) => { return <CrearFile modo="editar" idFile={obj.match.params.idFile} /> }} />
+                                    <Route path="/files/crear" exact component={(obj) => { return <CrearFile modoPagina="create" history={obj.history} /> }} />
+                                    <Route path="/file/ver/:idFile" exact component={(obj) => {/*console.log("@@@@@@@@",obj);*/return <CrearFile modoPagina="view" history={obj.history} idFile={obj.match.params.idFile} /> }} />
+                                    {/*<Route path="/file/editar/:idFile" exact component={(obj) => { return <CrearFile modo="edit" idFile={obj.match.params.idFile} /> }} />*/}
                                     <Route path="/servicios" exact component={VerServicios} />
                                     <Route path="/servicios/crear" exact component={CrearServicio} />
                                     <Route path="/biblias" exact component={ListaBiblias} />

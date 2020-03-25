@@ -43,7 +43,7 @@ export default class ServiceRow extends React.Component {
         vuelo: '',
         vr: '',
         tc: '',
-        idProveedor: '',
+        proveedor: '',
         clase: 'general',
         //idFile: this.props.idFile
     }
@@ -111,7 +111,7 @@ export default class ServiceRow extends React.Component {
             disabled={this.modoVer()}
             placeholder={this.modoVer() ? "" : placeholder}
             datalist={datalist}
-            value={this.props.service.idProveedor}
+            value={this.props.service.proveedor}
             sideButton={
                 <Button style={{ padding: "3px 11px", backgroundColor: "#00000000" }} icon
                     onClick={() => {
@@ -122,14 +122,14 @@ export default class ServiceRow extends React.Component {
                 </Button>
             }
             onChange={(event, data) => {
-                this.props.onUpdateValues({ idProveedor: data.value });
+                this.props.onUpdateValues({ proveedor: data.value });
             }}
         />
 
         if (this.modoVer()) {
             let nombreProovedor = '-';
             if (this.props.opcionesHoteles) {
-                let filtrado = this.props.opcionesProveedores.filter(x => x.value === this.props.service.idProveedor);
+                let filtrado = this.props.opcionesProveedores.filter(x => x.value === this.props.service.proveedor);
                 //console.log("filtrado: ",filtrado);
                 if (filtrado && filtrado.length > 0) {
                     nombreProovedor = filtrado[0].text;
@@ -290,7 +290,9 @@ export default class ServiceRow extends React.Component {
 
         if (this.props.service.mode === mode_view) {
             buttons = <>
-                <Button floated="right" icon color="red" onClick={() => { }}>
+                <Button floated="right" icon color="red" onClick={() => { 
+                    this.props.onDelete();
+                }}>
                     <Icon name="trash alternate outline" />
                 </Button>
 

@@ -12,6 +12,7 @@ import BibliaModel from './../../common/Models/Apis/BibliaModel';
 import CardBiblia from '../CardBiblias/CardBiblia';
 import NotificationStateHolder from '../../common/StateHolders/NotificationStateHolder';
 import NotificacionApi from './../NotificacionApi/NotificacionApi';
+import { ListaMeses } from './../../common/Constantes';
 
 
 class ListaBiblias extends Component {
@@ -78,11 +79,13 @@ class ListaBiblias extends Component {
             for(let i=0;i<rpta.cont.length;i++){
                 let e = rpta.cont[i];
                 if(e){
-                    if(e.biblia){
-                        bibs.push({
-                            anho : e.biblia.anho,
-                            mes: e.biblia.mes
-                        });
+                    if(e.anho && e.mes){
+                        let mes = ListaMeses.find(x=>x.value===e.mes)
+                        if(mes)
+                            bibs.push({
+                                anho : e.anho,
+                                mes:  mes.text
+                            });
                     }
                 }
             }

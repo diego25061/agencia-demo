@@ -7,6 +7,8 @@ export default class FileModel {
     constructor(e) {
         this.idFile = e.hasOwnProperty("_id") ? e._id : "";
         this.codigo = e.hasOwnProperty("codigo") ? e.codigo : "-";
+        this.mes =  e.hasOwnProperty("mes") ? e.mes : "-";
+        this.anho =  e.hasOwnProperty("anho") ? e.anho : "-";
         //this.nombre = e.hasOwnProperty("nombre") ? e.nombre : "-";
         this.descripcion = e.hasOwnProperty("descripcion") ? e.descripcion : "-";
 
@@ -37,6 +39,8 @@ export default class FileModel {
             _id: obj.idFile,
             codigo: obj.codigo,
             descripcion: obj.descripcion,
+            mes: obj.mes,
+            anho: obj.anho,
             cliente: {
                 _id: obj.idCliente
                 },
