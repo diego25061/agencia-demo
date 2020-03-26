@@ -12,6 +12,8 @@ import TablaBuscador from '../TablaBuscador/TablaBuscador';
 //import { MDBDataTable } from 'mdbreact';
 import FileModel from './../../common/Models/Apis/FileModel';
 import cogoToast from 'cogo-toast';
+import moment from 'moment';
+import { const_numeroAMes } from './../../common/Constantes';
 
 
 class ViewFiles extends Component {
@@ -26,18 +28,23 @@ class ViewFiles extends Component {
 	}
 
 	cargarFiles = () => {
-		console.log("weeeeee");
+		//console.log("weeeeee");
 		Requester.getFiles({},rpta => {
 			console.log("servicios cargados > ",rpta.cont);
 			let listaFiles = rpta.cont.map((e, i) => {
 				var fm =  new FileModel(e);
 
 				if(fm.servicios){
-					fm.cantServiciosGenerales = fm.servicios.filter(w=> w.clase==="general").length;
-					fm.cantServiciosTransporte = fm.servicios.filter(w=> w.clase==='transporte').length;
+					fm.cantServicios = fm.servicios.length;
+					//fm.cantServiciosTransporte = fm.servicios.filter(w=> w.clase==='transporte').length;
 				}
 				if(fm.biblia){
-					fm.nombreBiblia=fm.biblia.mes + ' - ' +fm.biblia.anho;
+					let mes = const_numeroAMes(fm.mes);
+					mes = mes ? mes : " ";
+					fm.nombreBiblia= mes + ' ' +fm.anho;
+				}
+				if(fm.createdAt){
+					fm.fechaFormato = moment(fm.createdAt).format("LLL")
 				}
 				
 				return fm;
@@ -77,15 +84,11 @@ class ViewFiles extends Component {
 			},
 			{
 				Header: 'Fecha registro',
-				accessor: 'createdAt',
+				accessor: 'fechaFormato',
 			},
 			{
-				Header: 'Cant. servicios',
-				accessor: 'cantServiciosGenerales',
-			},
-			{
-				Header: 'Cant. Transportes',
-				accessor: 'cantServiciosTransporte',
+				Header: 'Cantidad servicios',
+				accessor: 'cantServicios',
 			},
 			{
 				Header: 'Accion',
