@@ -65,7 +65,7 @@ class InputSearchableDataButton extends React.Component {
                 {/*
             <Icon name='lightning' />*/}
                 <input />
-                {this.props.sideButton}
+                {this.props.sideButton ? this.props.sideButton : <></>}
             </Input>
             <datalist id={this.props.linkId}>
                 {this.props.datalist.map(e => <option key={e.value} value={e.text} />)}

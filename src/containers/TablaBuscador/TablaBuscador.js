@@ -80,7 +80,7 @@ class TablaBuscador extends Component{
                         ofText="de"
                         data={dataFiltrada}
                         columns={this.props.columns ? this.props.columns : this.columnasDefault} 
-                        defaultPageSize={5}
+                        defaultPageSize={10}
                         minRows={5}
                         className="-highlight"
                     />

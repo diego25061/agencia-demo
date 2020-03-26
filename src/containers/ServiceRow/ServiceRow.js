@@ -98,14 +98,16 @@ export default class ServiceRow extends React.Component {
             placeholder={this.modoVer() ? "" : placeholder}
             datalist={datalist}
             value={this.props.service.proveedor}
-            sideButton={
+
+            sideButton={<></>
+                /*
                 <Button style={{ padding: "3px 11px", backgroundColor: "#00000000" }} icon
                     onClick={() => {
                         //let modal = { ...this.state.modalCrearEditarProveedor, abierto: true };
                         //this.setState({ modalCrearEditarProveedor: modal });
                     }}>
                     <Icon name='plus' />
-                </Button>
+                </Button>*/
             }
             onChange={(event, data) => {
                 this.props.onUpdateValues({ proveedor: data.value });
@@ -123,8 +125,16 @@ export default class ServiceRow extends React.Component {
             }
             controlProveedor = <Input disabled transparent fluid value={nombreProovedor} />
         }
+        
+        let tipoProveedor = "Proveedor"
 
-        let campoProveedor = <Campo titulo="Hotel" >{controlProveedor}</Campo>
+        if (this.props.service.clase === "hospedaje") {
+            tipoProveedor="Hotel"
+        } else if (this.props.service.clase === "transporte") {
+            tipoProveedor = "Transportista"
+        }
+
+        let campoProveedor = <Campo titulo={tipoProveedor} >{controlProveedor}</Campo>
 
 
         let campoNombre = <Campo titulo="Nombre" >
@@ -348,7 +358,6 @@ export default class ServiceRow extends React.Component {
 
         let icono = "setting"
         let titulo = "Servicio general"
-        
         let color = const_colores.servicio_general;
 
         titulo = (this.props.orden + 1) + ". " + this.props.service.nombre;

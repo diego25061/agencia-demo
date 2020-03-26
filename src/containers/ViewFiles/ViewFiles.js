@@ -14,6 +14,8 @@ import FileModel from './../../common/Models/Apis/FileModel';
 import cogoToast from 'cogo-toast';
 import moment from 'moment';
 import { const_numeroAMes } from './../../common/Constantes';
+import NotificationStateHolder from '../../common/StateHolders/NotificationStateHolder';
+import NotificacionApi from '../NotificacionApi/NotificacionApi';
 
 
 class ViewFiles extends Component {
@@ -22,13 +24,15 @@ class ViewFiles extends Component {
 		open: false,
 		idFileABorrar: 0,
 		codigoFileABorrar: '',
+		filesCargando:false,
+        notificacion_leerFiles : new NotificationStateHolder(),
 		files: [
 			//{codigo: "23123", descripcion: "descripcion del file", biblia:"2018, mayo", cliente:"nts", fecha:"2/05/2019", estado:"activo", cantServicios: "2", cantTransportes: "3" },
 		]
 	}
 
 	cargarFiles = () => {
-		//console.log("weeeeee");
+		this.setState({filesCargando:true});
 		Requester.getFiles({},rpta => {
 			console.log("servicios cargados > ",rpta.cont);
 			let listaFiles = rpta.cont.map((e, i) => {
@@ -49,8 +53,16 @@ class ViewFiles extends Component {
 				
 				return fm;
 			});
-			console.log("servicios transformados > ",listaFiles);
-			this.setState({ files: listaFiles });
+			
+        	let n = this.state.notificacion_leerFiles;
+            n.setHidden();
+			//console.log("servicios transformados > ",listaFiles);
+			this.setState({ files: listaFiles, filesCargando:false, notificacion_leerFiles : n });
+		}, (rptaError) => {
+			let n = this.state.notificacion_leerFiles;
+            n.setRecibidoError("Error al cargar files",rptaError.cont.message,rptaError.cont.statusCode);
+			n.mostrarNotificacion=true;
+			this.setState({filesCargando:false}	);
 		});
 	}
 
@@ -58,7 +70,7 @@ class ViewFiles extends Component {
 		this.cargarFiles();
 	}
 
-	render=()=> {
+	render = () => {
 		const cols = [
 			{
 				Header: 'id',
@@ -122,9 +134,17 @@ class ViewFiles extends Component {
 			<Header size="medium">Lista de files</Header>
 
 			<Segment>
-				<TablaBuscador data={this.state.files} columns={cols} />
+				<TablaBuscador data={this.state.files} columns={cols} loading={this.state.filesCargando}/>
 			</Segment>
 
+                <NotificacionApi
+                    disabled={!this.state.notificacion_leerFiles.mostrarNotificacion}
+                    loading={this.state.notificacion_leerFiles.enviando}
+                    color={this.state.notificacion_leerFiles.notif_color}
+                    content={this.state.notificacion_leerFiles.contenidoRespuesta} 
+                    title={this.state.notificacion_leerFiles.tituloRespuesta}
+                    icon={this.state.notificacion_leerFiles.notif_icono}>
+                </NotificacionApi>
 			<Confirm content={"Seguro que deseas eliminar el file '" + this.state.codigoFileABorrar + "' ?"}
 				open={this.state.open}
 				onCancel={this.closeConfirm}
