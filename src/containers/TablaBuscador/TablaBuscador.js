@@ -61,7 +61,7 @@ class TablaBuscador extends Component{
             <Segment basic>
                     Buscar registros:{"      "}
                     <Input style={{padding:"0px 0px 12px 24px"}}
-                        placeholder="Buscar..."
+                        placeholder="Buscar"
                         value={query}
                         onChange={e => {
                             if(this.props.queryForzado)
@@ -73,6 +73,11 @@ class TablaBuscador extends Component{
                     {this.props.loading?<Dimmer active inverted><Loader size='large'>Cargando</Loader></Dimmer>:<></>}
 
                     <ReactTable
+                        previousText="Anterior"
+                        nextText="Siguiente"
+                        pageText="Pagina"
+                        rowsText="filas"
+                        ofText="de"
                         data={dataFiltrada}
                         columns={this.props.columns ? this.props.columns : this.columnasDefault} 
                         defaultPageSize={5}
