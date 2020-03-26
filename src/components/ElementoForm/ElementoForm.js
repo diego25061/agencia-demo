@@ -9,8 +9,11 @@ class ElementoForm extends Component{
             e = <b>{e}</b>;
 
         let obj = 
-        <Container fluid>
-            <p>{e}</p>
+        <Container fluid> 
+        
+            <Header style={{ margin: "-2px 0px 4px 0px" }} as="h4">
+                {e}
+            </Header>
             {this.props.children}
         </Container>
 /*

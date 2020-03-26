@@ -548,7 +548,7 @@ class CrearFile extends Component {
                         <Grid.Row>
                             <Grid.Column width={16}>
                                 <Header >Servicios</Header>
-                                {this.state.servs.length === 0 ? <Segment secondary textAlign="center">No hay servs en este file</Segment> : ''}
+                                {this.state.servs.length === 0 ? <Segment secondary textAlign="center">No hay servicios en este file</Segment> : ''}
                                 {this.state.servs.map((elem, index) => {
                                     //return this.filaServicio(index);
                                     let key = 0;
@@ -573,7 +573,6 @@ class CrearFile extends Component {
                                             serv.file = this.state.idFile;
                                             let obj = ServicioModel.toApiObj(serv);
                                             delete obj._id;
-                                            obj.proveedor = null;
 
                                             console.log("grabando serv nuevo > ", obj);
                                             Requester.postServicio(obj, (rpta) => {
@@ -605,11 +604,11 @@ class CrearFile extends Component {
                                             let obj = ServicioModel.toApiObj(serv);
                                             //console.log("actualizando serv transformado : ",obj);
                                             Requester.actualizarServicio(elem.idServicio, obj, (rpta) => {
-                                                console.log("servicio actualizado con exito : ", rpta.cont);
+                                                //console.log("servicio actualizado con exito : ", rpta.cont);
                                                 cogoToast.success("Servicio actualizado",{position:"bottom-center"});
                                                 this.cargarFileBase();
                                             }, (rpta) => {
-                                                console.error("error al actualizar servicio : ", rpta.cont.message);
+                                                //console.error("error al actualizar servicio : ", rpta.cont.message);
                                                 cogoToast.error("Error al actualizar servicio : "+rpta.cont.message,{position:"bottom-center"});
                                                 //TODO mostrar mensaje error en UI
                                             });
@@ -2049,7 +2048,7 @@ class CrearFile extends Component {
                 ...new ServicioModel({}),
                 mode: service_mode_added,
                 clase: clase,
-                nombre: "Nuevo",
+                nombre: "",
                 cantPasajeros: 1,
                 horaInicio: "00:00",
                 horaFinal: "00:00",

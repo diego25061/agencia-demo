@@ -73,6 +73,7 @@ class TablaBuscador extends Component{
                     {this.props.loading?<Dimmer active inverted><Loader size='large'>Cargando</Loader></Dimmer>:<></>}
 
                     <ReactTable
+                        resizable={false}
                         previousText="Anterior"
                         nextText="Siguiente"
                         pageText="Pagina"

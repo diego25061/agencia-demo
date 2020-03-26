@@ -48,7 +48,7 @@ class ViewFiles extends Component {
 					fm.nombreBiblia= mes + ' ' +fm.anho;
 				}
 				if(fm.createdAt){
-					fm.fechaFormato = moment(fm.createdAt).format("LLL")
+					fm.fechaFormato = moment(fm.createdAt).format("DD-MM-YYYY, H:mm")
 				}
 				
 				return fm;

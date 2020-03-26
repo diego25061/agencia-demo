@@ -137,7 +137,7 @@ export default class ServiceRow extends React.Component {
         let campoProveedor = <Campo titulo={tipoProveedor} >{controlProveedor}</Campo>
 
 
-        let campoNombre = <Campo titulo="Nombre" >
+        let campoNombre = <Campo titulo="Nombre *" >
             <Input disabled={this.modoVer()} transparent fluid placeholder={this.modoVer() ? "" : "In + city"}
                 value={this.props.service.nombre ? this.props.service.nombre : ""}
                 onChange={(event) => { this.props.onUpdateValues({ nombre: event.target.value }); }}
@@ -151,7 +151,7 @@ export default class ServiceRow extends React.Component {
             />
         </Campo>
 
-        let campoFecha = <Campo titulo="Fecha">
+        let campoFecha = <Campo titulo="Fecha *">
             <DateInput
                 disabled={this.modoVer()}
                 transparent
@@ -196,10 +196,17 @@ export default class ServiceRow extends React.Component {
             />
         </Campo>
 
+
+
         let campoCantidadPasajeros = <Campo titulo="Cantidad pasajeros">
             <Input type="number" transparent fluid disabled={this.modoVer()} placeholder={this.modoVer() ? "" : '4'}
                 value={this.props.service.cantPasajeros ? this.props.service.cantPasajeros : 0}
-                onChange={(event) => { this.props.onUpdateValues({ cantPasajeros: event.target.value }); }}
+                onChange={(event) => { 
+                    let cant = event.target.value;
+                    if(cant<0)
+                        cant=0;
+                    this.props.onUpdateValues({ cantPasajeros: cant }); 
+                    }}
             />
         </Campo>
 
@@ -260,10 +267,10 @@ export default class ServiceRow extends React.Component {
             />
         </Campo>
 
-        let campoAlm = <Campo titulo="Alm">
+        let campoAlm = <Campo titulo="Almuerzo">
             <Input transparent fluid
                 value={this.props.service.alm ? this.props.service.alm : ""}
-                disabled={this.modoVer()} placeholder={this.modoVer() ? "" : 'Alm'}
+                disabled={this.modoVer()} placeholder={this.modoVer() ? "" : 'Almuerzo'}
                 onChange={(event) => { this.props.onUpdateValues({ alm: event.target.value }); }}
             />
         </Campo>
@@ -345,6 +352,7 @@ export default class ServiceRow extends React.Component {
             {campoCiudadDestino}
             {campoFecha}
             {campoFechaOut}
+            {campoNombrePasajero}
             {campoCantidadPasajeros}
         </>
 
@@ -370,6 +378,7 @@ export default class ServiceRow extends React.Component {
                 {campoNombre}
                 {campoFecha}
                 {campoFechaOut}
+                {campoNombrePasajero}
                 {campoCantidadPasajeros}
             </>
 
@@ -387,6 +396,7 @@ export default class ServiceRow extends React.Component {
                 {campoNombre}
                 {campoCiudadDestino}
                 {campoFecha}
+                {campoNombrePasajero}
                 {campoCantidadPasajeros}
             </>
 
@@ -412,12 +422,9 @@ export default class ServiceRow extends React.Component {
             colorFondo = "#fff643";
             colorFondoLight = "#fff758";
         } else if (this.props.service.mode === mode_added) {
-            colorFondo = "#5fea3c";
-            colorFondoLight = "#7bff5a";
-        }
-        
-        let f = "asd";
-        let abc = <><input type="text" value={this.props.service[f]} onChange={(e) => { this.props.onUpdateValues({ [f]: e.target.value }) }} ></input></>
+            colorFondo = "#b3ff53";
+            colorFondoLight = "#b3ff53";
+        }        
 
         return <Segment.Group key={this.props.service.idServicio} id={this.props.service.idServicio}>
             <Segment.Group horizontal>

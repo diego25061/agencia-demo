@@ -12,66 +12,80 @@ import ServicioModel from './../../common/Models/Apis/ServicioModel';
 
 
 const localizer = BigCalendar.momentLocalizer(moment)
+const messagesSpanish = {
+    allDay: 'Todo el día',
+    previous: 'Anterior',
+    next: 'Siguiente',
+    today: 'Hoy',
+    month: 'Mes',
+    week: 'Semana',
+    day: 'Día',
+    agenda: 'Agenda',
+    date: 'Fecha',
+    time: 'Hora',
+    event: 'Evento',
+    showMore: total => `+ Ver más (${total})`
+};
 
 class VerCalendario extends Component {
 
 
     state = {
-        fecha:this.props.fechaDefault?this.props.fechaDefault : new Date(),
+        fecha: this.props.fechaDefault ? this.props.fechaDefault : new Date(),
         events: [
         ],
         //culture: moment.locale("es")
 
     }
 
-    componentDidMount=()=>{
+    componentDidMount = () => {
         //console.log("fecha: ",this.state.fecha.getMonth())
-        this.cargarServicios(this.state.fecha.getMonth()+1);
+        this.cargarServicios(this.state.fecha.getMonth() + 1);
 
     }
- 
+
     v = (event, start, end, isSelected) => {
         let newStyle = {
-          backgroundColor: event.color,
-          color: 'black',
-          borderRadius: "0px",
-          border: "none"
+            backgroundColor: event.color,
+            color: 'black',
+            borderRadius: "0px",
+            border: "none"
         };
-  
-        if (event.isMine){
-          newStyle.backgroundColor = "lightgreen"
-        }
-  
-        return {
-          className: "",
-          style: newStyle
-        };
-      }
 
-    cargarServicios= (mes)=>{
+        if (event.isMine) {
+            newStyle.backgroundColor = "lightgreen"
+        }
+
+        return {
+            className: "",
+            style: newStyle
+        };
+    }
+
+    cargarServicios = (mes) => {
 
         let eventosServ = [];
-        Requester.getServicios({}, (rpta) =>{
-            
-            rpta.cont.map((serv,i)=>{
+        Requester.getServicios({}, (rpta) => {
+
+            rpta.cont.map((serv, i) => {
                 let s = new ServicioModel(serv);
 
                 let color = const_colores.servicio_general;
-                if(s.clase==="transporte") color=const_colores.servicio_transporte;
-                if(s.clase==="hospedaje") color=const_colores.servicio_hospedaje;
+                if (s.clase === "transporte") color = const_colores.servicio_transporte;
+                if (s.clase === "hospedaje") color = const_colores.servicio_hospedaje;
 
                 eventosServ.push({
-                    title:s.nombre,
+                    title: s.nombre,
                     start: moment(s.fechaEjecucion),
                     end: moment(s.fechaOut),
-                    allDay:true,
-                    color:color
+                    allDay: true,
+                    color: color
                 })
 
             });
-            this.setState({events:eventosServ});
+            this.setState({ events: eventosServ });
         }, (rpta) => {
-            
+
         });
     }
 
@@ -82,12 +96,13 @@ class VerCalendario extends Component {
             {/*<Header size="large">Calendario</Header>*/}
             <Segment style={{ height: "800px" }}>
                 <BigCalendar
+                    messages={messagesSpanish}
                     localizer={localizer}
                     events={this.state.events}
                     culture={this.state.culture}
                     startAccessor="start"
                     endAccessor="end"
-                    defaultDate={this.state.fecha }
+                    defaultDate={this.state.fecha}
                     defaultView="month"
                     eventPropGetter={this.v}
                 />
