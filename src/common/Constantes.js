@@ -123,9 +123,11 @@ const Rol_Gerente="Gerente";
 const Rol_Operador="Operador";
 const Rol_Observador = "Observador";
 
+const defaultRoute = "https://agen-demo-api.herokuapp.com";
+//const defaultRoute = "http://192.168.1.11:1337";
+
 const Configuracion={
-    //ServerUrl:"http://localhost:65212",
-    ServerUrl:"http://192.168.1.11:1337",
+    ServerUrl: process.env.API_URL || defaultRoute,
     EnlacesNavBar:[
         {nombre:"Inicio", valor:"/inicio" },
         {nombre:"Files", valor:"/files"},
