@@ -22,6 +22,14 @@ export const const_colores = {
         servicio_hospedaje: '#fff1a3'
     }
 
+export const const_numeroAMes = (numero) => {
+    let obj = ListaMeses.find(x=>x.value===numero);
+    if(obj){
+        return obj.text;
+    }else 
+        return undefined
+}
+
 const CONSTANTES_GLOBALES={
     ListaMeses: [
         { key: 1 , text: 'Enero', value: 'enero' },
