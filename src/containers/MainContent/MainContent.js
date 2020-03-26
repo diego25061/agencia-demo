@@ -18,6 +18,14 @@ import NavBar from '../../components/NavBar/NavBar';
 import Auth from '../Auth/Auth';
 import Requester from '../../common/Services/Requester';
 import Mostrador404 from '../../components/Mostrador404/Mostrador404';
+import UsuarioModel from './../../common/Models/Apis/UsuarioModel';
+
+const tokenKey = "jwtToken";
+const userKey ="userInfo";
+
+const setGlobalToken = (token) =>{
+    Requester.store.token = token;
+}
 
 class MainContent extends Component {
 
@@ -29,7 +37,8 @@ class MainContent extends Component {
     }
 
     cerrarSesion = () => {
-        localStorage.removeItem("token");
+        localStorage.removeItem(tokenKey);
+        localStorage.removeItem(userKey);
 
         this.setState({
             token: null,
@@ -38,7 +47,23 @@ class MainContent extends Component {
         });
     }
 
+    loggedInHandler = (token, userInfo) => {
+        let user = new UsuarioModel(userInfo)
+        if(user){
+            localStorage.setItem(tokenKey, token);
+            localStorage.setItem(userKey,JSON.stringify(user));
 
+            setGlobalToken(token);
+
+            this.setState({
+                token: token,
+                mostrarContenido: true,
+                usuario: user
+            });
+        }
+    }
+
+/*
     loggedInHandler = (obj) => {
         //console.log("aaaaaaaa: "+obj);
         Requester.store.token = obj.token;
@@ -49,14 +74,36 @@ class MainContent extends Component {
             usuario: obj.usuario
         });
     }
+    */
+
 
     componentDidMount = () => {
-        //console.log("hah!");
-        var token = localStorage.getItem("token");
+        var token = localStorage.getItem(tokenKey);
         if (token) {
-            //console.log("HAY TOKEN!!!!!")
-            Requester.store.token = token;
+            console.log("token : ",token)
             //si hay token guardado
+            let userString = localStorage.getItem(userKey);
+            console.log("user info : ", userString);
+            if(userString){
+                //sacar info de usuario
+                var user = JSON.parse(localStorage.getItem(userKey));
+                console.log("user > ",user);
+                setGlobalToken(token);
+
+                this.setState({
+                    token : token,
+                    usuario: user,
+                    mostrarContenido:true
+                });
+
+            } else {
+                //si no hay token guardado
+                console.log("no hay token");
+                this.setState({ mostrarContenido: true, usuario: null });
+            }
+            
+            /*
+
             Requester.getInfo((rpta) => {
                 //console.log("Info:", rpta.cont)
                 this.setState({
@@ -75,6 +122,7 @@ class MainContent extends Component {
 
                 this.setState({ mostrarContenido: true, usuario: null });
             }, null, token)
+            */
         } else {
             //console.log("NO HAY TOKEN!!!!!")
             //si no hay token guardado
@@ -88,7 +136,7 @@ class MainContent extends Component {
         if (!this.state.mostrarContenido)
             return (<div style={{height:"100%"}}>
                 <Dimmer inverted active>
-                <Loader size="massive" content="" />
+                    <Loader size="massive" content="" />
                 </Dimmer>
                 </div> 
                 );
@@ -126,7 +174,7 @@ class MainContent extends Component {
                 </div>
             </div>);
 
-/*
+
         if (!this.state.usuario) {
             contenido = (
                 <div className="LoginContent">
@@ -134,7 +182,7 @@ class MainContent extends Component {
                         <Route component={() => { return <Auth loggedInHandler={this.loggedInHandler} /> }} />
                     </Switch>
                 </div>);
-        }*/
+        }
 
         return (contenido);
     }

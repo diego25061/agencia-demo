@@ -29,15 +29,4 @@ export default class CardBiblia extends Component {
 
     }
 
-    componentDidMount = () => {
-        Requester.getFiles({ "biblia.mes": this.props.mes, "biblia.anho": this.props.anho }, (response) => {
-            let count ='error';
-            try{
-            count = response.cont.length;
-            }catch{
-                console.error("invalid 'response.cont' > ",response);
-            }
-            this.setState({cantFiles:count});
-        })
-    }
 }

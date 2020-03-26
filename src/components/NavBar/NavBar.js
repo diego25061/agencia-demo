@@ -43,8 +43,8 @@ class NavBar extends Component {
         let nombre = "";
         let genero = 0;
         if (this.props.usuario) {
-            nombre = this.props.usuario.nombre;
-            genero = this.props.usuario.genero;
+            nombre = this.props.usuario.username;
+            genero = 0;//this.props.usuario.genero;
         }
         return (
             <div>
@@ -68,7 +68,7 @@ class NavBar extends Component {
                             </div>
                         </Menu.Item>
                         <Menu.Item style={{ padding: "4px 16px" }}>
-                            {genero == 0 ? "Bienvenido" : "Bienvenida"},{' '}<br /><b>{nombre ? nombre : "usuario"}</b>
+                            {genero == 0 ? "Bienvenido" : "Bienvenida"},&nbsp;{' '}<br /><b>{nombre ? nombre : "usuario"}</b>
                         </Menu.Item>
                         <Menu.Item>
                             <Button size="massive" style={{ backgroundColor: "#00000000", padding: "13.3px 5px" }} icon onClick={() => {

@@ -5,16 +5,21 @@ import './Auth.css'
 import LogoYllari from '../../assets/logo_yllari.png'
 import Requester from '../../common/Services/Requester';
 import MensajeTransaccion from '../../components/MensajeTransaccion/MensajeTransaccion';
+import NotificacionApi from '../NotificacionApi/NotificacionApi';
+import NotificationStateHolder from '../../common/StateHolders/NotificationStateHolder';
 
 class Auth extends Component {
+
     state = {
         usuario: "",
         clave: "",
 
-        transaccionEnviada: false,
-        responseRecibida: false,
-        rptaTransaccion: null,
+        //transaccionEnviada: false,
+        //responseRecibida: false,
+        //rptaTransaccion: null,
+        notificacion_login : new NotificationStateHolder()
     }
+
     render() {
         return (
             <div>
@@ -47,18 +52,24 @@ class Auth extends Component {
                                             responseRecibida: false });
 
                                         console.log("asd!", this.state);
-                                        Requester.postLogin(
-                                            {
-                                            username: this.state.usuario,
+                                        Requester.postLogin({
+                                            identifier: this.state.usuario,
                                             password: this.state.clave
-                                        },
+                                            },
                                             (rpta) => {
 
-                                                var token = rpta.cont.token;
-                                                Requester.store.token = token;
-                                                console.log("Requester store: ",Requester.store)
+                                                console.log("Rpta > ",rpta);
 
-                                                localStorage.setItem("token", token);
+                                                var token = rpta.cont.jwt;
+                                                var userInfo = rpta.cont.user;
+
+                                                //Requester.store.token = token;
+                                                //console.log("Requester store: ",Requester.store)
+ 
+                                                
+                                                this.props.loggedInHandler(token,userInfo);
+
+                                                /*
                                                 var pack = { token: token };
 
                                                 Requester.getInfo((rpta) => {
@@ -75,13 +86,15 @@ class Auth extends Component {
                                                 }, (error, errorCompleto) => {
                                                     //error etc
                                                 }, null, token)
+                                                */
 
-
-                                            }, (rpta) => {
-                                                this.setState({
-                                                    responseRecibida: true,
-                                                    rptaTransaccion: rpta
-                                                });
+                                            }, (rptaError) => {
+                                                console.log("Rpta error > ",rptaError);
+                                                
+                                                let notif = this.state.notificacion_login;
+                                                notif.mostrarNotificacion=true;
+                                                notif.setRecibidoError("Credenciales inválidos","", rptaError.cont.statusCode, rptaError.cont.data);
+                                                this.setState({notificacion_login:notif});
                                             }
                                         );
 
@@ -107,19 +120,27 @@ class Auth extends Component {
                                     }>
                                     Ingresar
                                 </Button>
+                                <NotificacionApi
+                                    disabled={!this.state.notificacion_login.mostrarNotificacion}
+                                    loading={this.state.notificacion_login.enviando}
+                                    color={this.state.notificacion_login.notif_color}
+                                    content={this.state.notificacion_login.contenidoRespuesta} 
+                                    title={this.state.notificacion_login.tituloRespuesta}
+                                    icon={this.state.notificacion_login.notif_icono}
+                                />
 
-
-                                <MensajeTransaccion
+                                {/*
+                                    <MensajeTransaccion
                                     transaccionEnviada={this.state.transaccionEnviada}
                                     responseRecibida={this.state.responseRecibida}
                                     rptaTransaccion={this.state.rptaTransaccion} />
-                                {/*
+
                                 <Button color='orange' fluid size='large' onClick={
                                     ()=>{
                                         localStorage.removeItem("token")
                                     }
                                 }>sacar token</Button>
-                            */}
+                                */}
                             </Segment>
                         </Form>
                     </Grid.Column>

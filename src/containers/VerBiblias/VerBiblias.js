@@ -123,37 +123,7 @@ class ListaBiblias extends Component {
             notif.mostrarNotificacion=true;
             this.setState({notificacion_leerBiblia:notif, bibliaCargando:false});   
         });
-        /*
-        Requester.getBiblias({},(rpta) => {
-            var anhos = rpta.cont.map((e) => { return e.anho });
-            var anhosUnique = anhos.filter(this.onlyUnique);
-            //console.log(anhosUnique);
-            var biblias = anhosUnique.map((e, i) => {
-                var meses = rpta.cont.filter((biblia) => {
-                    return biblia.anho == e;
-                });
-                meses = meses.map((e) => {
-                    return new BibliaModel(e);
-                })
-                meses = meses.sort((a, b) => {
-                    return MesANumero(a.mes) - MesANumero(b.mes);
-                })
-                //console.log(meses)
-                return { anho: e, meses: meses };
-            })
-            biblias.sort((a, b) => {
-                return b.anho - a.anho;
-            })
-            console.log(biblias);
-            let notif = this.state.notificacion_leerBiblia;
-            notif.setHidden();
-            this.setState({ biblias: biblias,notificacion_leerBiblia:notif });
-        },(rptaError) =>{
-            let notif = this.state.notificacion_leerBiblia;
-            notif.setRecibidoError("Error al leer biblias",rptaError.cont.message, rptaError.cont.statusCode, rptaError.cont.data);
-            notif.mostrarNotificacion=true;
-            this.setState({notificacion_leerBiblia:notif});   
-        });*/
+        
     }
 
     componentDidMount = () => {
@@ -184,22 +154,6 @@ class ListaBiblias extends Component {
                                     if (i < 6)
                                         return <Grid.Column>
                                             <CardBiblia mes={mes.mes} anho={e.anho} funcNavegar={this.navegar}  idMes={mes.idMes}/>
-                                            
-                                            {/*
-                                            <Card>
-                                                <Card.Content header={mes.mes} />
-                                                <Card.Content extra style={{ backgroundColor: "#00000000", padding: "5px 7px" }}>
-                                                    <Icon style={{  padding: "3px" }} name='folder' />
-                                                    {mes.files}
-                                                    <Button style={{ backgroundColor: "#00000000", padding: "5px" }} icon floated="right"
-                                                        onClick={() => {
-                                                            //console.log("state: ",this.props.location.pathname)
-                                                            this.navegar("/calendario/"+e.anho+"/"+mes.codigoMes);
-                                                        }}>
-                                                        <Icon fitted size="large" name="angle right" />
-                                                    </Button>
-                                                </Card.Content>
-                                            </Card>*/}
                                         </Grid.Column>
                                 })}
                             </Grid.Row>
@@ -208,20 +162,6 @@ class ListaBiblias extends Component {
                                     if (i > 5)
                                         return <Grid.Column>
                                             <CardBiblia mes={mes.mes} anho={e.anho} funcNavegar={this.navegar} idMes={mes.idMes}/>
-                                            {/*
-                                            <Card>
-                                                <Card.Content header={mes.mes} />
-                                                <Card.Content extra style={{ backgroundColor: "#00000000", padding: "5px 7px" }}>
-                                                    <Icon name='folder' />
-                                                    {mes.files}
-                                                    <Button style={{ backgroundColor: "#00000000", padding: "5px" }} icon floated="right"
-                                                        onClick={() => {
-                                                            this.navegar("/calendario/"+e.anho+"/"+mes.codigoMes);
-                                                        }}>
-                                                        <Icon fitted size="large" name="angle right" />
-                                                    </Button>
-                                                </Card.Content>
-                                            </Card>*/}
                                         </Grid.Column>
                                 })}
                             </Grid.Row>
@@ -260,7 +200,7 @@ class ListaBiblias extends Component {
             />
         </div>
     }
-
+/*
     EnviarPostBiblia = () => {
         let obj = this.state.notificacion_crearBiblia;
         obj.setAsEnviando();
@@ -279,7 +219,7 @@ class ListaBiblias extends Component {
             notif.setRecibidoError("Error al crear biblia",rptaError.cont.message, rptaError.cont.statusCode, rptaError.cont.data);
             this.setState({notificacion_crearBiblia:notif});
         });
-    }
+    }*/
 
 }
 

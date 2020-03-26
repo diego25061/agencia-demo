@@ -39,7 +39,7 @@ class Requester {
         let string_serv_inaccesible = "Servidor inaccesible";
         let verbose = true;
         //test
-        auth=false;
+        auth=true;
 
         var callback_then = (response) => {
             try {
@@ -86,7 +86,7 @@ class Requester {
         //simulando lag
         //setTimeout(()=>{ 
         //}, 1000);
-        
+
         if(mode==="get"){
             axios.get(direccion,auth ? {headers:{Authorization:"Bearer "+ this.store.token}}: null)
             .then(callback_then)
@@ -239,7 +239,7 @@ class Requester {
     //------------------------ AUTH -----------------------------------
 
     static postLogin = (obj, funcSuccess, funcError, funcAlways) => {
-        this.requestBasicoPost(Configuracion.ServerUrl + "/usuarios/authenticate/", obj, funcSuccess, funcError, funcAlways, false);
+        this.api_post( "/auth/local/", obj, funcSuccess, funcError, funcAlways, false);
     }
 
     //------------------------ FILES -----------------------------------
