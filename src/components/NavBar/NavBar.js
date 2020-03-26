@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom'
 import { Grid, Button, Menu, Image, Header, Container, Segment, Flag, Icon } from 'semantic-ui-react'
 import { Configuracion } from '../../common/Constantes'
 
-import LogoYllari from '../../assets/logo_yllari.png'
+import LogoYllari from '../../assets/logo_generic.png'
 
 import { withRouter } from 'react-router-dom'
 import moment from 'moment'

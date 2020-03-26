@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Grid, Header, Image, Form, Button, Segment, Message, Divider, Input } from 'semantic-ui-react';
 import './Auth.css'
 
-import LogoYllari from '../../assets/logo_yllari.png'
+import LogoYllari from '../../assets/logo_generic.png'
 import Requester from '../../common/Services/Requester';
 import MensajeTransaccion from '../../components/MensajeTransaccion/MensajeTransaccion';
 import NotificacionApi from '../NotificacionApi/NotificacionApi';
@@ -26,9 +26,9 @@ class Auth extends Component {
                 <Grid textAlign='center' style={{ height: '100%' }} verticalAlign='middle'>
                     <Grid.Column style={{ maxWidth: 450 }}>
                         <Header as='h2' color='black' textAlign='center'>
-                            <Image src={LogoYllari} size="massive" />
+                            <Image src={LogoYllari} size="massive" style={{width:"150px"}} />
                             <Divider hidden />
-                            Gestor de Recursos Yllari Travel
+                            Gestor de Recursos Agencia de Viajes
                         </Header>
                         <Form size='large'>
                             <Segment >
@@ -45,7 +45,7 @@ class Auth extends Component {
                                     placeholder='Contraseña'
                                     type='password'
                                 />
-                                <Button color='orange' fluid size='large'
+                                <Button color='teal' fluid size='large'
                                     onClick={() => {
 
                                         this.setState({ transaccionEnviada: true,
@@ -142,6 +142,12 @@ class Auth extends Component {
                                 }>sacar token</Button>
                                 */}
                             </Segment>
+
+                            <Message
+                                info
+                                header='Aplicación de demostración'
+                                content={<>Usuario: demo <br/> Contraseña: demo123</>}
+                            />
                         </Form>
                     </Grid.Column>
                 </Grid>

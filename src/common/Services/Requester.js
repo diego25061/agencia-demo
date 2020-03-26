@@ -86,7 +86,11 @@ class Requester {
         //simulando lag
         //setTimeout(()=>{ 
         //}, 1000);
+        let tokenValido = this.store.token ? true : false;
 
+        if(!tokenValido)
+            auth=false
+            
         if(mode==="get"){
             axios.get(direccion,auth ? {headers:{Authorization:"Bearer "+ this.store.token}}: null)
             .then(callback_then)
