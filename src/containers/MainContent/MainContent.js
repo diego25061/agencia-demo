@@ -144,33 +144,27 @@ class MainContent extends Component {
             <div>
                 <Route component={(props) => { return <NavBar usuario={this.state.usuario} history={props.history} cerrarSesionHandler={this.cerrarSesion} /> }} />
                 <div className="MainContent">
-                    <Grid>
-                        <Grid.Row>
-                            <Grid.Column width={1}></Grid.Column>
-                            <Grid.Column width={14}>
                                 {/*<br />*/}
-                                <Switch>
-                                    <Route path="/pruebas" exact component={Pruebas} />
-                                    <Route path="/inicio" exact component={Inicio} />
-                                    <Route path="/files" exact component={ViewFiles} />
-                                    <Route path="/files/crear" exact component={(obj) => { return <CrearFile modoPagina="create" history={obj.history} /> }} />
-                                    <Route path="/file/ver/:idFile" exact component={(obj) => {/*console.log("@@@@@@@@",obj);*/return <CrearFile modoPagina="view" history={obj.history} idFile={obj.match.params.idFile} /> }} />
-                                    {/*<Route path="/file/editar/:idFile" exact component={(obj) => { return <CrearFile modo="edit" idFile={obj.match.params.idFile} /> }} />*/}
-                                    <Route path="/servicios" exact component={VerServicios} />
-                                    <Route path="/servicios/crear" exact component={CrearServicio} />
-                                    <Route path="/biblias" exact component={ListaBiblias} />
-                                    <Route path="/proveedores" exact component={MostradorProveedores} />
-                                    <Route path="/clientes" exact component={VerClientes} />
-                                    <Route path="/calendario/" exact component={(obj) => { return <VerCalendario/> }} />
-                                    <Route path="/calendario/:anho/:mes" component={(obj) => { return <VerCalendario
-                                        fechaDefault={new Date(obj.match.params.anho,obj.match.params.mes-1,1)}/> }} />
-                                    <Route path="/" exact component={Inicio} />
-                                    <Route component={Mostrador404 /*() => { return <div>404!</div> }*/} />
-                                </Switch>
-                            </Grid.Column>
-                            <Grid.Column width={1}></Grid.Column>
-                        </Grid.Row>
-                    </Grid>
+                            <Switch>
+                                {/*<Route path="/pruebas" exact component={()=><Pruebas/>} />*/}
+                                <Route path="/inicio" exact component={()=><Inicio/>} />
+                                <Route path="/files" exact component={()=>contained(<ViewFiles/>)} />)}
+                                <Route path="/files/crear" exact 
+                                    component={(obj) => { return contained(<CrearFile modoPagina="create" history={obj.history} />) }} />
+                                <Route path="/file/ver/:idFile" exact 
+                                    component={(obj) => {return contained(<CrearFile modoPagina="view" history={obj.history} idFile={obj.match.params.idFile} /> )}} />
+
+                                <Route path="/servicios" exact component={()=>contained(<VerServicios/>)} />
+                                <Route path="/servicios/crear" exact component={()=>contained(<CrearServicio/>)} />
+                                <Route path="/biblias" exact component={()=>contained(<ListaBiblias/>)} />
+                                <Route path="/proveedores" exact component={()=>contained(<MostradorProveedores/>)} />
+                                <Route path="/clientes" exact component={()=>contained(<VerClientes/>)} />
+                                <Route path="/calendario/" exact component={(obj) => { return contained(<VerCalendario/>) }} />
+                                <Route path="/calendario/:anho/:mes" component={(obj) => { return contained(<VerCalendario
+                                fechaDefault={new Date(obj.match.params.anho,obj.match.params.mes-1,1)}/>) }} />
+                                <Route path="/" exact component={Inicio} />
+                                <Route component={Mostrador404} />
+                            </Switch>
                 </div>
             </div>);
 
@@ -187,6 +181,24 @@ class MainContent extends Component {
         return (contenido);
     }
 
+}
+
+const contained = ( Jsx ) =>{
+    return <Contained>{Jsx}</Contained>
+}
+
+const Contained = (props) => {
+    return <div className="contained">
+        <Grid>
+            <Grid.Row>
+                <Grid.Column width={1} ></Grid.Column>
+                <Grid.Column width={14} >
+                    {props.children}
+                </Grid.Column>
+                <Grid.Column width={1} ></Grid.Column>
+            </Grid.Row>
+        </Grid>
+    </div>
 }
 
 export default MainContent;

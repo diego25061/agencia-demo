@@ -94,7 +94,7 @@ class VerCalendario extends Component {
 
         return <div>
             {/*<Header size="large">Calendario</Header>*/}
-            <Segment style={{ height: "800px" }}>
+            <Segment style={{ height: this.props.height || "800px" }}>
                 <BigCalendar
                     messages={messagesSpanish}
                     localizer={localizer}
