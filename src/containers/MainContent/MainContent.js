@@ -21,9 +21,9 @@ import Mostrador404 from '../../components/Mostrador404/Mostrador404';
 import UsuarioModel from './../../common/Models/Apis/UsuarioModel';
 
 const tokenKey = "jwtToken";
-const userKey ="userInfo";
+const userKey = "userInfo";
 
-const setGlobalToken = (token) =>{
+const setGlobalToken = (token) => {
     Requester.store.token = token;
 }
 
@@ -49,9 +49,9 @@ class MainContent extends Component {
 
     loggedInHandler = (token, userInfo) => {
         let user = new UsuarioModel(userInfo)
-        if(user){
+        if (user) {
             localStorage.setItem(tokenKey, token);
-            localStorage.setItem(userKey,JSON.stringify(user));
+            localStorage.setItem(userKey, JSON.stringify(user));
 
             setGlobalToken(token);
 
@@ -63,37 +63,37 @@ class MainContent extends Component {
         }
     }
 
-/*
-    loggedInHandler = (obj) => {
-        //console.log("aaaaaaaa: "+obj);
-        Requester.store.token = obj.token;
-        Requester.store.usuario = obj.usuario;
-        this.setState({
-            token: obj.token,
-            mostrarContenido: true,
-            usuario: obj.usuario
-        });
-    }
-    */
+    /*
+        loggedInHandler = (obj) => {
+            //console.log("aaaaaaaa: "+obj);
+            Requester.store.token = obj.token;
+            Requester.store.usuario = obj.usuario;
+            this.setState({
+                token: obj.token,
+                mostrarContenido: true,
+                usuario: obj.usuario
+            });
+        }
+        */
 
 
     componentDidMount = () => {
         var token = localStorage.getItem(tokenKey);
         if (token) {
-            console.log("token : ",token)
+            console.log("token : ", token)
             //si hay token guardado
             let userString = localStorage.getItem(userKey);
             console.log("user info : ", userString);
-            if(userString){
+            if (userString) {
                 //sacar info de usuario
                 var user = JSON.parse(localStorage.getItem(userKey));
-                console.log("user > ",user);
+                console.log("user > ", user);
                 setGlobalToken(token);
 
                 this.setState({
-                    token : token,
+                    token: token,
                     usuario: user,
-                    mostrarContenido:true
+                    mostrarContenido: true
                 });
 
             } else {
@@ -101,7 +101,7 @@ class MainContent extends Component {
                 console.log("no hay token");
                 this.setState({ mostrarContenido: true, usuario: null });
             }
-            
+
             /*
 
             Requester.getInfo((rpta) => {
@@ -134,37 +134,39 @@ class MainContent extends Component {
 
     render() {
         if (!this.state.mostrarContenido)
-            return (<div style={{height:"100%"}}>
+            return (<div style={{ height: "100%" }}>
                 <Dimmer inverted active>
                     <Loader size="massive" content="" />
                 </Dimmer>
-                </div> 
-                );
+            </div>
+            );
         let contenido = (
             <div>
                 <Route component={(props) => { return <NavBar usuario={this.state.usuario} history={props.history} cerrarSesionHandler={this.cerrarSesion} /> }} />
                 <div className="MainContent">
-                                {/*<br />*/}
-                            <Switch>
-                                {/*<Route path="/pruebas" exact component={()=><Pruebas/>} />*/}
-                                <Route path="/inicio" exact component={()=><Inicio/>} />
-                                <Route path="/files" exact component={()=>contained(<ViewFiles/>)} />)}
-                                <Route path="/files/crear" exact 
-                                    component={(obj) => { return contained(<CrearFile modoPagina="create" history={obj.history} />) }} />
-                                <Route path="/file/ver/:idFile" exact 
-                                    component={(obj) => {return contained(<CrearFile modoPagina="view" history={obj.history} idFile={obj.match.params.idFile} /> )}} />
+                    {/*<br />*/}
+                    <Switch>
+                        {/*<Route path="/pruebas" exact component={()=><Pruebas/>} />*/}
+                        <Route path="/inicio" exact component={() => <Inicio />} />
+                        <Route path="/files" exact component={() => contained(<ViewFiles />)} />)}
+                                <Route path="/files/crear" exact
+                            component={(obj) => { return contained(<CrearFile modoPagina="create" history={obj.history} />) }} />
+                        <Route path="/file/ver/:idFile" exact
+                            component={(obj) => { return contained(<CrearFile modoPagina="view" history={obj.history} idFile={obj.match.params.idFile} />) }} />
 
-                                <Route path="/servicios" exact component={()=>contained(<VerServicios/>)} />
-                                <Route path="/servicios/crear" exact component={()=>contained(<CrearServicio/>)} />
-                                <Route path="/biblias" exact component={()=>contained(<ListaBiblias/>)} />
-                                <Route path="/proveedores" exact component={()=>contained(<MostradorProveedores/>)} />
-                                <Route path="/clientes" exact component={()=>contained(<VerClientes/>)} />
-                                <Route path="/calendario/" exact component={(obj) => { return contained(<VerCalendario/>) }} />
-                                <Route path="/calendario/:anho/:mes" component={(obj) => { return contained(<VerCalendario
-                                fechaDefault={new Date(obj.match.params.anho,obj.match.params.mes-1,1)}/>) }} />
-                                <Route path="/" exact component={Inicio} />
-                                <Route component={Mostrador404} />
-                            </Switch>
+                        <Route path="/servicios" exact component={() => contained(<VerServicios />)} />
+                        <Route path="/servicios/crear" exact component={() => contained(<CrearServicio />)} />
+                        <Route path="/biblias" exact component={(obj) => contained(<ListaBiblias history={obj.history} />)} />
+                        <Route path="/proveedores" exact component={() => contained(<MostradorProveedores />)} />
+                        <Route path="/clientes" exact component={() => contained(<VerClientes />)} />
+                        <Route path="/calendario/" exact component={(obj) => { return contained(<VerCalendario />) }} />
+                        <Route path="/calendario/:anho/:mes" component={(obj) => {
+                            return contained(<VerCalendario
+                                fechaDefault={new Date(obj.match.params.anho, obj.match.params.mes - 1, 1)} />)
+                        }} />
+                        <Route path="/" exact component={Inicio} />
+                        <Route component={Mostrador404} />
+                    </Switch>
                 </div>
             </div>);
 
@@ -183,7 +185,7 @@ class MainContent extends Component {
 
 }
 
-const contained = ( Jsx ) =>{
+const contained = (Jsx) => {
     return <Contained>{Jsx}</Contained>
 }
 

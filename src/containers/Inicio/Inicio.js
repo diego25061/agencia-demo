@@ -13,7 +13,7 @@ import Pruebas from './../Test/Pruebas';
 import ViewFiles from './../ViewFiles/ViewFiles';
 
 const carouselStyle = {
-    height:"700px"
+    height:window.screen.availHeight-300
 }
 
 class Inicio extends Component {
@@ -21,6 +21,7 @@ class Inicio extends Component {
     componentDidMount() {
 
         console.log(this.props)
+        console.log("height: ",window.screen);
     }
 
     render() {

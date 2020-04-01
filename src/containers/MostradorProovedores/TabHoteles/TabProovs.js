@@ -9,6 +9,7 @@ import ProveedorModel from './../../../common/Models/Apis/ProovedorModel';
 import ModalProveedores from './../ModalProveedores';
 import NotificationStateHolder from '../../../common/StateHolders/NotificationStateHolder';
 import NotificacionApi from './../../NotificacionApi/NotificacionApi';
+import { const_validacion_modificar_campo } from './../../../common/Constantes';
 
 
 class TabProovs extends Component{
@@ -47,10 +48,10 @@ class TabProovs extends Component{
         { Header: 'Nombre', accessor: 'nombre', Cell: props => props.value ? props.value:"" },
         { Header: 'Correo', accessor: 'correoContacto', Cell: props => props.value ? props.value:"" },
         { Header: 'Correo Adic.',accessor: 'correoAdicional', Cell: props => props.value ? props.value:"" }, 
-        { Header: 'Numero contacto',accessor: 'numeroContacto', Cell: props => props.value ? props.value:"" }, 
-        { Header: 'Numero contacto adicional', accessor: 'numeroContactoAdicional', Cell: props => props.value ? props.value:"" },
+        { Header: 'Número contacto',accessor: 'numeroContacto', Cell: props => props.value ? props.value:"" }, 
+        { Header: 'Número contacto adicional', accessor: 'numeroContactoAdicional', Cell: props => props.value ? props.value:"" },
         { Header: 'Ciudad', accessor: 'ciudad', Cell: props => props.value ? props.value:"" },
-        { Header: 'Accion', Cell: props => {
+        { Header: 'Acción', Cell: props => {
             //console.log(props);
             return <Container textAlign="center">
                 <Button circular color="yellow" icon="pencil" onClick={()=>{this.abrirModalEdicion(this.state.proovs.find(element=>element.idProveedor==props.original.idProveedor))}}></Button>
@@ -58,12 +59,12 @@ class TabProovs extends Component{
             </Container>
         }} 
     ]
-    
+
     render = () => {
         return <div>
             <Header size="medium">{this.props.sustPlural}</Header> 
-            <Button primary onClick={ this.abrirModal }>Nuevo {this.props.sust}</Button>
-            <Header size="small">Lista</Header>
+            
+            <Button primary onClick={ this.abrirModal }>{this.props.genero ==="f" ? "Nueva" : "Nuevo"} {this.props.sust}</Button>
             <TablaBuscador data={this.state.proovs} columns={this.columnasTabla} loading={this.state.cargandoTabla} />
             {/*this.ModalCrear()*/}
 
@@ -75,9 +76,19 @@ class TabProovs extends Component{
                 
                 onUpdateFields={(keyPair)=>{
                     let campos = this.state.modalCrearEditar.campos;
+                    
+                    for (let [key, value] of Object.entries(keyPair)) {
+                        value = const_validacion_modificar_campo(key,value);
+                        //console.log(`luego de validar > ${key}: ${value}`);
+                        keyPair[key]=value;
+                    }
+                    
                     let newCampos = {...campos,...keyPair};
                     //console.log("new campos > ",newCampos);
                     let obj = {...this.state.modalCrearEditar};
+
+                    
+
                     obj.campos = newCampos;
                     let newObj = obj;
                     this.setState({modalCrearEditar:newObj});
@@ -178,39 +189,10 @@ class TabProovs extends Component{
         this.setState({modalCrearEditar:obj});
     }
 
-    enviarProov = () => { 
-        /*
-        console.log("enviando!");
-        
-        var obj = {...this.state.modalCrearEditar};
-        obj.mensaje.enviado=true;
-        this.setState({modalCrearEditar:obj});
+    enviarProov = () => {
 
-        let enviar =this.state.modalCrearEditar.campos;
-        enviar.tipo=this.props.tipo;
+        //console.log("Enviando nuevo proveedor!");
 
-        this.props.funcEnviar( 
-            ProveedorModel.toApiObj(enviar),
-            (rpta)=>{
-                console.log(enviar);
-                console.log("success!");
-                console.log(rpta);
-                var obj = {...this.state.modalCrearEditar};
-                obj.mensaje.recibido=true;
-                obj.mensaje.respuesta = rpta;
-                this.setState({modalCrearEditar:obj});
-                this.cargarProovs();
-            },
-            (rptaError)=>{
-                console.log("err!");
-                var obj = {...this.state.modalCrearEditar};
-                obj.mensaje.recibido=true;
-                obj.mensaje.respuesta = rptaError;
-                this.setState({modalCrearEditar:obj});
-            })
-*/
-            
-        console.log("Enviando nuevo proveedor!");
         let notif = this.state.notificacion_crearEditar_proveedor;
         notif.setAsEnviando();
         this.setState({notificacion_crearEditar_proveedor:notif});
@@ -234,37 +216,7 @@ class TabProovs extends Component{
 
     }
     
-    editarProov = () => { 
-        //console.log("editando!");
-        /*
-        var obj = {...this.state.modalCrearEditar};
-        obj.mensaje.enviado=true;
-        this.setState({modalCrearEditar:obj});
-        //console.log(": "+this.state.modalCrearEditar.campos.id);
-        Requester.editarProveedor(
-            this.state.modalCrearEditar.campos.idProveedor,
-            ProveedorModel.toApiObj(this.state.modalCrearEditar.campos),
-            (rpta)=>{
-                //console.log(this.state.modalCrearEditar.campos);
-                //console.log("edicion success!");
-                //console.log(rpta);
-                var obj = {...this.state.modalCrearEditar};
-                obj.mensaje.recibido=true;
-                obj.mensaje.respuesta = rpta;
-                this.setState({modalCrearEditar:obj});
-            },
-            (rptaError)=>{
-                //console.log("edicion error!");
-                var obj = {...this.state.modalCrearEditar};
-                obj.mensaje.recibido=true;
-                obj.mensaje.respuesta = rptaError;
-                this.setState({modalCrearEditar:obj});
-            },
-            () => {
-                this.cargarProovs();
-            });
-        */
-            
+    editarProov = () => {
         let notif = this.state.notificacion_crearEditar_proveedor;
         notif.setAsEnviando();
 

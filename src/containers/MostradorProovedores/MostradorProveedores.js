@@ -104,6 +104,7 @@ class MostradorProveedores extends Component{
                 return <Tab.Pane><div></div><div></div><div></div><div></div>
                     <TabProovs sust="Guia" 
                         sustPlural="Guias"
+                        genero="f"
                         placeholderNombre="Guia" 
                         placeholderCorreo="carlos.guia@gmail.com" 
                         placeholderCorreoAdic="carlos.guia@hotmail.com"
@@ -144,6 +145,7 @@ class MostradorProveedores extends Component{
                     <div></div><div></div>
                     <TabProovs sust="Empresa" 
                         sustPlural="Empresas"
+                        genero="f"
                         placeholderNombre="asda" 
                         placeholderCorreo="empresa@gmail.com" 
                         placeholderCorreoAdic="correo.ventas@gmail.com"
@@ -166,6 +168,7 @@ class MostradorProveedores extends Component{
                         i={this.state.activeIndex}
                         sust="Persona" 
                         sustPlural="Personas"
+                        genero="f"
                         placeholderNombre="Christian cueva" 
                         placeholderCorreo="christian@gmail.com" 
                         placeholderCorreoAdic="cuevita@gmail.com"

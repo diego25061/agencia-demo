@@ -131,7 +131,6 @@ class ViewFiles extends Component {
 					<Button primary>Nuevo file</Button>
 				</Link>
 			</Container>
-			<Header size="medium">Lista de files</Header>
 
 			<Segment>
 				<TablaBuscador data={this.state.files} columns={cols} loading={this.state.filesCargando}/>

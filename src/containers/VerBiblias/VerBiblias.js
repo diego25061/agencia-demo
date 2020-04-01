@@ -139,8 +139,7 @@ class ListaBiblias extends Component {
                 var obj = { ...this.state.modalBiblia };
                 obj.abierto = true;
                 this.setState({ modalBiblia: obj });
-            }}>Nueva Biblia</Button>*/}
-            <Header size="small">Lista</Header>
+            }}>Nueva Biblia</Button>*/} 
             {this.state.bibliaCargando ? <Segment basic style={{padding:"200px"}}>
                 <Dimmer active inverted><Loader size='huge'>Cargando</Loader></Dimmer>
             </Segment> : <></>}
@@ -169,8 +168,9 @@ class ListaBiblias extends Component {
                     </Segment>
                 )
                 return cuadro;
-            })}{/*
-                
+            })}
+            {
+            /*
             <hr/>
             <Link onClick={()=>{
                 var obj = {...this.state.modalBiblia};
@@ -200,27 +200,7 @@ class ListaBiblias extends Component {
             />
         </div>
     }
-/*
-    EnviarPostBiblia = () => {
-        let obj = this.state.notificacion_crearBiblia;
-        obj.setAsEnviando();
-
-        this.setState({notificacion_crearBiblia:obj });
-
-        Requester.crearBiblia(BibliaModel.toApiObj(this.state.modalBiblia.campos), (rpta) => {
-            
-            let notif = this.state.notificacion_crearBiblia;
-            notif.setRecibidoSuccess("Biblia creada","Biblia: "+rpta.cont.anho+" "+rpta.cont.mes)
-            this.setState({notificacion_crearBiblia:notif});
-            
-            this.cargarBiblias();
-        }, (rptaError) => {
-            let notif = this.state.notificacion_crearBiblia;
-            notif.setRecibidoError("Error al crear biblia",rptaError.cont.message, rptaError.cont.statusCode, rptaError.cont.data);
-            this.setState({notificacion_crearBiblia:notif});
-        });
-    }*/
-
+    
 }
 
 

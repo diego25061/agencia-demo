@@ -9,6 +9,7 @@ import ClientModel from './../../common/Models/Apis/ClientModel';
 import ModalClientes from './ModalClientes';
 import NotificationStateHolder from '../../common/StateHolders/NotificationStateHolder';
 import NotificacionApi from './../NotificacionApi/NotificacionApi';
+import { const_validacion_modificar_campo } from './../../common/Constantes';
 
 
 class TabClientes extends Component{
@@ -64,7 +65,7 @@ class TabClientes extends Component{
         return <div /*style={{backgroundColor:"#f9f9f9"}}*/>
             <Header size="medium">{this.props.sustPlural}</Header> 
             <Button primary onClick={ this.abrirModal }>Nuevo {this.props.sust}</Button>
-            <Header size="small">Lista</Header>
+            
             <TablaBuscador data={this.state.clientesDirs} columns={this.columnasTabla} loading={this.state.cargandoTabla}/>
             {/*this.ModalCrear()*/}
 
@@ -76,6 +77,12 @@ class TabClientes extends Component{
                 campos = {this.state.modalCrearEditar.campos}
                 
                 onUpdateFields={(keyPair)=>{
+                    for (let [key, value] of Object.entries(keyPair)) {
+                        value = const_validacion_modificar_campo(key,value);
+                        //console.log(`luego de validar > ${key}: ${value}`);
+                        keyPair[key]=value;
+                    }
+                    
                     let campos = this.state.modalCrearEditar.campos;
                     let newCampos = {...campos,...keyPair};
                     //console.log("new campos > ",newCampos);

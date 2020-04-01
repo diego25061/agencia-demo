@@ -413,17 +413,15 @@ export default class ServiceRow extends React.Component {
             titulo += " ( servicio general )"
         }
 
-            //colorFondo = "#f4f4f4";
-            //colorFondoLight = "#f9f9F9";
-        let colorFondo = color;//"#b5dec7";
-        let colorFondoLight = "";//"#def0e6";
+        let colorFondo = color;
+        let colorFondoLight = "";
 
         if (this.props.service.mode === mode_edit) {
-            colorFondo = "#fff643";
-            colorFondoLight = "#fff758";
+            colorFondo = const_colores.servicio_editando;
+            colorFondoLight = const_colores.servicio_editando;
         } else if (this.props.service.mode === mode_added) {
-            colorFondo = "#b3ff53";
-            colorFondoLight = "#b3ff53";
+            colorFondo = const_colores.servicio_agregando;
+            colorFondoLight = const_colores.servicio_agregando;
         }        
 
         return <Segment.Group key={this.props.service.idServicio} id={this.props.service.idServicio}>

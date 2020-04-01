@@ -14,12 +14,21 @@ export const ListaMeses = [
     ]
 
 export const const_colores = {
-        servicio_agregando: '#a7ff81',
-        servicio_editando: '#ffec81',
+        servicio_agregando: '#c2f088',
+        servicio_editando: '#ffe96c',
 
         servicio_general: '#dcedc1',
         servicio_transporte : '#beebe9',
         servicio_hospedaje: '#fff1a3'
+    }
+
+export const const_validacion_modificar_campo = (campo, valor) =>{
+        if(campo==="numeroContacto")
+            return valor = valor.replace(/[^0-9+()]/g, '');
+        else if(campo==="numeroContactoAdicional")
+            return valor = valor.replace(/[^0-9+()]/g, '');
+        else
+            return valor;
     }
 
 export const const_numeroAMes = (numero) => {
