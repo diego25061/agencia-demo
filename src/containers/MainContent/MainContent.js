@@ -5,15 +5,13 @@ import ViewFiles from '../ViewFiles/ViewFiles'
 
 import './MainContent.css';
 import CrearFile from '../ViewFiles/CrearFile/CrearFile';
-import { Grid, Segment, Loader, Dimmer } from 'semantic-ui-react'
+import { Grid, Loader, Dimmer } from 'semantic-ui-react'
 import Inicio from '../Inicio/Inicio';
 import VerServicios from '../VerServicios/VerServicios';
-import CrearServicio from '../VerServicios/CrearServicio/CrearServicio';
 import ListaBiblias from '../VerBiblias/VerBiblias';
 import MostradorProveedores from '../MostradorProovedores/MostradorProveedores';
 import VerClientes from '../VerClientes/VerClientes';
 import VerCalendario from '../Calendario/VerCalendario';
-import Pruebas from '../Test/Pruebas';
 import NavBar from '../../components/NavBar/NavBar';
 import Auth from '../Auth/Auth';
 import Requester from '../../common/Services/Requester';
@@ -65,7 +63,7 @@ class MainContent extends Component {
 
     /*
         loggedInHandler = (obj) => {
-            //console.log("aaaaaaaa: "+obj);
+            //console.log("obj : "+obj);
             Requester.store.token = obj.token;
             Requester.store.usuario = obj.usuario;
             this.setState({
@@ -103,7 +101,6 @@ class MainContent extends Component {
             }
 
             /*
-
             Requester.getInfo((rpta) => {
                 //console.log("Info:", rpta.cont)
                 this.setState({
@@ -155,7 +152,6 @@ class MainContent extends Component {
                             component={(obj) => { return contained(<CrearFile modoPagina="view" history={obj.history} idFile={obj.match.params.idFile} />) }} />
 
                         <Route path="/servicios" exact component={() => contained(<VerServicios />)} />
-                        <Route path="/servicios/crear" exact component={() => contained(<CrearServicio />)} />
                         <Route path="/biblias" exact component={(obj) => contained(<ListaBiblias history={obj.history} />)} />
                         <Route path="/proveedores" exact component={() => contained(<MostradorProveedores />)} />
                         <Route path="/clientes" exact component={() => contained(<VerClientes />)} />

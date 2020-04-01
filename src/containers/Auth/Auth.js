@@ -13,10 +13,7 @@ class Auth extends Component {
     state = {
         usuario: "",
         clave: "",
-
-        //transaccionEnviada: false,
-        //responseRecibida: false,
-        //rptaTransaccion: null,
+        
         notificacion_login : new NotificationStateHolder()
     }
 

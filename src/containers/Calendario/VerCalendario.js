@@ -7,7 +7,7 @@ import { Segment, Header } from 'semantic-ui-react';
 
 import 'moment/locale/es'
 import Requester from '../../common/Services/Requester';
-import CONSTANTES_GLOBALES, { const_colores } from '../../common/Constantes';
+import { const_colores } from '../../common/Constantes';
 import ServicioModel from './../../common/Models/Apis/ServicioModel';
 
 
@@ -29,17 +29,14 @@ const messagesSpanish = {
 
 class VerCalendario extends Component {
 
-
     state = {
         fecha: this.props.fechaDefault ? this.props.fechaDefault : new Date(),
         events: [
         ],
         //culture: moment.locale("es")
-
     }
 
     componentDidMount = () => {
-        //console.log("fecha: ",this.state.fecha.getMonth())
         this.cargarServicios(this.state.fecha.getMonth() + 1);
 
     }
@@ -51,11 +48,9 @@ class VerCalendario extends Component {
             borderRadius: "0px",
             border: "none"
         };
-
         if (event.isMine) {
             newStyle.backgroundColor = "lightgreen"
         }
-
         return {
             className: "",
             style: newStyle
@@ -69,11 +64,9 @@ class VerCalendario extends Component {
 
             rpta.cont.map((serv, i) => {
                 let s = new ServicioModel(serv);
-
                 let color = const_colores.servicio_general;
                 if (s.clase === "transporte") color = const_colores.servicio_transporte;
                 if (s.clase === "hospedaje") color = const_colores.servicio_hospedaje;
-
                 eventosServ.push({
                     title: s.nombre,
                     start: moment(s.fechaEjecucion),
@@ -81,19 +74,13 @@ class VerCalendario extends Component {
                     allDay: true,
                     color: color
                 })
-
             });
             this.setState({ events: eventosServ });
-        }, (rpta) => {
-
-        });
+        }, (rpta) => {});
     }
 
     render() {
-
-
         return <div>
-            {/*<Header size="large">Calendario</Header>*/}
             <Segment style={{ height: this.props.height || "800px" }}>
                 <BigCalendar
                     messages={messagesSpanish}

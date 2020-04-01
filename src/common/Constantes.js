@@ -31,6 +31,8 @@ export const const_validacion_modificar_campo = (campo, valor) =>{
             return valor;
     }
 
+//------------- old
+
 export const const_numeroAMes = (numero) => {
     let obj = ListaMeses.find(x=>x.value===numero);
     if(obj){

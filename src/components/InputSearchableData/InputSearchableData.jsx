@@ -1,6 +1,6 @@
 import React from 'react'
 import { Component } from 'react'
-import { Input , Dropdown,Button} from 'semantic-ui-react';
+import { Input, Dropdown, Button } from 'semantic-ui-react';
 
 //class InputSearchableData extends Component {
 
@@ -19,10 +19,7 @@ class InputSearchableDataButton extends React.Component {
                 disabled={this.props.disabled} placeholder={this.props.placeholder}
                 fluid={this.props.fluid}
                 value={this.props.value}
-                onBlur={(event, data) => {/*
-                console.log("proovs! ",this.state.opcionesProveedores);
-                console.log("event! ",event.target.value);
-                console.log("data! ",data);*/
+                onBlur={(event, data) => {
                     if (event.target.value) {
                         let foundVal = this.props.datalist.find((obj) => {
                             /*

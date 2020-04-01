@@ -16,7 +16,7 @@ export default class CardBiblia extends Component {
                 <Card.Content header={this.props.mes + " - " + this.props.anho} />
                 <Card.Content extra style={{ backgroundColor: "#00000000", padding: "5px 7px" }}>
                     <Icon style={{ padding: "3px" }} name='folder' />
-                    {' '+this.state.cantFiles+ ' files'}
+                    {' ' + this.state.cantFiles + ' files'}
                     <Button style={{ backgroundColor: "#00000000", padding: "5px" }} icon floated="right"
                         onClick={() => {
                             this.props.funcNavegar("/calendario/" + this.props.anho + "/" + this.props.idMes);

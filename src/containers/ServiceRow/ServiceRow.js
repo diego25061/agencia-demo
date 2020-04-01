@@ -125,11 +125,11 @@ export default class ServiceRow extends React.Component {
             }
             controlProveedor = <Input disabled transparent fluid value={nombreProovedor} />
         }
-        
+
         let tipoProveedor = "Proveedor"
 
         if (this.props.service.clase === "hospedaje") {
-            tipoProveedor="Hotel"
+            tipoProveedor = "Hotel"
         } else if (this.props.service.clase === "transporte") {
             tipoProveedor = "Transportista"
         }
@@ -201,12 +201,12 @@ export default class ServiceRow extends React.Component {
         let campoCantidadPasajeros = <Campo titulo="Cantidad pasajeros">
             <Input type="number" transparent fluid disabled={this.modoVer()} placeholder={this.modoVer() ? "" : '4'}
                 value={this.props.service.cantPasajeros ? this.props.service.cantPasajeros : 0}
-                onChange={(event) => { 
+                onChange={(event) => {
                     let cant = event.target.value;
-                    if(cant<0)
-                        cant=0;
-                    this.props.onUpdateValues({ cantPasajeros: cant }); 
-                    }}
+                    if (cant < 0)
+                        cant = 0;
+                    this.props.onUpdateValues({ cantPasajeros: cant });
+                }}
             />
         </Campo>
 
@@ -293,7 +293,7 @@ export default class ServiceRow extends React.Component {
 
         if (this.props.service.mode === mode_view) {
             buttons = <>
-                <Button floated="right" icon color="red" onClick={() => { 
+                <Button floated="right" icon color="red" onClick={() => {
                     this.props.onDelete();
                 }}>
                     <Icon name="trash alternate outline" />
@@ -392,7 +392,7 @@ export default class ServiceRow extends React.Component {
             icono = "car"
             titulo += " ( transporte )"
             color = const_colores.servicio_transporte;
-            primeraFila =<>
+            primeraFila = <>
                 {campoNombre}
                 {campoCiudadDestino}
                 {campoFecha}
@@ -422,7 +422,7 @@ export default class ServiceRow extends React.Component {
         } else if (this.props.service.mode === mode_added) {
             colorFondo = const_colores.servicio_agregando;
             colorFondoLight = const_colores.servicio_agregando;
-        }        
+        }
 
         return <Segment.Group key={this.props.service.idServicio} id={this.props.service.idServicio}>
             <Segment.Group horizontal>

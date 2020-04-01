@@ -4,7 +4,6 @@ import { Button, Container, Header } from 'semantic-ui-react';
 import TablaBuscador from '../../TablaBuscador/TablaBuscador';
 import Requester from '../../../common/Services/Requester';
 import Constantes from '../../../common/Constantes';
-import ModalCrearEditarProveedor from '../ModalCrearEditarProveedor';
 import ProveedorModel from './../../../common/Models/Apis/ProovedorModel';
 import NotificacionApi from './../../NotificacionApi/NotificacionApi';
 import NotificationStateHolder from '../../../common/StateHolders/NotificationStateHolder';

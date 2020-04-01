@@ -4,15 +4,11 @@ import { Dropdown, Input, TextArea, Form, Grid, Segment, Button, Icon, Label, Ta
 
 import ElementoForm from '../../../components/ElementoForm/ElementoForm';
 import Constantes, { RptaTrx, ListaMeses } from '../../../common/Constantes';
-import { Configuracion } from '../../../common/Constantes';
-import CamposCrearCliente from '../../VerClientes/CamposCrearCliente/CamposCrearCliente';
+
 
 //date pickers
 import { DateInput, TimeInput, DateTimeInput, DatesRangeInput } from 'semantic-ui-calendar-react';
-import axios from 'axios';
-import ModalTrxSimple from '../../ModalTrxSimple/ModalTrxSimple';
 import Requester from '../../../common/Services/Requester';
-import ModalCrearEditarProveedor from '../../MostradorProovedores/ModalCrearEditarProveedor';
 import MensajeTransaccion from '../../../components/MensajeTransaccion/MensajeTransaccion';
 
 import '../CrearFile/CrearFile.css'
@@ -37,32 +33,9 @@ const mode_view = "view"
 
 class CrearFile extends Component {
 
-    /*
-        servicio = (tipoServicio, fecha, ciudad, horaInicio, nombre, pasajeros, nombrePasajero, tren, alm, observaciones, idProveedor) => {
-            return {tipoServicio,  fecha, ciudad, horaInicio, nombre, pasajeros, nombrePasajero, tren, alm, observaciones, idProveedor };
-        }
-        transporte = (tipoServicio, fecha, ciudad, horaInicio, horaFin, vuelo, nombre, pasajeros, nombrePasajero, vr, tc, idProveedor, observaciones) => {
-            return {tipoServicio,  fecha, ciudad, horaInicio, horaFin, vuelo, nombre, pasajeros, nombrePasajero, vr, tc, idProveedor, observaciones };
-        }
-        hospedaje = (tipoServicio, fecha, fechaOut, horaInicio, horaFin,  nombre, pasajeros, nombrePasajero, idProveedor, observaciones) => {
-            return { tipoServicio, fecha, fechaOut,  horaInicio, horaFin,  nombre, pasajeros, nombrePasajero, idProveedor, observaciones };
-        }
-    */
     serv = (tipoServicio, nombre, fecha, fechaOut, ciudad, pasajeros, nombrePasajero, horaInicio, horaFin, tren, alm, vuelo, vr, tc, observaciones, proveedor) => {
         return { tipoServicio, nombre, fecha, fechaOut, ciudad, pasajeros, nombrePasajero, horaInicio, horaFin, tren, alm, vuelo, vr, tc, observaciones, proveedor };
     }
-    /*
-        servicioDefault = () => {
-            return this.servicio(Constantes.AliasServicios.SERVICIO, '', '', '', '', 0, '', '', '', '')
-        }*/
-    /*
-    transporteDefault = () => {
-        return this.transporte(Constantes.AliasServicios.TRANSPORTE, '', '', '', '', '', '', 0, '', '', '', '', '')
-    }
-    
-    hospedajeDefault = () => {
-        return this.hospedaje(Constantes.AliasServicios.HOSPEDAJE, '', '', '', '', '', 0, '', '', '')
-    }*/
 
     servDefault = () => {
         return this.serv("general", '', '', '', '', 0, '', '', '', '', '', '', '', '', '', '');
@@ -262,27 +235,6 @@ class CrearFile extends Component {
             this.cargarCiudades();
         }
 
-        /*
-                if (this.state.mode === mode_view || this.state.mode === mode_edit) {
-                    this.cargarFileBase();
-                    this.cargarProveedoresNoTransp();
-                    this.cargarTransportes();
-                    this.cargarHoteles();
-                }
-                if ( this.state.mode ===mode_create || this.state.mode === mode_edit) {
-                    this.cargarClientes();
-                    this.cargarBiblias();
-                    this.cargarProveedoresNoTransp();
-                    this.cargarTransportes();
-                    this.cargarCiudades();
-                    this.cargarHoteles();
-                    //this.cargarPaises();
-                }*/
-
-/*
-        var transps = this.state.servs.slice();
-        transps.push(this.servDefault());
-        this.setState({ servs: transps });*/
     }
 
     render = () => {
@@ -485,16 +437,7 @@ class CrearFile extends Component {
                                 title={this.state.aperturaFile_tituloRespuesta}
                                 icon={this.state.aperturaFile_notif_icono}>
                             </NotificacionApi>
-                            {/*
-                            <NotificacionApi
-                                disabled={!this.state.actualizacionFile_mostrarNotificacion}
-                                loading={this.state.actualizacionFile_enviando}
-                                color={this.state.actualizacionFile_notif_color}
-                                content={this.state.actualizacionFile_contenidoRespuesta}
-                                title={this.state.actualizacionFile_tituloRespuesta}
-                                icon={this.state.actualizacionFile_notif_icono}>
-                            </NotificacionApi>
-*/}
+                            
                             <NotificacionApi
                                 disabled={!this.state.cargaFileInicial_mostrarNotificacion}
                                 loading={false}
@@ -627,19 +570,7 @@ class CrearFile extends Component {
                                         }}
 
                                         onUpdateValues={(keyPair) => {
-                                            /*
-                                            let servs = this.state.servs.slice();
-                                            let s = this.state["serv_"+index]
-                                            let result = { ...s , ...keyPair };
-                                            //servs[index] = result;
-
-                                            //console.log("result > ",result);
-                                            //servs[index].mode = service_mode_view;
-                                            this.setState({
-                                                ["serv_"+index] : result,
-                                            });
-
-    */
+                                            
                                             console.log("actualizando: ", keyPair);
 
                                             //console.log("actualizando: ",keyPair);
@@ -688,48 +619,18 @@ class CrearFile extends Component {
                     </>:<></>}
                 </Grid>
             </Segment>
-            {/*
-            {!this.state.bibliasCargaronExito ? <Message error>Error de conexion: Las biblias no se pueden cargar.</Message> : null}
-            {!this.state.clientesCargaronExito ? <Message error>Error de conexion: Los clientes no se pueden cargar.</Message> : null}
-            {!this.state.hotelesCargaronExito ? <Message error>Error de conexion: Los hoteles no se pueden cargar.</Message> : null}
-            */}
-
+            
 
             <Container fluid textAlign="right">
             </Container>
 
 
-
-            <ModalCrearEditarProveedor
-                parent={this}
-                pack="modalCrearEditarProveedor"
-                sustantivoTitulo="Proveedor Nuevo"
-                elegirTipo
-                placeholderNombre="Melia"
-                placeholderCorreo="ventas@hotelmelia.com"
-                placeholderCorreoAdic="contacto.melia@gmail.com"
-                enEnviar={this.enEnviarProovedor}
-                enCerrar={this.enCerrarModalProveedor} />
-
-
-            <ModalCrearEditarProveedor
-                parent={this}
-                pack="modalCrearProveedorTransporte"
-                sustantivoTitulo="Transportista Nuevo"
-                placeholderNombre="Transportista"
-                placeholderCorreo="carlos@gmail.com"
-                placeholderCorreoAdic="contacto@transportescarlos.com"
-                enEnviar={this.enEnviarProveedorTransporte}
-                enCerrar={this.enCerrarModalProveedorTransportes} />
-
-
-            {/*this.ModalCrearBiblia()*/}
-            {/*this.ModalCrearCliente()*/}
         </div>
 
     }
 
     // ------------------------------------------------------------------------- Cargas iniciales
+
 
     cargarFileBase = () => {
         //console.log("id:",this.props)
@@ -755,20 +656,7 @@ class CrearFile extends Component {
                     idCliente: fm.cliente.idCliente,
                     nombreCliente: fm.cliente.nombre + ' ( ' + fm.cliente.clase + ' )',
                     servs: fm.servicios,
-                    //transportes: fm.servicios.filter(x=>x.clase==="transporte"),
-                    //hospedajes: fm.servicios.filter(x=>x.clase==="hospedaje")
-
-                    /*
-                    idFile: fm.idFile,
-                    codigo: fm.codigo,
-                    descripcion: fm.descripcion,
-                    idBiblia: fm.biblia.id,
-                    idCliente: rpta.cont.idCliente,
-                    nombreBiblia: rpta.cont.nombreBiblia,
-                    nombreCliente: rpta.cont.nombreCliente,
-                    servicios: servis,
-                    transportes: transportes,
-                    hospedajes : hospedajes*/
+                    
                     agregandoServicio:false
                 });
             },
@@ -821,23 +709,11 @@ class CrearFile extends Component {
     }
 
     cargarCiudades = () => {
-        /*
-        Requester.getCiudades((rpta) => {
-            this.setState({ opcionesCiudades: rpta.cont });
-        },
-        (rptaError) => {
-            console.error("Ciudades no cargadas");
-        })*/
+        
     }
 
     cargarPaises = () => {
-        /*
-        Requester.getPaises((rpta) => {
-            this.setState({ opcionesPaises: rpta.cont });
-        },
-        (rptaError) => {
-            console.error("Paises no cargadas");
-        })*/
+        
     }
 
     cargarProveedores = () => {
@@ -910,693 +786,6 @@ class CrearFile extends Component {
             });
     }
 
-    CuerpoServicio = (props) => {
-
-        let estiloInputs = {}
-        if (this.modoVer())
-            estiloInputs = { color: "black" };
-
-        let controlProveedor =
-            <InputSearchableDataButton
-                loading={!this.state.hotelesCargaron}
-                disabled={this.modoVer()}
-                placeholder={this.modoVer() ? "" : 'Sheraton'}
-                datalist={this.state.opcionesProveedores}
-                value={this.state.servicios[props.index].idProveedor}
-                sideButton={
-                    <Button style={{ padding: "3px 11px", backgroundColor: "#00000000" }} icon onClick={() => {
-                        let modal = { ...this.state.modalCrearEditarProveedor, abierto: true };
-                        this.setState({ modalCrearEditarProveedor: modal });
-                    }}>
-                        <Icon name='plus' />
-                    </Button>
-                }
-                onChange={(event, data) => {
-                    var servs = this.state.servicios.slice();
-                    servs[props.index].idProveedor = data.value;
-                    this.setState({ servicios: servs });
-                }}
-            />
-
-        if (this.modoVer()) {
-            //console.log("cuerpo: ", this.state.servicios[props.index]);
-            let nombreProovedor = '';
-            if (this.state.opcionesProveedores) {
-                //console.log("lista: ",this.state.opcionesProveedores);
-                let filtrado = this.state.opcionesProveedores.filter(x => x.value === this.state.servicios[props.index].idProveedor);
-                //console.log("filtrado: ",filtrado);
-                if (filtrado && filtrado.length > 0) {
-                    nombreProovedor = filtrado[0].text;
-                }
-
-            }
-            controlProveedor = <Input disabled transparent fluid value={nombreProovedor} />
-        }
-
-
-        return <Segment.Group key={props.key}>
-            <Segment.Group horizontal>
-                <Segment style={{ backgroundColor: "#fff5e6" }}>
-                    <Grid columns="equal">
-                        <Grid.Row style={{ padding: "4px 0px" }}>
-                            <Grid.Column verticalAlign="middle">
-                                <Header as="h3">Servicio {props.index + 1}</Header>
-                            </Grid.Column>
-                            <Grid.Column style={{ padding: "0px 8px" }}>
-
-                                {this.modoVer() ? <div></div> :
-                                    <Button style={{ padding: "8px 14px", margin: "4px 0px" }} floated="right" color="red" onClick={() => {
-                                        var lista = this.state.servicios.slice();
-                                        lista.splice(props.index, 1);
-                                        this.setState({ servicios: lista });
-                                        //console.log(this.state.servicios)
-                                    }}>Borrar</Button>
-                                }
-                            </Grid.Column>
-                        </Grid.Row>
-                    </Grid>
-                </Segment>
-            </Segment.Group>
-            <Segment.Group horizontal style={{ backgroundColor: "#fffbf6" }}>
-                <CampoServicio titulo="Nombre *" componente={
-                    <Input disabled={this.modoVer()} transparent fluid placeholder={this.modoVer() ? "" : "In + city"}
-                        value={this.state.servicios[props.index].nombre ? this.state.servicios[props.index].nombre : ""}
-                        onChange={(event) => {
-                            var servs = this.state.servicios.slice();
-                            servs[props.index].nombre = event.target.value;
-                            this.setState({ servicios: servs });
-                        }} />
-                } />
-                <CampoServicio titulo="Ciudad de destino" componente={
-                    <div>
-                        <Input disabled={this.modoVer()} transparent list={'ciudades' + props.index} placeholder={this.modoVer() ? "" : 'Lima'} fluid
-
-                            value={this.state.servicios[props.index].ciudad ? this.state.servicios[props.index].ciudad : ""}
-                            onChange={(event) => {
-                                var servs = this.state.servicios.slice();
-                                servs[props.index].ciudad = event.target.value;
-                                this.setState({ servicios: servs });
-                            }} />
-                        <datalist id={'ciudades' + props.index}>
-                            {this.state.opcionesCiudades.map(e => <option value={e} />)}
-                        </datalist>
-                    </div>
-                } />
-                <CampoServicio titulo="Fecha ejecución *" componente={
-                    <DateInput
-                        disabled={this.modoVer()}
-                        transparent
-                        closable
-                        fluid
-                        dateFormat="YYYY-MM-DD"
-                        name="fecha"
-                        placeholder={this.modoVer() ? "-" : 'aaaa-mm-dd'}
-                        value={this.state.servicios[props.index].fechaEjecucion ? this.state.servicios[props.index].fechaEjecucion : ""}
-                        iconPosition="left"
-                        onChange={(event, { name, value }) => {
-                            if (name === "fecha") {
-                                var servs = this.state.servicios.slice();
-                                servs[props.index].fechaEjecucion = value;
-                                this.setState({ servicios: servs });
-                                console.log(this.state);
-                            }
-                        }}
-                    />} />
-
-
-
-                <CampoServicio titulo="Fecha final " componente={
-                    <DateInput
-                        disabled={this.modoVer()}
-                        transparent
-                        closable
-                        fluid
-                        dateFormat="YYYY-MM-DD"
-                        name="fecha"
-                        placeholder={this.modoVer() ? "-" : 'aaaa-mm-dd'}
-                        value={this.state.servicios[props.index].fechaOut ? this.state.servicios[props.index].fechaOut : ""}
-                        iconPosition="left"
-                        onChange={(event, { name, value }) => {
-                            if (name === "fecha") {
-                                var servs = this.state.servicios.slice();
-                                servs[props.index].fechaOut = value;
-                                this.setState({ servicios: servs });
-                                console.log(this.state);
-                            }
-                        }}
-                    />} />
-
-                <CampoServicio titulo="Nombre pasajero" componente={
-                    <Input transparent disabled={this.modoVer()} placeholder={this.modoVer() ? "" : 'Lewis Hamilton'} fluid
-                        value={this.state.servicios[props.index].nombrePasajero ? this.state.servicios[props.index].nombrePasajero : ""}
-                        onChange={(event) => {
-                            var servs = this.state.servicios.slice();
-                            servs[props.index].nombrePasajero = event.target.value;
-                            this.setState({ servicios: servs });
-                        }}></Input>} />
-                <CampoServicio titulo="Cant. pasajeros *" componente={
-                    <Input type="number" transparent fluid disabled={this.modoVer()} placeholder={this.modoVer() ? "" : '4'}
-                        value={this.state.servicios[props.index].cantPasajeros ? this.state.servicios[props.index].cantPasajeros : 0}
-                        onChange={(event) => {
-                            var servs = this.state.servicios.slice();
-                            servs[props.index].cantPasajeros = event.target.value;
-                            this.setState({ servicios: servs });
-                        }}></Input>} />
-            </Segment.Group>
-            <Segment.Group horizontal style={{ backgroundColor: "#fffbf6" }}>
-
-                <CampoServicio titulo="Proveedor" componente={controlProveedor} />
-
-                <CampoServicio titulo="Hora" componente={
-                    <TimeInput
-                        transparent
-                        fluid
-                        name="horaInicio"
-                        disabled={this.modoVer()} placeholder={this.modoVer() ? "" : '0:00'}
-                        value={this.state.servicios[props.index].horaInicio ? this.state.servicios[props.index].horaInicio : ""}
-                        iconPosition="left"
-                        onChange={(event, { name, value }) => {
-                            if (name === "horaInicio") {
-                                var servss = this.state.servicios.slice();
-                                servss[props.index].horaInicio = value;
-                                this.setState({ servicios: servss });
-                                console.log(this.state);
-                            }
-                        }}
-                    />
-                } />
-
-                <CampoServicio titulo="Tren" componente={
-                    <Input transparent fluid disabled={this.modoVer()} placeholder={this.modoVer() ? "" : 'Tren'}
-                        value={this.state.servicios[props.index].tren ? this.state.servicios[props.index].tren : ""}
-                        onChange={(event) => {
-                            var servs = this.state.servicios.slice();
-                            servs[props.index].tren = event.target.value;
-                            this.setState({ servicios: servs });
-                        }}></Input>} />
-
-                <CampoServicio titulo="ALM" componente={
-
-                    <Input transparent fluid disabled={this.modoVer()} placeholder={this.modoVer() ? "" : 'ALM'}
-                        value={this.state.servicios[props.index].alm ? this.state.servicios[props.index].alm : ""}
-                        onChange={(event) => {
-                            var servs = this.state.servicios.slice();
-                            servs[props.index].alm = event.target.value;
-                            this.setState({ servicios: servs });
-                        }}></Input>} />
-
-                <CampoServicio titulo="Descripcion" componente={
-                    <Input transparent fluid disabled={this.modoVer()} placeholder={this.modoVer() ? "" : 'Descripcion'}
-                        value={this.state.servicios[props.index].descripcion ? this.state.servicios[props.index].descripcion : ""}
-                        onChange={(event) => {
-                            var servs = this.state.servicios.slice();
-                            servs[props.index].descripcion = event.target.value;
-                            this.setState({ servicios: servs });
-                        }}></Input>
-                } />
-            </Segment.Group>
-        </Segment.Group>
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    Serv = (props) => {
-
-
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    CuerpoHospedaje = (props) => {
-
-        let estiloInputs = {}
-        if (this.modoVer())
-            estiloInputs = { color: "black" };
-
-        let controlProveedor =
-            <InputSearchableDataButton
-                loading={!this.state.hotelesCargaron}
-                disabled={this.modoVer()}
-                placeholder={this.modoVer() ? "" : 'Sheraton'}
-                datalist={this.state.opcionesHoteles}
-                value={this.state.hospedajes[props.index].idProveedor}
-                sideButton={
-                    <Button style={{ padding: "3px 11px", backgroundColor: "#00000000" }} icon onClick={() => {
-                        let modal = { ...this.state.modalCrearEditarProveedor, abierto: true };
-                        this.setState({ modalCrearEditarProveedor: modal });
-                    }}>
-                        <Icon name='plus' />
-                    </Button>
-                }
-                onChange={(event, data) => {
-                    var servs = this.state.hospedajes.slice();
-                    servs[props.index].idProveedor = data.value;
-                    this.setState({ hospedajes: servs });
-                }}
-            />
-
-        if (this.modoVer()) {
-            let nombreProovedor = '-';
-            if (this.state.opcionesHoteles) {
-                let filtrado = this.state.opcionesHoteles.filter(x => x.value === this.state.hospedajes[props.index].idProveedor);
-                //console.log("filtrado: ",filtrado);
-                if (filtrado && filtrado.length > 0) {
-                    nombreProovedor = filtrado[0].text;
-                }
-
-            }
-            controlProveedor = <Input disabled transparent fluid value={nombreProovedor} />
-
-        }
-
-
-        return <Segment.Group key={props.key}>
-            <Segment.Group horizontal>
-                <Segment style={{ backgroundColor: "#b5dec7" }}>
-                    <Grid columns="equal">
-                        <Grid.Row style={{ padding: "4px 0px" }}>
-                            <Grid.Column verticalAlign="middle">
-                                <Header as="h3">Hospedaje {props.index + 1}</Header>
-                            </Grid.Column>
-                            <Grid.Column style={{ padding: "0px 8px" }}>
-
-                                {this.modoVer() ? <div></div> :
-                                    <Button style={{ padding: "8px 14px", margin: "4px 0px" }} floated="right" color="red" onClick={() => {
-                                        var lista = this.state.hospedajes.slice();
-                                        lista.splice(props.index, 1);
-                                        this.setState({ hospedajes: lista });
-                                        //console.log(this.state.servicios)
-                                    }}>Borrar</Button>
-                                }
-                            </Grid.Column>
-                        </Grid.Row>
-                    </Grid>
-                </Segment>
-            </Segment.Group>
-            <Segment.Group horizontal style={{ backgroundColor: "#def0e6" }}>
-                <CampoServicio titulo="Nombre *" componente={
-                    <Input disabled={this.modoVer()} transparent fluid placeholder={this.modoVer() ? "" : "In + city"}
-                        value={this.state.hospedajes[props.index].nombre ? this.state.hospedajes[props.index].nombre : ""}
-                        onChange={(event) => {
-                            var servs = this.state.hospedajes.slice();
-                            servs[props.index].nombre = event.target.value;
-                            this.setState({ hospedajes: servs });
-                        }} />
-                } />
-
-                <CampoServicio titulo="Fecha In *" componente={
-                    <DateInput
-                        disabled={this.modoVer()}
-                        transparent
-                        closable
-                        fluid
-                        dateFormat="YYYY-MM-DD"
-                        name="fecha"
-                        placeholder={this.modoVer() ? "-" : 'aaaa-mm-dd'}
-                        value={this.state.hospedajes[props.index].fechaEjecucion ? this.state.hospedajes[props.index].fechaEjecucion : ""}
-                        iconPosition="left"
-                        onChange={(event, { name, value }) => {
-                            if (name === "fecha") {
-                                var servs = this.state.hospedajes.slice();
-                                servs[props.index].fechaEjecucion = value;
-                                this.setState({ hospedajes: servs });
-                                console.log(this.state);
-                            }
-                        }}
-                    />} />
-
-
-
-                <CampoServicio titulo="Fecha Out *" componente={
-                    <DateInput
-                        disabled={this.modoVer()}
-                        transparent
-                        closable
-                        fluid
-                        dateFormat="YYYY-MM-DD"
-                        name="fecha"
-                        placeholder={this.modoVer() ? "-" : 'aaaa-mm-dd'}
-                        value={this.state.hospedajes[props.index].fechaOut ? this.state.hospedajes[props.index].fechaOut : ""}
-                        iconPosition="left"
-                        onChange={(event, { name, value }) => {
-                            if (name === "fecha") {
-                                var servs = this.state.hospedajes.slice();
-                                servs[props.index].fechaOut = value;
-                                this.setState({ hospedajes: servs });
-                                console.log(this.state);
-                            }
-                        }}
-                    />} />
-
-                <CampoServicio titulo="Nombre pasajero" componente={
-                    <Input transparent disabled={this.modoVer()} placeholder={this.modoVer() ? "" : 'Lewis Hamilton'} fluid
-                        value={this.state.hospedajes[props.index].nombrePasajero ? this.state.hospedajes[props.index].nombrePasajero : ""}
-                        onChange={(event) => {
-                            var servs = this.state.hospedajes.slice();
-                            servs[props.index].nombrePasajero = event.target.value;
-                            this.setState({ hospedajes: servs });
-                        }}></Input>} />
-                <CampoServicio titulo="Cant. pasajeros *" componente={
-                    <Input type="number" transparent fluid disabled={this.modoVer()} placeholder={this.modoVer() ? "" : '4'}
-                        value={this.state.hospedajes[props.index].cantPasajeros ? this.state.hospedajes[props.index].cantPasajeros : 0}
-                        onChange={(event) => {
-                            var servs = this.state.hospedajes.slice();
-                            servs[props.index].cantPasajeros = event.target.value;
-                            this.setState({ hospedajes: servs });
-                        }}></Input>} />
-            </Segment.Group>
-            <Segment.Group horizontal style={{ backgroundColor: "#def0e6" }}>
-
-                <CampoServicio titulo="Hotel" componente={controlProveedor} />
-
-                <CampoServicio titulo="Hora entrada" componente={
-                    <TimeInput
-                        transparent
-                        fluid
-                        name="horaInicio"
-                        disabled={this.modoVer()} placeholder={this.modoVer() ? "" : '0:00'}
-                        value={this.state.hospedajes[props.index].horaInicio ? this.state.hospedajes[props.index].horaInicio : ""}
-                        iconPosition="left"
-                        onChange={(event, { name, value }) => {
-                            if (name === "horaInicio") {
-                                var servss = this.state.hospedajes.slice();
-                                servss[props.index].horaInicio = value;
-                                this.setState({ hospedajes: servss });
-                                console.log(this.state);
-                            }
-                        }}
-                    />
-                } />
-
-
-                <CampoServicio titulo="Hora salida" componente={
-                    <TimeInput
-                        transparent
-                        fluid
-                        name="horaFinal"
-                        disabled={this.modoVer()} placeholder={this.modoVer() ? "" : '0:00'}
-                        value={this.state.hospedajes[props.index].horaFinal ? this.state.hospedajes[props.index].horaFinal : ""}
-                        iconPosition="left"
-                        onChange={(event, { name, value }) => {
-                            if (name === "horaFinal") {
-                                var servss = this.state.hospedajes.slice();
-                                servss[props.index].horaFinal = value;
-                                this.setState({ hospedajes: servss });
-                                console.log(this.state);
-                            }
-                        }}
-                    />
-                } />
-
-                <CampoServicio titulo="Descripcion" componente={
-                    <Input transparent fluid disabled={this.modoVer()} placeholder={this.modoVer() ? "" : 'OBS'}
-                        value={this.state.hospedajes[props.index].descripcion ? this.state.hospedajes[props.index].descripcion : ""}
-                        onChange={(event) => {
-                            var servs = this.state.hospedajes.slice();
-                            servs[props.index].descripcion = event.target.value;
-                            this.setState({ hospedajes: servs });
-                        }}></Input>
-                } />
-            </Segment.Group>
-        </Segment.Group>
-    }
-
-
-
-    CuerpoTransporte = (props) => {
-
-        let controlProveedorTransporte =
-            <InputSearchableDataButton
-                //loading={!this.state.hotelesCargaron}
-                disabled={this.modoVer()}
-                placeholder={this.modoVer() ? "" : 'Transp. Manuel'}
-                datalist={this.state.opcionesTransportes}
-                value={this.state.transportes[props.index].idProveedor}
-                sideButton={
-                    <Button style={{ padding: "3px 11px", backgroundColor: "#00000000" }} icon onClick={() => {
-                        let modal = { ...this.state.modalCrearProveedorTransporte, abierto: true };
-                        this.setState({ modalCrearProveedorTransporte: modal });
-                    }}>
-                        <Icon name='plus' />
-                    </Button>
-                }
-                onChange={(event, data) => {
-                    var transps = this.state.transportes.slice();
-                    transps[props.index].idProveedor = data.value;
-                    this.setState({ transportes: transps });
-                }}
-            />
-
-        if (this.modoVer()) {
-            let nombreProovedor = '-';
-            if (this.state.opcionesTransportes) {
-                let filtrado = this.state.opcionesTransportes.filter(x => x.value === this.state.transportes[props.index].idProveedor);
-                //console.log("filtrado: ",filtrado);
-                if (filtrado && filtrado.length > 0) {
-                    nombreProovedor = filtrado[0].text;
-                }
-
-            }
-            controlProveedorTransporte = <Input disabled transparent fluid value={nombreProovedor} />
-
-        }
-
-
-        return <Segment.Group key={props.key}>
-            <Segment.Group horizontal>
-                <Segment style={{ backgroundColor: "#ccebff" }}>
-                    <Grid columns="equal">
-                        <Grid.Row style={{ padding: "4px 0px" }}>
-                            <Grid.Column verticalAlign="middle">
-                                <Header as="h3">Transporte {props.index + 1}</Header>
-                            </Grid.Column>
-                            <Grid.Column style={{ padding: "0px 8px" }}>
-                                {this.modoVer() ? <div></div> :
-                                    <Button style={{ padding: "8px 14px", margin: "4px 0px" }} floated="right" color="red" onClick={() => {
-                                        var lista = this.state.transportes.slice();
-                                        lista.splice(props.index, 1);
-                                        this.setState({ transportes: lista });
-                                    }}>Borrar</Button>
-                                }
-                            </Grid.Column>
-                        </Grid.Row>
-                    </Grid>
-                </Segment>
-            </Segment.Group>
-            <Segment.Group horizontal style={{ backgroundColor: "#e6f5ff" }}>
-                <CampoServicio titulo="Nombre *" componente={
-                    <Input transparent fluid disabled={this.modoVer()} placeholder={this.modoVer() ? "" : 'APTO / Four points'}
-                        value={this.state.transportes[props.index].nombre ? this.state.transportes[props.index].nombre : ""}
-                        onChange={(event) => {
-                            var trans = this.state.transportes.slice();
-                            trans[props.index].nombre = event.target.value;
-                            this.setState({ transportes: trans });
-                        }}></Input>
-                } />
-                <CampoServicio titulo="Ciudad de destino" componente={
-                    <div>
-                        <Input transparent fluid disabled={this.modoVer()} placeholder={this.modoVer() ? "" : 'Ciudad'}
-                            value={this.state.transportes[props.index].ciudad ? this.state.transportes[props.index].ciudad : ""}
-                            onChange={(event) => {
-                                var trans = this.state.transportes.slice();
-                                trans[props.index].ciudad = event.target.value;
-                                this.setState({ transportes: trans });
-                            }}></Input>
-                    </div>
-                } />
-                <CampoServicio titulo="Fecha ejecucion *" componente={
-                    <DateInput
-                        transparent
-                        fluid
-                        closable
-                        name="fecha"
-                        dateFormat="YYYY-MM-DD"
-                        disabled={this.modoVer()}
-                        placeholder={this.modoVer() ? "" : 'aaaa-mm-dd'}
-                        value={this.state.transportes[props.index].fechaEjecucion ? this.state.transportes[props.index].fechaEjecucion : ""}
-                        iconPosition="left"
-                        onChange={(event, { name, value }) => {
-                            if (name === "fecha") {
-                                var transs = this.state.transportes.slice();
-                                transs[props.index].fechaEjecucion = value;
-                                this.setState({ transportes: transs });
-                                console.log(this.state);
-                            }
-                        }}
-                    />} />
-
-                <CampoServicio titulo="Nombre pasajero" componente={
-
-                    <Input transparent fluid disabled={this.modoVer()} placeholder={this.modoVer() ? "" : 'Steven Gerard'}
-                        value={this.state.transportes[props.index].nombrePasajero ? this.state.transportes[props.index].nombrePasajero : ""}
-                        onChange={(event) => {
-                            var trans = this.state.transportes.slice();
-                            trans[props.index].nombrePasajero = event.target.value;
-                            this.setState({ transportes: trans });
-                        }}></Input>
-                } />
-                <CampoServicio titulo="Cant. pasajeros *" componente={
-                    <Input type="number" transparent fluid disabled={this.modoVer()} placeholder={this.modoVer() ? "" : '4'}
-                        value={this.state.transportes[props.index].cantPasajeros ? this.state.transportes[props.index].cantPasajeros : 0}
-                        onChange={(event) => {
-                            var trans = this.state.transportes.slice();
-                            trans[props.index].cantPasajeros = event.target.value;
-                            this.setState({ transportes: trans });
-                        }}></Input>} />
-            </Segment.Group>
-            <Segment.Group horizontal style={{ backgroundColor: "#e6f5ff" }}>
-                <CampoServicio titulo="Proveedor de Transporte" componente={controlProveedorTransporte
-
-                    /*
-                    <div>
-                        <Input icon="lightning" iconPosition="left" list={'transportes' + props.index} transparent fluid
-                            disabled={this.modoVer()} placeholder={this.modoVer() ? "" : 'Transportista'}
-                            value={this.state.transportes[props.index].proveedor}
-                            onChange={(event) => {
-                                var trans = this.state.transportes.slice();
-                                trans[props.index].proveedor = event.target.value;
-                                this.setState({ transportes: trans });
-                            }}></Input>
-                        <datalist id={'transportes' + props.index}>
-                            {this.state.opcionesTransportes.map(e => <option value={e.text} />)}
-                        </datalist>
-                    </div>
-
-
-
-                        */} />
-                <CampoServicio titulo="Hora recojo" componente={
-                    <TimeInput
-                        transparent
-                        fluid
-                        name="hora"
-                        disabled={this.modoVer()} placeholder={this.modoVer() ? "" : '0:00'}
-                        value={this.state.transportes[props.index].horaInicio ? this.state.transportes[props.index].horaInicio : ""}
-                        iconPosition="left"
-                        onChange={(event, { name, value }) => {
-                            if (name === "hora") {
-                                var transs = this.state.transportes.slice();
-                                transs[props.index].horaInicio = value;
-                                this.setState({ transportes: transs });
-                                console.log(this.state);
-                            }
-                        }}
-                    />
-                } />
-                <CampoServicio titulo="Hora salida" componente={
-                    <TimeInput
-                        transparent
-                        fluid
-                        name="hora"
-                        disabled={this.modoVer()} placeholder={this.modoVer() ? "" : '0:00'}
-                        value={this.state.transportes[props.index].horaFinal ? this.state.transportes[props.index].horaFinal : ""}
-                        iconPosition="left"
-                        onChange={(event, { name, value }) => {
-                            if (name === "hora") {
-                                var transs = this.state.transportes.slice();
-                                transs[props.index].horaFinal = value;
-                                this.setState({ transportes: transs });
-                                console.log(this.state);
-                            }
-                        }}
-                    />
-                } />
-                <CampoServicio titulo="Vuelo" componente={
-                    <Input transparent fluid
-                        value={this.state.transportes[props.index].vuelo ? this.state.transportes[props.index].vuelo : ""}
-                        disabled={this.modoVer()} placeholder={this.modoVer() ? "" : 'Vuelo'}
-                        onChange={(event) => {
-                            var trans = this.state.transportes.slice();
-                            trans[props.index].vuelo = event.target.value;
-                            this.setState({ transportes: trans });
-                        }}></Input>
-                } />
-                <CampoServicio titulo="V/R" componente={
-
-                    <Input transparent fluid disabled={this.modoVer()} placeholder={this.modoVer() ? "" : 'V/R'}
-                        value={this.state.transportes[props.index].vr ? this.state.transportes[props.index].vr : ""}
-                        onChange={(event) => {
-                            var trans = this.state.transportes.slice();
-                            trans[props.index].vr = event.target.value;
-                            this.setState({ transportes: trans });
-                        }}></Input>
-                } />
-                <CampoServicio titulo="TC" componente={
-                    <Input transparent fluid disabled={this.modoVer()} placeholder={this.modoVer() ? "" : 'TC'}
-                        value={this.state.transportes[props.index].tc ? this.state.transportes[props.index].tc : ""}
-                        onChange={(event) => {
-                            var trans = this.state.transportes.slice();
-                            trans[props.index].tc = event.target.value;
-                            this.setState({ transportes: trans });
-                        }}></Input>
-                } />
-                <CampoServicio titulo="Descripcion" componente={
-                    <Input transparent fluid disabled={this.modoVer()} placeholder={this.modoVer() ? "" : 'OBS'}
-                        value={this.state.transportes[props.index].descripcion ? this.state.transportes[props.index].descripcion : ""}
-                        onChange={(event) => {
-                            var trans = this.state.transportes.slice();
-                            trans[props.index].descripcion = event.target.value;
-                            this.setState({ transportes: trans });
-                        }}></Input>
-                } />
-            </Segment.Group>
-        </Segment.Group>
-    }
-
     AbrirCuadroConfirmacionBorradoFile = () => {
         this.setState({ borradoFile_confirmAbierto: true });
     }
@@ -1640,17 +829,6 @@ class CrearFile extends Component {
                 this.setState({borradoServicio_confirmAbierto:false});
                 this.cargarFileBase();
             }, (rpta) => {
-                //error
-                //console.log("Rpta de error", rpta);
-                /*
-                this.setState({
-                    borradoFile_mostrarNotificacion: true,
-                    borradoFile_enviando: false,
-                    borradoFile_tituloRespuesta: "Error al borrar file",
-                    borradoFile_contenidoRespuesta: rpta.cont.message + " (" + rpta.cont.statusCode + ")",
-                    borradoFile_notif_color: "red",
-                    borradoFile_notif_icono: "warning"
-                });*/
                 this.setState({borradoServicio_confirmAbierto:false});
                 this.cargarFileBase();
                 cogoToast.error("Error al eliminar servicio", { position : "bottom-center" });
@@ -1693,14 +871,7 @@ class CrearFile extends Component {
             model,
 
             (rpta) => {
-                //console.log("exitooo")
-                this.setState({/*
-                    actualizacionFile_enviando: false,
-                    actualizacionFile_tituloRespuesta: "File actualizado",
-                    actualizacionFile_contenidoRespuesta: "File actualizado: '" + rpta.cont.codigo + "'",
-                    actualizacionFile_notif_color: "green",
-                    actualizacionFile_notif_icono: "check",
-                    //fileAbierto:true*/
+                this.setState({
                     modoFile: mode_view
                 });
                 
@@ -1708,14 +879,6 @@ class CrearFile extends Component {
             },
             (rpta) => {
                 console.log("Rpta de error", rpta);
-                /*
-                this.setState({
-                    actualizacionFile_enviando: false,
-                    actualizacionFile_tituloRespuesta: "Error al actualizar file",
-                    actualizacionFile_contenidoRespuesta: rpta.cont.message + " (" + rpta.cont.statusCode + ")",
-                    actualizacionFile_notif_color: "red",
-                    actualizacionFile_notif_icono: "warning"
-                });*/
                 cogoToast.error(<><b>Error</b> al actualizar file : {rpta.cont.message + " (" + rpta.cont.statusCode + ")"}</>,{position:"bottom-center"});
             },
             () => {
@@ -1916,35 +1079,9 @@ class CrearFile extends Component {
 
         this.setState({ modalCrearEditarProveedor: obj });
 
-        /*
-                if (this.state.modalCrearEditarProveedor.modo === "edicion") {
-                    var obj = { ...this.state.modalCrearEditarProveedor };
-                    obj.campos.tipo = '';
-                    obj.campos.id = '';
-                    obj.campos.nombre = '';
-                    obj.campos.correo = '';
-                    obj.campos.correoAdic = '';
-                    obj.campos.num = '';
-                    obj.campos.numAdic = '';
-                    obj.campos.ciudad = '';
-                    this.setState({ modalCrearEditar: obj });
-                }*/
-        //this.resetearCamposModalProveedor();
-    }
-    /*
-    resetearCamposModalProveedor =() => {
-        var obj = { ...this.state.modalCrearEditarProveedor };
-        obj.campos.id = '';
-        obj.campos.nombre = '';
-        obj.campos.correo = '';
-        obj.campos.correoAdic = '';
-        obj.campos.num = '';
-        obj.campos.numAdic = '';
-        obj.campos.ciudad = '';
-        obj.campos.tipo ='';
-        this.setState({ modalCrearEditarProveedor: obj });
-    }*/
 
+    }
+    
     // ------------------------------------------------------------------------- Modal proveedores transportes
 
     abrirModalProveedorTransporte = () => {
@@ -2017,19 +1154,7 @@ class CrearFile extends Component {
         obj.campos.ciudad = '';
 
         this.setState({ modalCrearProveedorTransporte: obj });
-        //if (this.state.modalCrearProveedorTransporte.modo === "edicion") {
-        //this.resetearCamposModalProveedorTransportes();
-        /*
-        var obj = { ...this.state.modalCrearProveedorTransporte };
-        obj.campos.id = '';
-        obj.campos.nombre = '';
-        obj.campos.correo = '';
-        obj.campos.correoAdic = '';
-        obj.campos.num = '';
-        obj.campos.numAdic = '';
-        obj.campos.ciudad = '';
-        this.setState({ modalCrearProveedorTransporte: obj });*/
-        //}
+        
     }
 
     abrirAvisoModalCreacionServicio = () => {

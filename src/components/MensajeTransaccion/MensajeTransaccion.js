@@ -13,20 +13,9 @@ const MensajeTransaccion = (props) => {
 
     if (props.rptaTransaccion)
         if (props.rptaTransaccion.msj) {
-            //console.log("WWWWWWWWAAAAAck",props.rptaTransaccion.msj)
             lineasMensaje = props.rptaTransaccion.msj.split('|');
         }
 
-    //console.log("LINEAS MENSAJE:",lineasMensaje);
-    //props.rptaTransaccion.msj ? <Message.Item> {props.rptaTransaccion.msj} </Message.Item> : null
-
-    //console.log(props)
-
-    //let contenedor = props.contenedor;
-    /*
-    transaccionEnviada:false,
-    responseRecibida:false,
-    rptaTransaccion:null,*/
     if (props) {
         if (props.transaccionEnviada && !props.responseRecibida) {
             msj = <Message icon>
@@ -52,7 +41,7 @@ const MensajeTransaccion = (props) => {
                         <Message.Header>{props.headerError ? props.headerError : "Error en transaccion"}</Message.Header>
                         <Message.List>
                             {lineasMensaje ? lineasMensaje.map((e, i) => {
-                                if(e)
+                                if (e)
                                     return <Message.Item>{e}</Message.Item>
                             }) : null}
                             {props.rptaTransaccion.trace ? <Message.Item>{props.rptaTransaccion.trace}</Message.Item> : null}
@@ -65,17 +54,5 @@ const MensajeTransaccion = (props) => {
     }
 
 }
-/*
-class MensajeTransaccion extends Component{
-
-    state={
-
-    }
-
-    render(){
-
-    }
-
-}*/
 
 export default MensajeTransaccion;

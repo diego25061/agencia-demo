@@ -1,89 +1,93 @@
 import React from 'react'
-import {Component} from 'react'
-import { Tab, Menu, Label, Icon} from 'semantic-ui-react';
+import { Component } from 'react'
+import { Tab, Menu, Label, Icon } from 'semantic-ui-react';
 import TabClientes from './TabClientes';
 import Requester from '../../common/Services/Requester';
 import Constantes from '../../common/Constantes';
 import TabTodosClientes from './TabTodos/TabTodosClientes';
 
-const panes = [ 
+const panes = [
     {
         menuItem: (
             <Menu.Item key='Todos'>
-                Todos 
+                Todos
             </Menu.Item>
         ),
         render: () => {
             return <Tab.Pane>
-                <TabTodosClientes/>
-            </Tab.Pane>},
+                <TabTodosClientes />
+            </Tab.Pane>
+        },
     },
     {
         menuItem: (
             <Menu.Item key='clienteDirecto'>
-                <Icon name="user"/>Cliente Directo
+                <Icon name="user" />Cliente Directo
             </Menu.Item>
         ),
         render: () => {
             return <Tab.Pane>
-                
-                <TabClientes sust="Cliente directo" 
+
+                <TabClientes sust="Cliente directo"
                     sustPlural="Clientes directos"
-                    placeholderNombre="Juan" 
-                    placeholderCorreo="Juan@gmail.com" 
+                    placeholderNombre="Juan"
+                    placeholderCorreo="Juan@gmail.com"
                     placeholderCorreoAdic="juan.agencia@gmail.com"
-                    alias = {Constantes.AliasClientes.CLIENTE_DIRECTO}
-                    funcEnviar = {Requester.crearCliente}
+                    alias={Constantes.AliasClientes.CLIENTE_DIRECTO}
+                    funcEnviar={Requester.crearCliente}
                     tipo="directo"
 
-                    />
-            </Tab.Pane>},
+                />
+            </Tab.Pane>
+        },
     },
     {
         menuItem: (
             <Menu.Item key='OpMinorista'>
-                <Icon name="box"/>Operador minorista
+                <Icon name="box" />Operador minorista
             </Menu.Item>
         ),
         render: () => {
             return <Tab.Pane>
                 <div></div>
-                <TabClientes sust="Operador minorista" 
+                <TabClientes sust="Operador minorista"
                     sustPlural="Minoristas"
-                    placeholderNombre="NTS" 
-                    placeholderCorreo="mariana@gmail.com" 
+                    placeholderNombre="NTS"
+                    placeholderCorreo="mariana@gmail.com"
                     placeholderCorreoAdic="-"
-                    alias = {Constantes.AliasClientes.OPERADOR_MINORISTA}
-                    funcEnviar = {Requester.crearCliente}
+                    alias={Constantes.AliasClientes.OPERADOR_MINORISTA}
+                    funcEnviar={Requester.crearCliente}
                     tipo="minorista"
-                    />
-            </Tab.Pane>},
+                />
+            </Tab.Pane>
+        },
     },
     {
         menuItem: (
             <Menu.Item key='opMayorista'>
-                <Icon name="boxes"/>Operador mayorista 
+                <Icon name="boxes" />Operador mayorista
             </Menu.Item>
         ),
         render: () => {
             return <Tab.Pane>
                 <div></div><div></div>
-                <TabClientes sust="Operador mayorista" 
+                <TabClientes sust="Operador mayorista"
                     sustPlural="Mayoristas"
-                    placeholderNombre="Eurolatina" 
-                    placeholderCorreo="contacto@eurolatina.com" 
+                    placeholderNombre="Eurolatina"
+                    placeholderCorreo="contacto@eurolatina.com"
                     placeholderCorreoAdic="ventas@eurolatina.com"
-                    alias = {Constantes.AliasClientes.OPERADOR_MAYORISTA}
-                    funcEnviar = {Requester.crearCliente}
+                    alias={Constantes.AliasClientes.OPERADOR_MAYORISTA}
+                    funcEnviar={Requester.crearCliente}
                     tipo="mayorista"
-                    />
-            </Tab.Pane>},
+                />
+            </Tab.Pane>
+        },
     }
-  ]
+]
 
-class VerClientes extends Component{
+class VerClientes extends Component {
 
-    render(){
+    render() {
         return <Tab panes={panes} />
     }
 }

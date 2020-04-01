@@ -19,7 +19,7 @@ class ListaBiblias extends Component {
 
     state = {
 
-        bibliaCargando:false,
+        bibliaCargando: false,
         modalBiblia: {
             abierto: false,
 
@@ -29,8 +29,8 @@ class ListaBiblias extends Component {
             }
         },
 
-        notificacion_crearBiblia : new NotificationStateHolder(),
-        notificacion_leerBiblia : new NotificationStateHolder(),
+        notificacion_crearBiblia: new NotificationStateHolder(),
+        notificacion_leerBiblia: new NotificationStateHolder(),
 
         biblias: [
             /*
@@ -71,20 +71,20 @@ class ListaBiblias extends Component {
 
     cargarBiblias = () => {
 
-        this.setState({ bibliaCargando:true});
-        
-        Requester.getFiles({},(rpta) => {
-            console.log("rpta > ",rpta.cont);
+        this.setState({ bibliaCargando: true });
+
+        Requester.getFiles({}, (rpta) => {
+            console.log("rpta > ", rpta.cont);
             let bibs = [];
-            for(let i=0;i<rpta.cont.length;i++){
+            for (let i = 0; i < rpta.cont.length; i++) {
                 let e = rpta.cont[i];
-                if(e){
-                    if(e.anho && e.mes){
-                        let mes = ListaMeses.find(x=>x.value===e.mes)
-                        if(mes)
+                if (e) {
+                    if (e.anho && e.mes) {
+                        let mes = ListaMeses.find(x => x.value === e.mes)
+                        if (mes)
                             bibs.push({
-                                anho : e.anho,
-                                mes:  mes.text,
+                                anho: e.anho,
+                                mes: mes.text,
                                 idMes: mes.value
                             });
                     }
@@ -92,8 +92,8 @@ class ListaBiblias extends Component {
             }
             var anhos = bibs.map((e) => { return e.anho });
             var anhosUnique = anhos.filter(this.onlyUnique);
-            bibs = bibs.map(x=>x.mes+","+x.anho+","+x.idMes).filter(this.onlyUnique);
-            bibs = bibs.map(x=>{return {mes: x.split(",")[0],anho:x.split(",")[1],idMes:x.split(",")[2]}});
+            bibs = bibs.map(x => x.mes + "," + x.anho + "," + x.idMes).filter(this.onlyUnique);
+            bibs = bibs.map(x => { return { mes: x.split(",")[0], anho: x.split(",")[1], idMes: x.split(",")[2] } });
             //console.log(anhosUnique);
             var biblias = anhosUnique.map((e, i) => {
                 var meses = bibs.filter((biblia) => {
@@ -113,17 +113,17 @@ class ListaBiblias extends Component {
             biblias.sort((a, b) => {
                 return b.anho - a.anho;
             })
-            console.log("BIBLIAS:" ,biblias);
+            console.log("BIBLIAS:", biblias);
             let notif = this.state.notificacion_leerBiblia;
             notif.setHidden();
-            this.setState({ biblias: biblias,notificacion_leerBiblia:notif , bibliaCargando:false});
-        },(rptaError) =>{
+            this.setState({ biblias: biblias, notificacion_leerBiblia: notif, bibliaCargando: false });
+        }, (rptaError) => {
             let notif = this.state.notificacion_leerBiblia;
-            notif.setRecibidoError("Error al leer biblias",rptaError.cont.message, rptaError.cont.statusCode, rptaError.cont.data);
-            notif.mostrarNotificacion=true;
-            this.setState({notificacion_leerBiblia:notif, bibliaCargando:false});   
+            notif.setRecibidoError("Error al leer biblias", rptaError.cont.message, rptaError.cont.statusCode, rptaError.cont.data);
+            notif.mostrarNotificacion = true;
+            this.setState({ notificacion_leerBiblia: notif, bibliaCargando: false });
         });
-        
+
     }
 
     componentDidMount = () => {
@@ -139,8 +139,8 @@ class ListaBiblias extends Component {
                 var obj = { ...this.state.modalBiblia };
                 obj.abierto = true;
                 this.setState({ modalBiblia: obj });
-            }}>Nueva Biblia</Button>*/} 
-            {this.state.bibliaCargando ? <Segment basic style={{padding:"200px"}}>
+            }}>Nueva Biblia</Button>*/}
+            {this.state.bibliaCargando ? <Segment basic style={{ padding: "200px" }}>
                 <Dimmer active inverted><Loader size='huge'>Cargando</Loader></Dimmer>
             </Segment> : <></>}
             {this.state.biblias.map(e => {
@@ -152,7 +152,7 @@ class ListaBiblias extends Component {
                                 {e.meses.map((mes, i) => {
                                     if (i < 6)
                                         return <Grid.Column>
-                                            <CardBiblia mes={mes.mes} anho={e.anho} funcNavegar={this.navegar}  idMes={mes.idMes}/>
+                                            <CardBiblia mes={mes.mes} anho={e.anho} funcNavegar={this.navegar} idMes={mes.idMes} />
                                         </Grid.Column>
                                 })}
                             </Grid.Row>
@@ -160,7 +160,7 @@ class ListaBiblias extends Component {
                                 {e.meses.map((mes, i) => {
                                     if (i > 5)
                                         return <Grid.Column>
-                                            <CardBiblia mes={mes.mes} anho={e.anho} funcNavegar={this.navegar} idMes={mes.idMes}/>
+                                            <CardBiblia mes={mes.mes} anho={e.anho} funcNavegar={this.navegar} idMes={mes.idMes} />
                                         </Grid.Column>
                                 })}
                             </Grid.Row>
@@ -170,37 +170,37 @@ class ListaBiblias extends Component {
                 return cuadro;
             })}
             {
-            /*
-            <hr/>
-            <Link onClick={()=>{
-                var obj = {...this.state.modalBiblia};
-                obj.abierto=true;
-                this.setState({modalBiblia:obj});
-                }}>
-                Crear biblia</Link>
-                */
+                /*
+                <hr/>
+                <Link onClick={()=>{
+                    var obj = {...this.state.modalBiblia};
+                    obj.abierto=true;
+                    this.setState({modalBiblia:obj});
+                    }}>
+                    Crear biblia</Link>
+                    */
             }
-            
+
             <NotificacionApi
                 disabled={!this.state.notificacion_leerBiblia.mostrarNotificacion}
                 loading={this.state.notificacion_leerBiblia.enviando}
                 color={this.state.notificacion_leerBiblia.notif_color}
-                content={this.state.notificacion_leerBiblia.contenidoRespuesta} 
+                content={this.state.notificacion_leerBiblia.contenidoRespuesta}
                 title={this.state.notificacion_leerBiblia.tituloRespuesta}
                 icon={this.state.notificacion_leerBiblia.notif_icono}>
             </NotificacionApi>
 
-            <ModalCrearBiblia parentComponent={this} 
-                crearBiblia_mostrarNotificacion = {this.state.notificacion_crearBiblia.mostrarNotificacion}
-                crearBiblia_enviando = {this.state.notificacion_crearBiblia.enviando}
-                crearBiblia_notif_color = {this.state.notificacion_crearBiblia.notif_color}
-                crearBiblia_contenidoRespuesta = {this.state.notificacion_crearBiblia.contenidoRespuesta}
-                crearBiblia_tituloRespuesta = {this.state.notificacion_crearBiblia.tituloRespuesta}
-                crearBiblia_notif_icono = {this.state.notificacion_crearBiblia.notif_icono} 
+            <ModalCrearBiblia parentComponent={this}
+                crearBiblia_mostrarNotificacion={this.state.notificacion_crearBiblia.mostrarNotificacion}
+                crearBiblia_enviando={this.state.notificacion_crearBiblia.enviando}
+                crearBiblia_notif_color={this.state.notificacion_crearBiblia.notif_color}
+                crearBiblia_contenidoRespuesta={this.state.notificacion_crearBiblia.contenidoRespuesta}
+                crearBiblia_tituloRespuesta={this.state.notificacion_crearBiblia.tituloRespuesta}
+                crearBiblia_notif_icono={this.state.notificacion_crearBiblia.notif_icono}
             />
         </div>
     }
-    
+
 }
 
 

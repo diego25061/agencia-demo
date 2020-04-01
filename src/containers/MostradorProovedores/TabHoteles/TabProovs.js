@@ -3,8 +3,6 @@ import {Component} from 'react'
 import { Button, Container, Header, Confirm, Modal } from 'semantic-ui-react';
 import TablaBuscador from '../../TablaBuscador/TablaBuscador';
 import Requester from '../../../common/Services/Requester';
-import Constantes from '../../../common/Constantes';
-import ModalCrearEditarProveedor from '../ModalCrearEditarProveedor';
 import ProveedorModel from './../../../common/Models/Apis/ProovedorModel';
 import ModalProveedores from './../ModalProveedores';
 import NotificationStateHolder from '../../../common/StateHolders/NotificationStateHolder';
@@ -254,6 +252,7 @@ class TabProovs extends Component{
                 proovs: proovs,
                 notificacion_cargar_proveedores:notif,
                 cargandoTabla:false });
+            this.forceUpdate();
         },(rptaError)=>{
             let notif = this.state.notificacion_cargar_proveedores;
             notif.setRecibidoError("Error al leer proveedores",rptaError.cont.message, rptaError.cont.statusCode, rptaError.cont.data);

@@ -13,7 +13,7 @@ class TabTodosClientes extends Component {
         clientes: [
         ],
         notificacion_cargar_clientes: new NotificationStateHolder(),
-        cargandoTabla:false
+        cargandoTabla: false
     }
 
     columnasTabla = [
@@ -30,7 +30,7 @@ class TabTodosClientes extends Component {
         return <div>
             <Header size="medium">Todos los clientes</Header>
             {/*<Header size="small">Lista</Header>*/}
-            <TablaBuscador data={this.state.clientes} columns={this.columnasTabla} loading={this.state.cargandoTabla}/>
+            <TablaBuscador data={this.state.clientes} columns={this.columnasTabla} loading={this.state.cargandoTabla} />
             <NotificacionApi
                 disabled={!this.state.notificacion_cargar_clientes.mostrarNotificacion}
                 loading={this.state.notificacion_cargar_clientes.enviando}
@@ -43,20 +43,20 @@ class TabTodosClientes extends Component {
     }
 
     cargarTodos = () => {
-        this.setState({cargandoTabla:true});
+        this.setState({ cargandoTabla: true });
         Requester.getClientes({}, (rpta) => {
             var clientes = rpta.cont.map((e, i) => {
                 return new ClientModel(e);
             });
             let notif = this.state.notificacion_cargar_clientes;
-        console.log("clientes", clientes)
+            //console.log("clientes", clientes)
             notif.setHidden();
-            this.setState({ clientes: clientes, notificacion_cargar_clientes: notif , cargandoTabla:false});
+            this.setState({ clientes: clientes, notificacion_cargar_clientes: notif, cargandoTabla: false });
         }, (rptaError) => {
             let notif = this.state.notificacion_cargar_clientes;
             notif.setRecibidoError("Error al leer clientes", rptaError.cont.message, rptaError.cont.statusCode, rptaError.cont.data);
             notif.mostrarNotificacion = true;
-            this.setState({ notificacion_cargar_clientes: notif, cargandoTabla:false });
+            this.setState({ notificacion_cargar_clientes: notif, cargandoTabla: false });
         });
 
         console.log("clientes", this.state.clientes)

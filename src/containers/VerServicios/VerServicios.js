@@ -2,11 +2,8 @@ import React from 'react';
 import { Component } from 'react';
 import { Link } from 'react-router-dom'
 import { Label, Button, Container, Header, Segment, Message, Icon } from 'semantic-ui-react';
-import ReactTable from "react-table";
 import 'react-table/react-table.css'
 import TablaBuscador from '../TablaBuscador/TablaBuscador';
-import ModalCrearServicio from './ModalCrearServicio';
-import CONSTANTES_GLOBALES from '../../common/Constantes';
 import Requester from '../../common/Services/Requester';
 import moment from 'moment'
 import momentTz from 'moment-timezone'
@@ -140,7 +137,7 @@ class VerServicios extends Component {
             }}>Mañana</Button>
             <Button onClick={() => {
                 this.setState({ queryForzadoServs: "", queryForzadoTransps: "", queryForzadoHospedajes: "" })
-            }} secondary>Todos</Button>
+            }}>Todos</Button>
             <Header size="medium">Servicios generales programados</Header>
             <Segment>
                 <TablaBuscador

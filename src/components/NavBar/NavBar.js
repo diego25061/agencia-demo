@@ -1,15 +1,12 @@
 import React from 'react'
 import { Component } from 'react';
 import './NavBar.css';
-import { Link } from 'react-router-dom'
-import { Grid, Button, Menu, Image, Header, Container, Segment, Flag, Icon } from 'semantic-ui-react'
+import { Button, Menu, Flag, Icon } from 'semantic-ui-react'
 import { Configuracion } from '../../common/Constantes'
 
 import LogoYllari from '../../assets/logo_generic.png'
 
-import { withRouter } from 'react-router-dom'
 import moment from 'moment'
-import momentTz from 'moment-timezone'
 import 'moment/locale/es-us'
 
 class NavBar extends Component {
@@ -20,8 +17,8 @@ class NavBar extends Component {
     state = {
         enlace: '',
         usuarioNombre: '',
-        fecha:this.capitalize(moment().tz('America/Lima').format('dddd D')) + ' de ' + moment().tz('America/Lima').format('MMMM'),
-        hora:moment().tz('America/Lima').format('LT')
+        fecha: this.capitalize(moment().tz('America/Lima').format('dddd D')) + ' de ' + moment().tz('America/Lima').format('MMMM'),
+        hora: moment().tz('America/Lima').format('LT')
     }
 
     componentDidMount() {
@@ -31,8 +28,8 @@ class NavBar extends Component {
 
     tick() {
         this.setState({
-            fecha:this.capitalize(moment().tz('America/Lima').format('dddd D')) + ' de ' + moment().tz('America/Lima').format('MMMM'),
-            hora:moment().tz('America/Lima').format('LT')
+            fecha: this.capitalize(moment().tz('America/Lima').format('dddd D')) + ' de ' + moment().tz('America/Lima').format('MMMM'),
+            hora: moment().tz('America/Lima').format('LT')
         });
     }
 
@@ -52,7 +49,7 @@ class NavBar extends Component {
                     <Menu.Item >
                         <img src={LogoYllari} />
                     </Menu.Item>
-                    {Configuracion.EnlacesNavBar.map((element,index) => {
+                    {Configuracion.EnlacesNavBar.map((element, index) => {
                         return <Menu.Item key={index} as='a' active={this.state.enlace === element.nombre}
                             onClick={() => { this.setState({ enlace: element.nombre }); this.navegar(element.valor) }}>
                             {element.nombre}
@@ -76,65 +73,10 @@ class NavBar extends Component {
                             }}>
                                 <Icon size="large" name='power off' />
                             </Button>
-                            {/*
-                            <Button as='a' onClick={() => {
-                                this.props.cerrarSesionHandler();
-                            }}>
-                                Cerrar sesión
-                                </Button>
-                                */}
                         </Menu.Item>
                     </Menu.Menu>
                 </Menu>
 
-                {/*
-                <Grid>
-                    <Grid.Row className="Spaced">
-
-                        <Grid.Column width={4} verticalAlign="middle" textAlign="left">
-                            <Image src ={LogoYllari} size="tiny"></Image>
-                        </Grid.Column>
-
-                        <Grid.Column width={8} textAlign="center"  verticalAlign="middle">
-                            <Grid columns="equal">
-                                <Grid.Row >
-                                    <Grid.Column>
-                                        <Link to="/inicio"><h4>Inicio</h4></Link>
-                                    </Grid.Column>
-                                    <Grid.Column>
-                                        <Link to="/files"><h4>Files</h4></Link>
-                                    </Grid.Column>
-                                    <Grid.Column>
-                                        <Link to="/servicios"><h4>Servicios</h4></Link>
-                                    </Grid.Column>
-                                    <Grid.Column>
-                                        <Link to="/transportes"><h4>Transportes</h4></Link>
-                                    </Grid.Column>
-                                    <Grid.Column>
-                                        <Link to="/clientes"><h4>Clientes</h4></Link>
-                                    </Grid.Column>
-                                    <Grid.Column>
-                                        <Link to="/calendario"><h4>Calendario</h4></Link>
-                                    </Grid.Column>
-                                </Grid.Row>
-                            </Grid>
-                        </Grid.Column>
-
-                        <Grid.Column width ={4} textAlign="right"  verticalAlign="middle">
-                            <Link floated="right" to="/inicio">Cerrar sesión</Link>
-                        </Grid.Column>
-
-                    </Grid.Row>
-                </Grid>
-
-                */}
-
-
-                {/*
-                    <Link to="/inicio">Inicio</Link>
-                    <Link to="/files">Files</Link>
-                    <Link to="/servicios">Servicios</Link>
-                <Link to="/transportes">Transportes</Link>*/}
             </div>
         );
     }

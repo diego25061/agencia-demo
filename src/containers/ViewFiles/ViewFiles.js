@@ -1,10 +1,8 @@
 import React from 'react';
 import { Component } from 'react';
-import FileCard from '../../components/FileCard/FileCard';
 import { Link } from 'react-router-dom'
 import './ViewFiles.css';
-import { Table, Menu, Icon, Label, Button, Container, Header, Input, Segment, Confirm } from 'semantic-ui-react';
-import ReactTable from "react-table";
+import { Button, Container, Header,  Segment, Confirm } from 'semantic-ui-react';
 import 'react-table/react-table.css'
 import Requester from '../../common/Services/Requester';
 import TablaBuscador from '../TablaBuscador/TablaBuscador';
@@ -24,45 +22,45 @@ class ViewFiles extends Component {
 		open: false,
 		idFileABorrar: 0,
 		codigoFileABorrar: '',
-		filesCargando:false,
-        notificacion_leerFiles : new NotificationStateHolder(),
+		filesCargando: false,
+		notificacion_leerFiles: new NotificationStateHolder(),
 		files: [
 			//{codigo: "23123", descripcion: "descripcion del file", biblia:"2018, mayo", cliente:"nts", fecha:"2/05/2019", estado:"activo", cantServicios: "2", cantTransportes: "3" },
 		]
 	}
 
 	cargarFiles = () => {
-		this.setState({filesCargando:true});
-		Requester.getFiles({},rpta => {
-			console.log("servicios cargados > ",rpta.cont);
+		this.setState({ filesCargando: true });
+		Requester.getFiles({}, rpta => {
+			//console.log("servicios cargados > ", rpta.cont);
 			let listaFiles = rpta.cont.map((e, i) => {
-				var fm =  new FileModel(e);
+				var fm = new FileModel(e);
 
-				if(fm.servicios){
+				if (fm.servicios) {
 					fm.cantServicios = fm.servicios.length;
 					//fm.cantServiciosTransporte = fm.servicios.filter(w=> w.clase==='transporte').length;
 				}
-				if(fm.biblia){
+				if (fm.biblia) {
 					let mes = const_numeroAMes(fm.mes);
 					mes = mes ? mes : " ";
-					fm.nombreBiblia= mes + ' ' +fm.anho;
+					fm.nombreBiblia = mes + ' ' + fm.anho;
 				}
-				if(fm.createdAt){
+				if (fm.createdAt) {
 					fm.fechaFormato = moment(fm.createdAt).format("DD-MM-YYYY, H:mm")
 				}
-				
+
 				return fm;
 			});
-			
-        	let n = this.state.notificacion_leerFiles;
-            n.setHidden();
+
+			let n = this.state.notificacion_leerFiles;
+			n.setHidden();
 			//console.log("servicios transformados > ",listaFiles);
-			this.setState({ files: listaFiles, filesCargando:false, notificacion_leerFiles : n });
+			this.setState({ files: listaFiles, filesCargando: false, notificacion_leerFiles: n });
 		}, (rptaError) => {
 			let n = this.state.notificacion_leerFiles;
-            n.setRecibidoError("Error al cargar files",rptaError.cont.message,rptaError.cont.statusCode);
-			n.mostrarNotificacion=true;
-			this.setState({filesCargando:false}	);
+			n.setRecibidoError("Error al cargar files", rptaError.cont.message, rptaError.cont.statusCode);
+			n.mostrarNotificacion = true;
+			this.setState({ filesCargando: false });
 		});
 	}
 
@@ -133,28 +131,29 @@ class ViewFiles extends Component {
 			</Container>
 
 			<Segment>
-				<TablaBuscador data={this.state.files} columns={cols} loading={this.state.filesCargando}/>
+				<TablaBuscador data={this.state.files} columns={cols} loading={this.state.filesCargando} />
 			</Segment>
 
-                <NotificacionApi
-                    disabled={!this.state.notificacion_leerFiles.mostrarNotificacion}
-                    loading={this.state.notificacion_leerFiles.enviando}
-                    color={this.state.notificacion_leerFiles.notif_color}
-                    content={this.state.notificacion_leerFiles.contenidoRespuesta} 
-                    title={this.state.notificacion_leerFiles.tituloRespuesta}
-                    icon={this.state.notificacion_leerFiles.notif_icono}>
-                </NotificacionApi>
+			<NotificacionApi
+				disabled={!this.state.notificacion_leerFiles.mostrarNotificacion}
+				loading={this.state.notificacion_leerFiles.enviando}
+				color={this.state.notificacion_leerFiles.notif_color}
+				content={this.state.notificacion_leerFiles.contenidoRespuesta}
+				title={this.state.notificacion_leerFiles.tituloRespuesta}
+				icon={this.state.notificacion_leerFiles.notif_icono}>
+			</NotificacionApi>
 			<Confirm content={"Seguro que deseas eliminar el file '" + this.state.codigoFileABorrar + "' ?"}
 				open={this.state.open}
 				onCancel={this.closeConfirm}
 				onConfirm={() => {
 					Requester.borrarFile(this.state.idFileABorrar,
-						(rpta)=>{this.cargarFiles();
-                			cogoToast.success("File eliminado",{position:"bottom-center"});
-						},
-						(rptaError)=>{
+						(rpta) => {
 							this.cargarFiles();
-							cogoToast.error(<><b>Error</b> al actualizar file : {rptaError.cont.message + " (" + rptaError.cont.statusCode + ")"}</>,{position:"bottom-center"});
+							cogoToast.success("File eliminado", { position: "bottom-center" });
+						},
+						(rptaError) => {
+							this.cargarFiles();
+							cogoToast.error(<><b>Error</b> al actualizar file : {rptaError.cont.message + " (" + rptaError.cont.statusCode + ")"}</>, { position: "bottom-center" });
 						});
 					this.closeConfirm();
 				}} />
@@ -162,7 +161,7 @@ class ViewFiles extends Component {
 		</div>
 		)
 	}
-	
+
 	openConfirm = (idFile, codFile) => this.setState({ open: true, idFileABorrar: idFile, codigoFileABorrar: codFile })
 
 	closeConfirm = () => {
